@@ -1,5 +1,13 @@
 # Changelog — Performance Powerhouse V4 Community Edition
 
+## 5.0.1 — 2026-10-12
+
+- Isolated service-worker cache cleanup to Performance Powerhouse cache names.
+- Restricted runtime caching to the declared application asset allowlist.
+- Respected `Cache-Control: no-store` and `private` response directives.
+- Attached asynchronous cache writes to the fetch-event lifetime.
+- Added repeatable Node.js service-worker contract tests.
+
 ## V4.0 Community Edition
 
 ### Community readiness

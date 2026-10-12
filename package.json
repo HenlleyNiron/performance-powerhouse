@@ -1,0 +1,12 @@
+{
+  "name": "al-performance-powerhouse",
+  "version": "5.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --check sw.js && node --test tests/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

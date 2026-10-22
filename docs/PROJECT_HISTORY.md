@@ -25,3 +25,21 @@ AI systems have been used extensively as implementation and verification tools. 
 ## Git history boundary
 
 The first GitHub commit should be read as **"import existing maintained project into public open source"**, not as the project's original creation date.
+
+## Canonical repository
+
+`HenlleyNiron/performance-powerhouse` is the canonical repository from release 5.1.0 onward.
+The commits from September–October 2026 were first pushed to a secondary account
+(`henlleyniron-byte/performance-powerhouse`) and were carried over here unchanged, with their
+original authorship and dates, before the 5.1.0 work was added on top.
+
+## Release lineage
+
+| Release | Where it lived | Notes |
+| --- | --- | --- |
+| V2 | single HTML file | topic self-ratings (`al_v2_samra`) |
+| Command Centre V3–V6 | earlier web builds | their storage keys are still migrated forward |
+| Powerhouse V3 | ChatGPT Sites | Execution Lock, course correction |
+| V4 Community Edition (Aug 2026) | ChatGPT Sites / static bundle | repair dashboard, two-stage retests, Physics Intelligence, PWA — see `docs/archive/` |
+| V5 (Sep 2026) | GitHub | evidence chains, papers, intelligence, Study Tracker, unified backup |
+| 5.1.0 (Oct 2026) | GitHub + GitHub Pages | security hardening, tested core module, CI, demo mode |

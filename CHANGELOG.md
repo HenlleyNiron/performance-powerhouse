@@ -1,4 +1,47 @@
-# Changelog — Performance Powerhouse V4 Community Edition
+# Changelog
+
+All notable changes to Performance Powerhouse. Versions follow the `package.json` version;
+storage-schema changes are called out explicitly.
+
+## 5.1.0 — 2026-10-22
+
+Storage schema unchanged (12). Existing records load and migrate exactly as before.
+
+### Security
+- **Fixed stored cross-site scripting through backup import.** A crafted backup file could place
+  markup in fields (error family, ids, subject, marks) that were rendered with `innerHTML`, and
+  the injected script executed when the dashboard rendered. Every stored or imported record now
+  passes through a sanitiser (`PowerhouseCore.normalizeState`), the affected render paths escape
+  their output, and a regression test imports a hostile backup and asserts nothing executes.
+- Added a strict Content-Security-Policy (`script-src 'self'`, no third-party origins) and a
+  no-referrer policy to every page. All inline scripts and styles were moved into files.
+- Imports are now validated and summarised before anything is written; the student confirms, and
+  a recovery snapshot is still taken first. Invalid JSON or oversized files are rejected cleanly.
+
+### Fixed
+- Deleting the attempt that closed a scheduled check left the check closed with no evidence. The
+  check now reopens and its outcome is re-derived from the remaining attempts.
+- Editing an attempt did not update its retest schedule. Corrections now schedule missing checks,
+  remove untouched checks when the correction shows full credit, move untouched checks with a
+  corrected date or topic, and re-evaluate any check a corrected verification attempt had closed.
+- The output-streak counter could skip or repeat a day in time zones far from UTC.
+
+### Added
+- **Demo mode** (`?demo=1` or "Explore sample data" on first run): a clearly labelled, fictional
+  record held in memory only, so anyone can explore a populated dashboard without creating data.
+- `js/core.js` (`PowerhouseCore`): the evidence rules, retest lifecycle, sanitisation and import
+  inspection as one DOM-free module, unit-tested in Node.
+- Test suite: 40 core unit tests, static integrity tests (ids, links, CSP, precache, versions)
+  and Playwright browser tests on desktop and mobile Chromium.
+- CI (lint, unit, browser), CodeQL analysis, GitHub Pages deployment of the live demo, Dependabot,
+  and an optional Codex pull-request review workflow.
+- `AGENTS.md` for coding agents, `docs/ARCHITECTURE.md`, issue forms, `CITATION.cff`.
+
+### Changed
+- Source reorganised: `index.html` now contains markup only; scripts live in `js/` and styles in
+  `css/`. The service-worker cache was renamed to `powerhouse-v5.1.0` and its precache list updated.
+- Historical release reports moved to `docs/archive/`. An unrelated Focus Notes Studio bundle was
+  removed from the tree (it remains in Git history).
 
 ## 5.0.1 — 2026-10-12
 

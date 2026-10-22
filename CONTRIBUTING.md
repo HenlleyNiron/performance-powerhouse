@@ -20,20 +20,28 @@ Thank you for considering a contribution to Performance Powerhouse.
 
 ## Development
 
-The project is intentionally static and dependency-light. A local web server is sufficient for normal development:
+The app is intentionally static with zero runtime dependencies. Node.js 22+ is used only for
+the dev server and tests.
 
 ```bash
-python -m http.server 8080
+npm ci                            # ESLint + Playwright (dev only)
+npx playwright install chromium   # once
+npm start                         # http://localhost:4173 (or any static server)
+npm run check                     # lint, unit/integrity tests, browser tests
 ```
 
-Before a pull request, please check:
+Read [`AGENTS.md`](AGENTS.md) before changing code: it lists the layout and the invariants that
+protect students' data (storage keys, sanitisation, CSP, retest rules).
 
-1. Main navigation still works.
-2. A new attempt can be logged.
-3. Repair and retest stages behave correctly.
-4. Share-safe mode does not expose private performance values.
-5. No browser-console errors are introduced.
-6. Relative assets resolve correctly.
+Before opening a pull request:
+
+1. `npm run check` passes.
+2. New rules go in `js/core.js` with a unit test; new UI flows get a browser test in `tests/e2e/`.
+3. Try the change in demo mode (`?demo=1`) and with share-safe mode on.
+4. New shipped files are listed in `sw.js` and `scripts/build-site.mjs`.
+
+Pull requests receive an automated Codex first-pass review when the repository has an
+`OPENAI_API_KEY` secret configured. The maintainer makes every merge decision.
 
 ## AI-assisted contributions
 

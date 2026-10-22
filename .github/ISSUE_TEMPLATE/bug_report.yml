@@ -1,0 +1,51 @@
+name: Bug report
+description: Something in Performance Powerhouse behaves incorrectly.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. **Do not paste personal study records, backups, names or contact details.**
+        If a backup is needed to reproduce the bug, describe its shape or use demo mode (`?demo=1`).
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Log an attempt with ...
+        3. See ...
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Attempt logging / evidence ledger
+        - Repairs and retests
+        - Backup, import or migration
+        - Physics Intelligence
+        - Study Tracker
+        - Offline / install (PWA)
+        - Layout or accessibility
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: e.g. Chrome 141 on Android, Edge on Windows 11
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors (if any)
+      render: text

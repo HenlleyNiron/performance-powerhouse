@@ -1,0 +1,27 @@
+name: Data or syllabus correction
+description: A Physics Intelligence classification, syllabus label or period count looks wrong.
+labels: [data]
+body:
+  - type: markdown
+    attributes:
+      value: Please reference questions by year and number only. **Do not paste full exam questions or marking schemes.**
+  - type: input
+    id: reference
+    attributes:
+      label: Reference
+      placeholder: e.g. 2019 Q27, or Chemistry unit 12 period count
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: Current value
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed correction and evidence
+      description: Why is the correction right? Cite the syllabus section or official source.
+    validations:
+      required: true

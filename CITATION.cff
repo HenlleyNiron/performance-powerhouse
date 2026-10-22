@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: If you reference Performance Powerhouse, please cite it as below.
+title: Performance Powerhouse
+abstract: >-
+  A local-first, evidence-driven study repair and retest system for Sri Lankan
+  G.C.E. A/L Biological Science students.
+type: software
+authors:
+  - given-names: Henlley Niron
+    family-names: Pushparajah
+version: 5.1.0
+date-released: 2026-10-22
+license: MIT
+repository-code: https://github.com/HenlleyNiron/performance-powerhouse
+url: https://henlleyniron.github.io/performance-powerhouse/
+keywords:
+  - education
+  - spaced-retrieval
+  - local-first
+  - progressive-web-app
+  - sri-lanka

@@ -1,0 +1,96 @@
+name: Codex PR review
+
+# Runs OpenAI Codex as a first-pass reviewer on every pull request and posts its
+# findings as a comment. The maintainer still makes every merge decision.
+# Requires the OPENAI_API_KEY repository secret; without it the job skips cleanly.
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codex-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  codex:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      final_message: ${{ steps.run_codex.outputs.final-message }}
+    steps:
+      - name: Check for API key
+        id: gate
+        env:
+          HAS_KEY: ${{ secrets.OPENAI_API_KEY != '' }}
+        run: echo "enabled=$HAS_KEY" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v7
+        if: steps.gate.outputs.enabled == 'true'
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          persist-credentials: false
+
+      - name: Fetch base and head refs
+        if: steps.gate.outputs.enabled == 'true'
+        env:
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: git fetch --no-tags origin "$PR_BASE_REF" "+refs/pull/$PR_NUMBER/head"
+
+      - name: Assemble review prompt
+        if: steps.gate.outputs.enabled == 'true'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          {
+            cat .github/codex/review-prompt.md
+            echo
+            echo "Pull request #$PR_NUMBER. Review the commits in: git log --oneline $BASE_SHA...$HEAD_SHA"
+            echo "and the diff: git diff $BASE_SHA...$HEAD_SHA"
+            echo
+            echo "<untrusted_pr_description>"
+            printf '%s\n\n%s\n' "$PR_TITLE" "$PR_BODY"
+            echo "</untrusted_pr_description>"
+          } > "$RUNNER_TEMP/codex-prompt.md"
+
+      - name: Run Codex
+        id: run_codex
+        if: steps.gate.outputs.enabled == 'true'
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ':workspace'
+          prompt-file: ${{ runner.temp }}/codex-prompt.md
+
+  post_feedback:
+    needs: codex
+    if: needs.codex.outputs.final_message != ''
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Post Codex review
+        uses: actions/github-script@v9
+        env:
+          CODEX_FINAL_MESSAGE: ${{ needs.codex.outputs.final_message }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: `### Codex review\n\n${process.env.CODEX_FINAL_MESSAGE}\n\n<sub>Automated first-pass review. The maintainer makes the merge decision.</sub>`,
+            });

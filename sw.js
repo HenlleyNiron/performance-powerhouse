@@ -1,10 +1,13 @@
 const CACHE_PREFIX = 'powerhouse-';
-const CACHE = `${CACHE_PREFIX}v5-20261012-1`;
+const CACHE = `${CACHE_PREFIX}v5.1.0`;
 const ASSETS = [
   './',
   './index.html',
-  './v5.css',
-  './v5-additions.js',
+  './css/app.css',
+  './css/v5.css',
+  './js/core.js',
+  './js/app.js',
+  './js/v5-additions.js',
   './community-share.html',
   './manifest.webmanifest',
   './icon-192.png',
@@ -92,7 +95,7 @@ self.addEventListener('fetch', event => {
         event.waitUntil(cacheWrite);
       }
       return response;
-    } catch (_) {
+    } catch {
       return offlineResponse(request, url);
     }
   })());

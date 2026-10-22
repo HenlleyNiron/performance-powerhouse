@@ -7,7 +7,7 @@ const CORE='al_performance_powerhouse_v5';
 const CHANNEL='al-performance-powerhouse-study-tracker-v1';
 const randomTabId=()=>crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`;let tabId;try{tabId=sessionStorage.getItem('pp_tracker_tab')||randomTabId();sessionStorage.setItem('pp_tracker_tab',tabId)}catch(_){tabId=randomTabId()}
 const bc='BroadcastChannel'in window?new BroadcastChannel(CHANNEL):null;
-const $=id=>document.getElementById(id);const DAY=86400000;
+const $=id=>document.getElementById(id);
 const TYPES={
 'timed-question':['Timed question','evidence'],'mixed-question-set':['Mixed question set','evidence'],'mcq-set':['MCQ set','evidence'],'structured-questions':['Structured questions','evidence'],'essay':['Essay','evidence'],'timed-paper':['Timed paper / paper section','evidence'],'marking-correction':['Marking / correction','evidence'],'closed-book-reattempt':['Closed-book reattempt','evidence'],'repair':['Repair','evidence'],'fresh-transfer':['Fresh transfer','evidence'],'delayed-retest':['Delayed retest','evidence'],'active-recall':['Active recall','supporting'],'targeted-theory':['Targeted theory repair','supporting'],'lecture-segment':['Necessary lecture segment','supporting'],'practical-demo':['Practical demonstration','supporting'],'resource-admin':['Resource / admin','passive'],'planning':['Planning / system work','passive']};
 const OUTPUT_CLASS={'marked-attempt':'evidence','repair-completed':'evidence','closed-book-reattempt':'evidence','fresh-transfer':'evidence','delayed-retest':'evidence','closed-book-recall':'supporting','targeted-theory':'supporting','lecture-segment':'supporting','practical-demo':'supporting','resource-admin':'passive','planning':'passive','none':'passive'};

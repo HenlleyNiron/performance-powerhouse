@@ -3,7 +3,7 @@
   'use strict';
   const TRACKER_KEY = 'al_performance_powerhouse_study_tracker_v1';
   const PHYSICS_KEY = 'al_performance_powerhouse_physics_intelligence_v1';
-  const BUILD = '5.0.0-20260908';
+  const BUILD = PowerhouseCore.BUILD;
   const DAY = 86400000;
 
   const q = (sel, root=document) => root.querySelector(sel);
@@ -12,20 +12,11 @@
   const dl = (name, text, type='text/plain') => { const blob=new Blob([text],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),500); };
   const csv = value => `"${String(value ?? '').replaceAll('"','""')}"`;
   const pct = (n,d) => d ? Math.round(Number(n||0)/Number(d||0)*100) : null;
-  const fullPass = a => {
-    if (!a) return false;
-    const trusted = a.trustedEarned === null || a.trustedEarned === undefined || a.trustedEarned === '' ? Number(a.earned) : Number(a.trustedEarned);
-    return Number(a.earned) === Number(a.total) && trusted === Number(a.total) && Number(a.guesses||0)===0 && !a.error;
-  };
+  const fullPass = PowerhouseCore.isFullPass;
   const independentType = a => ['reattempt','fresh-transfer','delayed-retest','topic-question','mixed-set','mcq-section','structured-section','paper-section','full-paper','practical-data','mcq-set','structured-essay','essay'].includes(a?.type);
   const toDate = d => new Date(`${d}T12:00:00Z`);
   const daysAgo = d => d ? Math.max(0, Math.floor((toDate(v5Today())-toDate(d))/DAY)) : Infinity;
-  const v5Today = () => {
-    try {
-      const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Colombo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
-      return `${p.year}-${p.month}-${p.day}`;
-    } catch (_) { return new Date().toISOString().slice(0,10); }
-  };
+  const v5Today = () => PowerhouseCore.zonedToday('Asia/Colombo');
 
   function ensureState(){
     if (!Array.isArray(state.repairEvents)) state.repairEvents=[];
@@ -250,7 +241,7 @@
     q('#next-action-meta').innerHTML=`<span class="pill">${escapeHTML(titleCase(action.subject))}</span><span class="pill">${action.minutes} min</span><span class="pill">${escapeHTML(ATTEMPT_TYPE_NAMES[action.type]||action.type)}</span><span class="pill">closed-book where applicable</span>`;
     q('#start-focus-btn').textContent=`Start ${action.minutes}-min block`;
     q('#v5-why').textContent=action.why; q('#v5-what').textContent=action.what; q('#v5-complete').textContent=action.complete;
-    const r=recoveryMetrics(), c=calibrationMetrics(), tm=trackerMetrics(1);
+    const r=recoveryMetrics(), tm=trackerMetrics(1);
     q('#v5-command-kpis').innerHTML=`
       <article class="v5-kpi"><span>Marks targeted</span><strong>${fmt(r.targeted)}</strong><small>initial lost marks with an explicit repair completed</small></article>
       <article class="v5-kpi"><span>Observed recovered</span><strong>${fmt(r.recovered)}</strong><small>same-mark-scale improvement after repair; descriptive, not causal</small></article>

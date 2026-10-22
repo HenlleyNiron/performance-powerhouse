@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
-const source = await readFile(new URL('../sw.js', import.meta.url), 'utf8');
+const source = await readFile(new URL('../../sw.js', import.meta.url), 'utf8');
 
 test('uses a product-scoped cache namespace', () => {
   assert.match(source, /const CACHE_PREFIX = 'powerhouse-'/);

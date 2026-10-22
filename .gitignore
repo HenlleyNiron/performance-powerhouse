@@ -12,3 +12,5 @@ private/
 secrets/
 backups/
 exports/
+test-results/
+playwright-report/

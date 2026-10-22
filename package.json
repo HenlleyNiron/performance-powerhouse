@@ -1,12 +1,31 @@
 {
   "name": "al-performance-powerhouse",
-  "version": "5.0.1",
+  "version": "5.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --check sw.js && node --test tests/*.test.mjs"
+    "test": "npm run test:unit",
+    "start": "node scripts/serve.mjs",
+    "lint": "eslint .",
+    "test:unit": "node --check sw.js && node --test \"tests/unit/*.test.mjs\"",
+    "test:e2e": "playwright test",
+    "check": "npm run lint && npm run test:unit && npm run test:e2e"
   },
   "engines": {
     "node": ">=22"
-  }
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@playwright/test": "1.56.1",
+    "eslint": "9.39.5",
+    "globals": "17.13.0"
+  },
+  "description": "Local-first, evidence-driven G.C.E. A/L study repair and retest system",
+  "license": "MIT",
+  "author": "Henlley Niron Pushparajah",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HenlleyNiron/performance-powerhouse.git"
+  },
+  "homepage": "https://henlleyniron.github.io/performance-powerhouse/"
 }

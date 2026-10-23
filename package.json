@@ -9,12 +9,15 @@
     "lint": "eslint .",
     "test:unit": "node --check sw.js && node --test \"tests/unit/*.test.mjs\"",
     "test:e2e": "playwright test",
-    "check": "npm run lint && npm run test:unit && npm run test:e2e"
+    "check": "npm run lint && npm run test:coverage && npm run test:e2e",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=\"js/core.js\" --test-coverage-lines=95 --test-coverage-branches=85 --test-coverage-functions=95 \"tests/unit/*.test.mjs\"",
+    "validate:data": "node scripts/validate-physics-data.mjs"
   },
   "engines": {
     "node": ">=22"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.64.1",
     "eslint": "10.13.0",

@@ -128,8 +128,11 @@ function renderTrend(rows) {
 
 function heatColor(value, max) {
   const intensity = max ? value / max : 0;
-  const lightness = 15 + intensity * 48;
-  return `hsl(201 78% ${lightness}%)`;
+  // Two contrast-safe bands (WCAG AA for the small cell text): dark cells carry light
+  // text, light cells carry dark text, and the unreadable middle band is skipped.
+  const light = intensity >= 0.5;
+  const lightness = light ? 52 + (intensity - 0.5) * 2 * 20 : 12 + intensity * 2 * 18;
+  return { background: `hsl(201 78% ${lightness.toFixed(1)}%)`, color: light ? "#07111f" : "#eef8ff" };
 }
 
 function renderHeatmap(rows) {
@@ -141,7 +144,7 @@ function renderHeatmap(rows) {
     html += `<span class="heat-label heat-year">${row.year}</span>`;
     for (const unit of units) {
       const value = row.units[unit].percentage;
-      html += `<span class="heat-cell" style="background:${heatColor(value, max)}" title="${row.year} · ${unit}: ${row.units[unit].count}/${row.questionCount} (${pct(value, 2)})">${Math.round(value * 100)}</span>`;
+      html += `<span class="heat-cell" style="background:${heatColor(value, max).background};color:${heatColor(value, max).color}" title="${row.year} · ${unit}: ${row.units[unit].count}/${row.questionCount} (${pct(value, 2)})">${Math.round(value * 100)}</span>`;
     }
   }
   html += "</div>";

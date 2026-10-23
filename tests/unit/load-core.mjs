@@ -1,16 +1,12 @@
-import { readFileSync } from 'node:fs';
-import vm from 'node:vm';
+// js/core.js is a classic browser script that attaches PowerhouseCore to the global
+// object. Importing it as a module runs the same code in Node, so coverage tools
+// measure exactly the file the browser executes.
+await import('../../js/core.js');
 
-/** Loads js/core.js exactly as the browser does (a classic script) and returns PowerhouseCore. */
+/** Returns the PowerhouseCore API exactly as the browser sees it. */
 export function loadCore() {
-  const source = readFileSync(new URL('../../js/core.js', import.meta.url), 'utf8');
-  const sandbox = { crypto: globalThis.crypto, Intl, Date, console };
-  sandbox.globalThis = sandbox;
-  vm.createContext(sandbox);
-  vm.runInContext(source, sandbox, { filename: 'js/core.js' });
-  // Round-trip through JSON-free structuredClone is unnecessary: return the live API.
-  return sandbox.PowerhouseCore;
+  return globalThis.PowerhouseCore;
 }
 
-/** Deep-compares values created in the VM realm with values from this realm. */
+/** Converts values to plain JSON data for deep comparisons. */
 export const plain = value => JSON.parse(JSON.stringify(value));

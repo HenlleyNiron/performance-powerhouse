@@ -87,9 +87,15 @@ describe('offline shell and packaging', () => {
     assert.match(read('sw.js'), new RegExp(`v${version.replaceAll('.', '\\.')}`));
   });
 
-  test('package version and core build agree', () => {
+  test('package version, core build and citation agree', () => {
     const { version } = JSON.parse(read('package.json'));
     assert.equal(loadCore().BUILD, version);
+    assert.match(read('CITATION.cff'), new RegExp(`^version: ${version.replaceAll('.', '\\.')}$`, 'm'));
+  });
+
+  test('the changelog documents the current version', () => {
+    const { version } = JSON.parse(read('package.json'));
+    assert.match(read('CHANGELOG.md'), new RegExp(`^## ${version.replaceAll('.', '\\.')} `, 'm'));
   });
 
   test('web manifest is valid and its icons exist', () => {

@@ -279,3 +279,58 @@ describe('demo dataset', () => {
     assert.ok(demo.repairEvents.length > 0);
   });
 });
+
+describe('edge cases', () => {
+  test('zonedToday falls back to UTC for an unknown time zone', () => {
+    const now = new Date('2026-12-31T20:00:00Z');
+    assert.equal(core.zonedToday('Not/AZone', now), '2026-12-31');
+  });
+
+  test('a passing attempt that is later re-evaluated still closes the check', () => {
+    const source = attempt();
+    const state = { attempts: [source], retests: core.createRetests(source, [3, 7], ids) };
+    const fail = attempt({ id: 'f', type: 'fresh-transfer', date: '2026-10-05', earned: 6, error: 'M' });
+    const pass = attempt({ id: 'p', type: 'fresh-transfer', date: '2026-10-08', earned: 10, error: '' });
+    core.applyRetestOutcome(state.retests, fail);
+    core.applyRetestOutcome(state.retests, pass);
+    state.attempts.push(fail, pass);
+    const stage1 = state.retests.find(r => r.stage === 1);
+    core.recomputeRetest(stage1, new Map(state.attempts.map(a => [a.id, a])));
+    assert.deepEqual([stage1.completedAt, stage1.status, stage1.failures, stage1.lastAttemptId], ['2026-10-08', 'passed', 1, 'p']);
+  });
+
+  test('course-correction events keep only safe, dated records', () => {
+    const { state } = core.normalizeState({
+      courseCorrection: {
+        disciplineMode: false,
+        targetDate: '2027-08-01',
+        rabbitHoleEvents: [{ id: 'e1', type: 'resource', date: '2026-10-01', at: '2026-10-01T10:00:00Z' }, { type: '<b>', date: 'nope' }, 'junk'],
+        dailyAudits: { '2026-10-01': { sleepProtected: true, 'bad key': true }, notadate: {} },
+      },
+    });
+    const cc = state.courseCorrection;
+    assert.equal(cc.disciplineMode, false);
+    assert.equal(cc.targetDate, '2027-08-01');
+    assert.deepEqual(plain(cc.rabbitHoleEvents), [{ id: 'e1', date: '2026-10-01', at: '2026-10-01T10:00:00Z', type: 'resource' }]);
+    assert.deepEqual(plain(cc.dailyAudits), { '2026-10-01': { sleepProtected: true } });
+  });
+
+  test('lostMarksByError totals lost marks per error family', () => {
+    const totals = core.lostMarksByError([
+      { error: 'C', earned: 4, total: 10 },
+      { error: 'C', earned: 9, total: 10 },
+      { error: '', earned: 0, total: 5 },
+      { error: 'X', earned: 0, total: 5 },
+    ]);
+    assert.equal(totals.C, 7);
+    assert.equal(totals.K, 0);
+    assert.equal('X' in totals, false);
+  });
+
+  test('makeId produces distinct safe identifiers', () => {
+    const a = core.makeId();
+    const b = core.makeId();
+    assert.notEqual(a, b);
+    assert.match(a, /^[A-Za-z0-9._:-]+$/);
+  });
+});

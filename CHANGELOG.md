@@ -3,6 +3,33 @@
 All notable changes to Performance Powerhouse. Versions follow the `package.json` version;
 storage-schema changes are called out explicitly.
 
+## 5.1.1 — 2026-10-23
+
+Storage schema unchanged (12).
+
+### Accessibility
+- Every main-app panel, dialog and companion page now passes an automated WCAG 2.1 AA audit
+  (axe-core) that runs in CI.
+- Labelled the retest-interval inputs, the search box and subject filter, and the Study Tracker
+  filters; made the search results and weekly report keyboard-focusable regions.
+- Raised low-contrast secondary text, fixed links styled as buttons, and gave the Physics
+  Intelligence heatmap two contrast-safe colour bands so every cell value is readable.
+
+### Added
+- SVG favicon, home-screen icon, and Open Graph/Twitter preview card with a 1280×640 image.
+- `npm run validate:data`: checks that every Physics Intelligence total, era summary and question
+  family is reproducible from the per-year rows, that no question appears in two families, and that
+  the file contains no question or answer text. Runs in CI.
+- Browser tests for full offline use through the service worker, and for the Study Tracker →
+  evidence-ledger hand-off.
+- Enforced coverage thresholds for `js/core.js` (currently ~99.9% lines, ~90% branches).
+- Automatic GitHub Releases: a version bump on `main` tags the commit and publishes the matching
+  CHANGELOG section with a zipped static build.
+
+### Changed
+- Dev tooling updated (ESLint 10, Playwright 1.64). CI tests on Node 22 and 24.
+- The live-demo workflow now skips with a notice, instead of failing, until GitHub Pages is enabled.
+
 ## 5.1.0 — 2026-10-22
 
 Storage schema unchanged (12). Existing records load and migrate exactly as before.

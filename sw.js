@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'powerhouse-';
-const CACHE = `${CACHE_PREFIX}v5.1.0`;
+const CACHE = `${CACHE_PREFIX}v5.1.1`;
 const ASSETS = [
   './',
   './index.html',

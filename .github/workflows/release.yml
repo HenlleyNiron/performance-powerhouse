@@ -1,0 +1,84 @@
+name: Release
+
+# When the version in package.json changes on main and no matching tag exists,
+# tag the commit and publish a GitHub Release whose notes are that version's
+# CHANGELOG section. The static site is attached as a zip for self-hosting.
+
+on:
+  push:
+    branches: [main]
+    paths: [package.json, CHANGELOG.md]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Read version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Skip if already released
+        id: check
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "v$VERSION is already tagged; nothing to release."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Extract release notes from CHANGELOG
+        if: steps.check.outputs.exists == 'false'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          awk -v v="$VERSION" '
+            $0 ~ "^## " v "( |$)" { on = 1; next }
+            on && /^## / { exit }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then
+            echo "::error::CHANGELOG.md has no '## $VERSION' section."
+            exit 1
+          fi
+          {
+            echo
+            echo "---"
+            echo "**Try it:** [live demo with sample data](https://henlleyniron.github.io/performance-powerhouse/?demo=1) · or download \`performance-powerhouse-$VERSION.zip\` below and open \`index.html\` on any static host."
+          } >> notes.md
+
+      - name: Build static site bundle
+        if: steps.check.outputs.exists == 'false'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          node scripts/build-site.mjs
+          (cd _site && zip -qr "../performance-powerhouse-$VERSION.zip" .)
+
+      - name: Publish release
+        if: steps.check.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          gh release create "v$VERSION" "performance-powerhouse-$VERSION.zip" \
+            --target "$GITHUB_SHA" \
+            --title "Performance Powerhouse $VERSION" \
+            --notes-file notes.md

@@ -14,7 +14,7 @@
 (function (root) {
   'use strict';
 
-  const BUILD = '5.1.0';
+  const BUILD = '5.1.1';
   const SCHEMA_VERSION = 12;
   const DEFAULT_TIMEZONE = 'Asia/Colombo';
 

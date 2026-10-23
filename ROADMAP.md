@@ -10,14 +10,19 @@ becoming another high-maintenance productivity system.
 - Demo mode so new students can see the loop before entering data
 - Mobile header fixes for narrow screens
 
+## Done in 5.1.1
+
+- Automated WCAG 2.1 AA (axe) checks for every panel, dialog and companion page in CI
+- Validation script for the Physics Intelligence dataset
+- Offline and Study Tracker hand-off browser tests; automatic releases
+
 ## Next
 
-- Keyboard and screen-reader audit of every dialog and tab (automated axe checks in CI)
+- Manual screen-reader pass (NVDA, TalkBack) — automated checks cannot cover everything
 - Move rendering for the Repairs and Evidence panels onto `PowerhouseCore` helpers so more of the
   UI logic is unit-testable
 - Per-subject retest intervals (currently one 3/7-day setting)
-- Document the Physics Intelligence classification workflow and add a validation script for the
-  dataset
+- Document the Physics Intelligence classification workflow
 - Optional Sinhala and Tamil interface text
 
 ## Maintenance principles

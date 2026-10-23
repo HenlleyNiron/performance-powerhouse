@@ -35,13 +35,18 @@ behind an explicit interface first.
 ## Commands
 
 ```bash
-npm ci                 # dev tooling only (ESLint, Playwright)
+npm ci                 # dev tooling only (ESLint, Playwright, axe-core)
 npm start              # http://localhost:4173
 npm run lint
 npm test               # unit + integrity tests (fast, no browser)
-npm run test:e2e       # browser tests; first run: npx playwright install chromium
-npm run check          # everything CI runs
+npm run test:coverage  # same, with enforced coverage thresholds for js/core.js
+npm run validate:data  # Physics Intelligence dataset consistency
+npm run test:e2e       # browser, accessibility and offline tests; first run: npx playwright install chromium
+npm run check          # lint + coverage + browser tests
 ```
+
+On a machine that cannot download Playwright's browser, point the tests at an installed
+Chromium with `PW_CHROMIUM_PATH=/path/to/chrome npm run test:e2e`.
 
 Run `npm run check` before proposing a change.
 
@@ -65,10 +70,14 @@ Run `npm run check` before proposing a change.
 6. **Offline shell.** A new shipped file must be added to `ASSETS` in `sw.js` and to
    `PUBLISHED` in `scripts/build-site.mjs`; bump the cache name with the version.
 
-## Versioning
+7. **Accessible by default.** New UI must pass the axe audit in `tests/e2e/a11y.spec.mjs`
+   (labelled controls, sufficient contrast, keyboard-reachable scroll regions).
 
-`package.json` `version`, `PowerhouseCore.BUILD` and the `sw.js` cache name must match (an
-integrity test enforces this). Record user-visible changes in `CHANGELOG.md`.
+## Versioning and releases
+
+`package.json` `version`, `PowerhouseCore.BUILD`, the `sw.js` cache name and `CITATION.cff`
+must match, and `CHANGELOG.md` must have a `## <version>` section (integrity tests enforce all of
+this). Pushing a new version to `main` publishes the GitHub Release automatically.
 
 ## Content boundaries
 

@@ -92,9 +92,12 @@ Demo mode (`?demo=1`) builds a fictional record in memory and writes none of the
 
 | Layer | Tool | What it proves |
 | --- | --- | --- |
-| Core rules | `node:test` (`tests/unit/core.test.mjs`) | retest lifecycle, sanitisation, migration defaults, import inspection, demo validity |
-| Static integrity | `node:test` (`tests/unit/integrity.test.mjs`) | unique ids, every `$('id')` lookup exists, local links resolve, CSP present, precache assets exist, versions agree |
+| Core rules | `node:test` (`tests/unit/core.test.mjs`) | retest lifecycle, sanitisation, migration defaults, import inspection, demo validity — with enforced coverage thresholds |
+| Static integrity | `node:test` (`tests/unit/integrity.test.mjs`) | unique ids, every `$('id')` lookup exists, local links resolve, CSP present, precache assets exist, versions and changelog agree |
 | Service worker | `node:test` (`tests/unit/sw-contract.test.mjs`) | cache isolation and lifecycle contract |
-| Browser | Playwright (`tests/e2e/`) | onboarding, navigation, attempt → retest flow, migration, backup round-trip, hostile-import safety, demo mode, mobile overflow |
+| Dataset | `node:test` + `scripts/validate-physics-data.mjs` | Physics Intelligence totals, eras and families reproducible from per-year rows; no question/answer text |
+| Browser | Playwright (`tests/e2e/`) | onboarding, navigation, attempt → retest flow, migration, backup round-trip, hostile-import safety, demo mode, Study Tracker hand-off, offline use, mobile overflow |
+| Accessibility | Playwright + axe-core (`tests/e2e/a11y.spec.mjs`) | WCAG 2.1 A/AA rules on every panel, dialog and companion page |
 
-CI runs all of them on every push and pull request, plus CodeQL and an optional Codex review.
+CI runs all of them on every push and pull request (unit tests on Node 22 and 24), plus CodeQL
+and an optional Codex review. A version bump on `main` publishes a GitHub Release automatically.

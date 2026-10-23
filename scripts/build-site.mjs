@@ -14,6 +14,8 @@ export const PUBLISHED = [
   'index.html',
   'community-share.html',
   'manifest.webmanifest',
+  'favicon.svg',
+  'social-preview.png',
   'sw.js',
   'icon-192.png',
   'icon-512.png',

@@ -10,6 +10,7 @@ const ASSETS = [
   './js/v5-additions.js',
   './community-share.html',
   './manifest.webmanifest',
+  './favicon.svg',
   './icon-192.png',
   './icon-512.png',
   './study-tracker/',

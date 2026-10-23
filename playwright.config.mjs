@@ -14,6 +14,8 @@ export default defineConfig({
     locale: 'en-GB',
     trace: 'retain-on-failure',
     serviceWorkers: 'block',
+    // Optional: point at an already-installed Chromium (offline/sandboxed machines).
+    launchOptions: process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] }, testIgnore: /mobile\.spec\.mjs/ },

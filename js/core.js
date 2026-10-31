@@ -76,7 +76,7 @@
    * @property {Record<string, number>} dropped  Invalid records skipped, by collection.
    */
 
-  const BUILD = '5.2.0';
+  const BUILD = '5.3.0';
   const SCHEMA_VERSION = 12;
   const DEFAULT_TIMEZONE = 'Asia/Colombo';
 
@@ -1025,6 +1025,223 @@
       .slice(0, limit);
   }
 
+  // ------------------------------------------------------------ evidence chains
+
+  /**
+   * Lifecycle of one weakness, from the attempt that exposed it to delayed retention.
+   * @typedef {'Open' | 'Diagnosed' | 'Repair planned' | 'Repair completed' | 'Reattempt due'
+   *   | 'Reattempt passed' | 'Fresh transfer due' | 'Transfer passed' | 'Delayed retest due'
+   *   | 'Closed' | 'Reopened'} Lifecycle
+   *
+   * @typedef {object} EvidenceChain
+   * @property {Attempt} source            The attempt that lost marks, guessed or recorded an error.
+   * @property {RepairEvent | null} repair  Latest repair logged against the source.
+   * @property {Attempt | null} reattempt  First clean closed-book reattempt after the repair.
+   * @property {Attempt | null} transfer   First clean fresh-transfer after the reattempt.
+   * @property {Attempt | null} delayed    First clean delayed retest after the transfer.
+   * @property {Attempt | null} relapse    A later failure on the same topic after closure.
+   * @property {Lifecycle} lifecycle
+   * @property {string | null} closedAt
+   */
+
+  /** Display priority: what needs attention first. */
+  const LIFECYCLE_RANK = Object.freeze({
+    Reopened: 99,
+    'Delayed retest due': 90,
+    'Fresh transfer due': 80,
+    'Reattempt due': 70,
+    'Repair planned': 60,
+    Diagnosed: 50,
+    Open: 40,
+    'Repair completed': 30,
+    'Reattempt passed': 20,
+    'Transfer passed': 10,
+    Closed: 0,
+  });
+
+  const hasLoss = a => Number(a.earned) < Number(a.total) || Boolean(a.error) || Number(a.guesses || 0) > 0;
+  /** @type {(n: number, d: number) => number | null} */
+  const pct = (n, d) => (d ? Math.round((Number(n || 0) / Number(d || 0)) * 100) : null);
+
+  /**
+   * Builds the evidence chains for a record. The stages are repair, closed-book
+   * reattempt, fresh transfer and delayed retest; each counts only on a clean pass
+   * dated on or after the latest earlier stage that was achieved. Note: a stage can
+   * be skipped — e.g. a clean delayed retest after the repair closes the chain even
+   * without a reattempt or transfer (5.x behaviour, pinned by tests). A later failure
+   * on the same topic after closure reopens the chain.
+   *
+   * Returns a model with the chains plus helpers that reuse the same per-topic
+   * index, so callers never rescan every attempt.
+   *
+   * @param {PowerhouseState} state
+   */
+  function evidenceModel(state) {
+    const attempts = state.attempts || [];
+    /** @type {Map<string, Attempt[]>} */
+    const byTopic = new Map();
+    attempts.forEach(a => {
+      if (!Object.prototype.hasOwnProperty.call(ATTEMPT_TYPE_NAMES, a.type)) return;
+      const list = byTopic.get(a.topicKey);
+      if (list) list.push(a);
+      else byTopic.set(a.topicKey, [a]);
+    });
+    const order = (/** @type {Attempt} */ a) => String(a.date) + String(a.createdAt || '');
+    byTopic.forEach(list => list.sort((x, y) => order(x).localeCompare(order(y))));
+
+    /** @type {Map<string, RepairEvent>} */
+    const latestRepair = new Map();
+    (state.repairEvents || []).forEach(r => {
+      const prev = latestRepair.get(r.sourceAttemptId);
+      if (!prev || String(r.completedAt || '') >= String(prev.completedAt || ''))
+        latestRepair.set(r.sourceAttemptId, r);
+    });
+
+    /**
+     * Attempts on the same topic dated on or after `source`, oldest first.
+     * @param {Attempt} source
+     * @param {string[] | null} [types]
+     */
+    const later = (source, types = null) => {
+      const from = String(source.date || '');
+      return (byTopic.get(source.topicKey) || []).filter(
+        a => a.id !== source.id && String(a.date || '') >= from && (!types || types.includes(a.type)),
+      );
+    };
+    /** @param {Attempt[]} list @param {string} [after] */
+    const firstPassing = (list, after = '') =>
+      list.find(a => (!after || String(a.date) >= String(after)) && isFullPass(a)) || null;
+
+    /** @type {EvidenceChain[]} */
+    const chains = attempts
+      .filter(a => !VERIFICATION_TYPES.includes(a.type) && hasLoss(a))
+      .map(source => {
+        const repair = latestRepair.get(source.id) || null;
+        const following = later(source);
+        const reattempt = firstPassing(
+          following.filter(a => a.type === 'reattempt'),
+          repair?.completedAt || source.date,
+        );
+        const transfer = firstPassing(
+          following.filter(a => a.type === 'fresh-transfer'),
+          reattempt?.date || repair?.completedAt || source.date,
+        );
+        const delayed = firstPassing(
+          following.filter(a => a.type === 'delayed-retest'),
+          transfer?.date || reattempt?.date || repair?.completedAt || source.date,
+        );
+        const closedAt = delayed?.date || null;
+        const relapse = closedAt
+          ? following.find(a => String(a.date) > closedAt && !isFullPass(a) && hasLoss(a)) || null
+          : null;
+        /** @type {Lifecycle} */
+        let lifecycle = 'Open';
+        if (source.error) lifecycle = 'Diagnosed';
+        if (source.note) lifecycle = 'Repair planned';
+        if (repair) lifecycle = 'Repair completed';
+        if (repair && !reattempt) lifecycle = 'Reattempt due';
+        if (reattempt) lifecycle = 'Reattempt passed';
+        if (reattempt && !transfer) lifecycle = 'Fresh transfer due';
+        if (transfer) lifecycle = 'Transfer passed';
+        if (transfer && !delayed) lifecycle = 'Delayed retest due';
+        if (delayed) lifecycle = 'Closed';
+        if (relapse) lifecycle = 'Reopened';
+        return { source, repair, reattempt, transfer, delayed, relapse, lifecycle, closedAt };
+      })
+      .sort(
+        (a, b) =>
+          (LIFECYCLE_RANK[b.lifecycle] || 0) - (LIFECYCLE_RANK[a.lifecycle] || 0) ||
+          String(b.source.date).localeCompare(String(a.source.date)),
+      );
+
+    /**
+     * Marks recovered after repair and closure rates for a set of chains.
+     * "Recovered" is the best later score on the same mark scale — descriptive, not causal.
+     * @param {EvidenceChain[]} [subset]
+     */
+    const recovery = (subset = chains) => {
+      let lost = 0;
+      let targeted = 0;
+      let recovered = 0;
+      let closed = 0;
+      let transferPassed = 0;
+      let delayedPassed = 0;
+      let delayedAttempted = 0;
+      subset.forEach(c => {
+        const initialLost = Math.max(0, Number(c.source.total || 0) - Number(c.source.earned || 0));
+        lost += initialLost;
+        if (c.repair) {
+          targeted += initialLost;
+          const best = later(c.source, ['reattempt', 'fresh-transfer', 'delayed-retest'])
+            .filter(a => Number(a.total) === Number(c.source.total))
+            .reduce((m, a) => Math.max(m, Number(a.earned || 0)), Number(c.source.earned || 0));
+          recovered += Math.max(0, Math.min(initialLost, best - Number(c.source.earned || 0)));
+        }
+        if (c.lifecycle === 'Closed') closed += 1;
+        if (c.transfer) transferPassed += 1;
+        if (later(c.source, ['delayed-retest']).length) delayedAttempted += 1;
+        if (c.delayed) delayedPassed += 1;
+      });
+      const repaired = subset.filter(c => c.repair).length;
+      return {
+        lost,
+        targeted,
+        recovered,
+        repaired,
+        closed,
+        transferPassed,
+        delayedPassed,
+        delayedAttempted,
+        closureRate: pct(closed, repaired),
+        transferRate: pct(transferPassed, repaired),
+        survivalRate: pct(delayedPassed, delayedAttempted),
+      };
+    };
+
+    return { chains, later, recovery };
+  }
+
+  /**
+   * Confidence calibration: high-confidence errors ("danger"), low-confidence clean
+   * passes ("fragile"), high-confidence clean passes ("secure"), and the gap between
+   * raw and honestly re-marked (trusted) accuracy.
+   * @param {Attempt[]} attempts
+   */
+  function calibrationMetrics(attempts) {
+    let danger = 0;
+    let fragile = 0;
+    let secure = 0;
+    let guesses = 0;
+    let raw = 0;
+    let total = 0;
+    let trusted = 0;
+    let trustedTotal = 0;
+    attempts.forEach(a => {
+      const clean = isFullPass(a);
+      if (a.confidence === 'high' && Number(a.earned) < Number(a.total)) danger += 1;
+      if (a.confidence === 'low' && clean) fragile += 1;
+      if (a.confidence === 'high' && clean) secure += 1;
+      guesses += Number(a.guesses || 0);
+      raw += Number(a.earned || 0);
+      total += Number(a.total || 0);
+      if (hasTrusted(a)) {
+        trusted += Number(a.trustedEarned || 0);
+        trustedTotal += Number(a.total || 0);
+      }
+    });
+    const rawAccuracy = pct(raw, total);
+    const trustedAccuracy = pct(trusted, trustedTotal);
+    return {
+      danger,
+      fragile,
+      secure,
+      guesses,
+      rawAccuracy,
+      trustedAccuracy,
+      gap: total && trustedTotal ? Math.max(0, Number(rawAccuracy) - Number(trustedAccuracy)) : null,
+    };
+  }
+
   // ----------------------------------------------------------------- demo data
 
   /**
@@ -1391,6 +1608,9 @@
     repairPriorityScore,
     repairIntelligence,
     topicPriorities,
+    LIFECYCLE_RANK,
+    evidenceModel,
+    calibrationMetrics,
     buildDemoState,
   });
 })(typeof globalThis !== 'undefined' ? globalThis : this);

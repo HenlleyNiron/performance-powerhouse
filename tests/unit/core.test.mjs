@@ -513,3 +513,170 @@ describe('repair intelligence', () => {
     assert.ok(performance.now() - t0 < 500, 'ranking 5,000 attempts should take well under a second');
   });
 });
+
+describe('evidence chains', () => {
+  let n = 0;
+  const mk = (overrides = {}) =>
+    core.sanitizeAttempt({
+      id: `c${++n}`,
+      date: '2026-10-01',
+      subject: 'biology',
+      topicKey: 'biology|4|9',
+      type: 'topic-question',
+      earned: 10,
+      total: 10,
+      error: '',
+      confidence: 'medium',
+      createdAt: `2026-10-01T0${n % 10}:00:00.000Z`,
+      ...overrides,
+    });
+  const source = (o = {}) => mk({ earned: 4, error: 'R', ...o });
+  const lifecycle = state => core.evidenceModel(state).chains.map(c => c.lifecycle);
+
+  test('a clean attempt opens no chain; lost marks, an error or a guess each do', () => {
+    const state = {
+      attempts: [mk(), mk({ earned: 9, error: '' }), mk({ error: 'A' }), mk({ guesses: 1 })],
+      retests: [],
+    };
+    assert.equal(core.evidenceModel(state).chains.length, 3);
+  });
+
+  test('without repair: Open → Diagnosed → Repair planned', () => {
+    assert.deepEqual(plain(lifecycle({ attempts: [source({ error: '' })], retests: [] })), ['Open']);
+    assert.deepEqual(plain(lifecycle({ attempts: [source()], retests: [] })), ['Diagnosed']);
+    assert.deepEqual(plain(lifecycle({ attempts: [source({ note: 'rule' })], retests: [] })), [
+      'Repair planned',
+    ]);
+  });
+
+  test('each stage must pass cleanly, in order, on or after the previous one', () => {
+    const src = source();
+    const repair = {
+      id: 'rp',
+      sourceAttemptId: src.id,
+      completedAt: '2026-10-02',
+      createdAt: null,
+      rule: 'x',
+    };
+    const state = { attempts: [src], retests: [], repairEvents: [repair] };
+    const now = () => plain(lifecycle(state));
+    assert.deepEqual(now(), ['Reattempt due']);
+
+    // A reattempt dated before the repair does not count.
+    state.attempts.push(mk({ type: 'reattempt', date: '2026-10-01' }));
+    assert.deepEqual(now(), ['Reattempt due']);
+
+    state.attempts.push(mk({ type: 'reattempt', date: '2026-10-03' }));
+    assert.deepEqual(now(), ['Fresh transfer due']);
+
+    // A transfer dated before the reattempt does not count.
+    state.attempts.push(mk({ type: 'fresh-transfer', date: '2026-10-02' }));
+    assert.deepEqual(now(), ['Fresh transfer due']);
+
+    state.attempts.push(mk({ type: 'fresh-transfer', date: '2026-10-05' }));
+    assert.deepEqual(now(), ['Delayed retest due']);
+
+    // A guessed delayed retest is not a clean pass.
+    state.attempts.push(mk({ type: 'delayed-retest', date: '2026-10-09', guesses: 1 }));
+    assert.deepEqual(now(), ['Delayed retest due']);
+
+    state.attempts.push(mk({ type: 'delayed-retest', date: '2026-10-10' }));
+    const [chain] = core.evidenceModel(state).chains;
+    assert.equal(chain.lifecycle, 'Closed');
+    assert.equal(chain.closedAt, '2026-10-10');
+  });
+
+  // Current (5.x) behaviour, pinned so any change is deliberate: a stage may be
+  // skipped. A clean later stage dated after the repair counts without the earlier ones.
+  test('a clean later stage after the repair can skip earlier stages', () => {
+    const src = source();
+    const repairEvents = [
+      { id: 'rp', sourceAttemptId: src.id, completedAt: '2026-10-02', createdAt: null, rule: 'x' },
+    ];
+    const transferOnly = {
+      attempts: [src, mk({ type: 'fresh-transfer', date: '2026-10-03' })],
+      retests: [],
+      repairEvents,
+    };
+    assert.deepEqual(plain(lifecycle(transferOnly)), ['Delayed retest due']);
+    const delayedOnly = {
+      attempts: [src, mk({ type: 'delayed-retest', date: '2026-10-09' })],
+      retests: [],
+      repairEvents,
+    };
+    assert.deepEqual(plain(lifecycle(delayedOnly)), ['Closed']);
+  });
+
+  test('a later failure on the same topic reopens a closed chain', () => {
+    const src = source();
+    const state = {
+      attempts: [
+        src,
+        mk({ type: 'reattempt', date: '2026-10-02' }),
+        mk({ type: 'fresh-transfer', date: '2026-10-04' }),
+        mk({ type: 'delayed-retest', date: '2026-10-08' }),
+      ],
+      retests: [],
+      repairEvents: [
+        { id: 'rp', sourceAttemptId: src.id, completedAt: '2026-10-01', createdAt: null, rule: 'x' },
+      ],
+    };
+    assert.equal(core.evidenceModel(state).chains.find(c => c.source.id === src.id).lifecycle, 'Closed');
+    state.attempts.push(mk({ date: '2026-10-20', earned: 6, error: 'C' }));
+    const reopened = core.evidenceModel(state).chains.find(c => c.source.id === src.id);
+    assert.equal(reopened.lifecycle, 'Reopened');
+    assert.equal(reopened.relapse.date, '2026-10-20');
+  });
+
+  test('chains needing action sort before closed ones', () => {
+    const closedSrc = source({ date: '2026-09-01', topicKey: 'biology|0|0' });
+    const state = {
+      attempts: [
+        closedSrc,
+        mk({ type: 'reattempt', date: '2026-09-02', topicKey: 'biology|0|0' }),
+        mk({ type: 'fresh-transfer', date: '2026-09-03', topicKey: 'biology|0|0' }),
+        mk({ type: 'delayed-retest', date: '2026-09-09', topicKey: 'biology|0|0' }),
+        source({ date: '2026-09-15', topicKey: 'biology|1|0' }),
+      ],
+      retests: [],
+      repairEvents: [
+        { id: 'rp', sourceAttemptId: closedSrc.id, completedAt: '2026-09-01', createdAt: null, rule: 'x' },
+      ],
+    };
+    assert.deepEqual(plain(lifecycle(state)), ['Diagnosed', 'Closed']);
+  });
+
+  test('recovery measures repaired marks on the same scale only', () => {
+    const src = source({ earned: 4, total: 10 });
+    const state = {
+      attempts: [
+        src,
+        mk({ type: 'reattempt', date: '2026-10-02', earned: 8, total: 10, error: 'M' }),
+        mk({ type: 'fresh-transfer', date: '2026-10-03', earned: 20, total: 20 }),
+      ],
+      retests: [],
+      repairEvents: [
+        { id: 'rp', sourceAttemptId: src.id, completedAt: '2026-10-01', createdAt: null, rule: 'x' },
+      ],
+    };
+    const r = core.evidenceModel(state).recovery();
+    assert.equal(r.lost, 6);
+    assert.equal(r.targeted, 6);
+    assert.equal(r.recovered, 4); // 8/10 reattempt; the 20/20 transfer is a different scale
+    assert.equal(r.repaired, 1);
+    assert.equal(r.closureRate, 0);
+  });
+
+  test('calibration separates dangerous, fragile and secure answers', () => {
+    const c = core.calibrationMetrics([
+      mk({ confidence: 'high', earned: 5, error: 'C' }),
+      mk({ confidence: 'low' }),
+      mk({ confidence: 'high' }),
+      mk({ confidence: 'medium', earned: 8, trustedEarned: 6, error: 'G', guesses: 2 }),
+    ]);
+    assert.deepEqual([c.danger, c.fragile, c.secure, c.guesses], [1, 1, 1, 2]);
+    assert.equal(c.rawAccuracy, 83);
+    assert.equal(c.trustedAccuracy, 60);
+    assert.equal(c.gap, 23);
+  });
+});

@@ -29,23 +29,6 @@
   };
   const csv = value => `"${String(value ?? '').replaceAll('"', '""')}"`;
   const pct = (n, d) => (d ? Math.round((Number(n || 0) / Number(d || 0)) * 100) : null);
-  const fullPass = PowerhouseCore.isFullPass;
-  const independentType = a =>
-    [
-      'reattempt',
-      'fresh-transfer',
-      'delayed-retest',
-      'topic-question',
-      'mixed-set',
-      'mcq-section',
-      'structured-section',
-      'paper-section',
-      'full-paper',
-      'practical-data',
-      'mcq-set',
-      'structured-essay',
-      'essay',
-    ].includes(a?.type);
   const toDate = d => new Date(`${d}T12:00:00Z`);
   const daysAgo = d => (d ? Math.max(0, Math.floor((toDate(v5Today()) - toDate(d)) / DAY)) : Infinity);
   const v5Today = () => PowerhouseCore.zonedToday('Asia/Colombo');
@@ -78,207 +61,36 @@
     saveState();
   }
 
-  // Derived evidence (per-topic attempt index, evidence chains) is cached until the
-  // record changes. Every mutation goes through saveState() and is followed by
-  // refreshAll(); both clear the cache, and replacing `state` (import, reset) does too.
-  let derived = { state: null, byTopic: null, chains: null };
+  // The evidence model (chains, per-topic index, recovery metrics) comes from
+  // PowerhouseCore.evidenceModel and is cached until the record changes. Every
+  // mutation goes through saveState() and is followed by refreshAll(); both clear
+  // the cache, and replacing `state` (import, reset) does too.
+  let derived = { state: null, model: null, chains: null };
   function invalidateDerived() {
-    derived = { state: null, byTopic: null, chains: null };
+    derived = { state: null, model: null, chains: null };
   }
-  function derivedCache() {
-    if (derived.state !== state) derived = { state, byTopic: null, chains: null };
+  function evidence() {
+    if (derived.state !== state || !derived.model) {
+      const model = PowerhouseCore.evidenceModel(state);
+      derived = {
+        state,
+        model,
+        chains: model.chains.map(c => ({ ...c, topic: getTopic(c.source.topicKey) })),
+      };
+    }
     return derived;
   }
-  function attemptsByTopic() {
-    const cache = derivedCache();
-    if (!cache.byTopic) {
-      const map = new Map();
-      (state.attempts || []).forEach(a => {
-        if (!independentType(a)) return;
-        if (!map.has(a.topicKey)) map.set(a.topicKey, []);
-        map.get(a.topicKey).push(a);
-      });
-      const order = a => String(a.date) + String(a.createdAt || '');
-      map.forEach(list => list.sort((a, b) => order(a).localeCompare(order(b))));
-      cache.byTopic = map;
-    }
-    return cache.byTopic;
-  }
   function laterAttempts(source, types = null) {
-    const from = String(source.date || '');
-    return (attemptsByTopic().get(source.topicKey) || []).filter(
-      a => a.id !== source.id && String(a.date || '') >= from && (!types || types.includes(a.type)),
-    );
+    return evidence().model.later(source, types);
   }
-  function repairFor(source) {
-    return (
-      (state.repairEvents || [])
-        .filter(r => r.sourceAttemptId === source.id)
-        .sort((a, b) => String(a.completedAt || '').localeCompare(String(b.completedAt || '')))
-        .at(-1) || null
-    );
-  }
-  function firstPassing(list, after = '') {
-    return list.find(a => (!after || String(a.date) >= String(after)) && fullPass(a)) || null;
-  }
-
   function evidenceChains() {
-    const cache = derivedCache();
-    if (!cache.chains) cache.chains = computeEvidenceChains();
-    return cache.chains;
+    return evidence().chains;
   }
-
-  function computeEvidenceChains() {
-    const sourceAttempts = (state.attempts || []).filter(
-      a =>
-        !['reattempt', 'fresh-transfer', 'delayed-retest'].includes(a.type) &&
-        (Number(a.earned) < Number(a.total) || a.error || Number(a.guesses || 0) > 0),
-    );
-    return sourceAttempts
-      .map(source => {
-        const repair = repairFor(source);
-        const later = laterAttempts(source);
-        const reattempt = firstPassing(
-          later.filter(a => a.type === 'reattempt'),
-          repair?.completedAt || source.date,
-        );
-        const transfer = firstPassing(
-          later.filter(a => a.type === 'fresh-transfer'),
-          reattempt?.date || repair?.completedAt || source.date,
-        );
-        const delayed = firstPassing(
-          later.filter(a => a.type === 'delayed-retest'),
-          transfer?.date || reattempt?.date || repair?.completedAt || source.date,
-        );
-        const closedAt = delayed?.date || null;
-        const relapse = closedAt
-          ? later.find(
-              a =>
-                String(a.date) > closedAt &&
-                !fullPass(a) &&
-                (a.error || Number(a.earned) < Number(a.total) || Number(a.guesses || 0) > 0),
-            )
-          : null;
-        let lifecycle = 'Open';
-        if (source.error) lifecycle = 'Diagnosed';
-        if (source.note) lifecycle = 'Repair planned';
-        if (repair) lifecycle = 'Repair completed';
-        if (repair && !reattempt) lifecycle = 'Reattempt due';
-        if (reattempt) lifecycle = 'Reattempt passed';
-        if (reattempt && !transfer) lifecycle = 'Fresh transfer due';
-        if (transfer) lifecycle = 'Transfer passed';
-        if (transfer && !delayed) lifecycle = 'Delayed retest due';
-        if (delayed) lifecycle = 'Closed';
-        if (relapse) lifecycle = 'Reopened';
-        return {
-          source,
-          repair,
-          reattempt,
-          transfer,
-          delayed,
-          relapse,
-          lifecycle,
-          closedAt,
-          topic: getTopic(source.topicKey),
-        };
-      })
-      .sort((a, b) => {
-        const rank = {
-          Reopened: 99,
-          'Delayed retest due': 90,
-          'Fresh transfer due': 80,
-          'Reattempt due': 70,
-          'Repair planned': 60,
-          Diagnosed: 50,
-          Open: 40,
-          'Repair completed': 30,
-          'Reattempt passed': 20,
-          'Transfer passed': 10,
-          Closed: 0,
-        };
-        return (
-          (rank[b.lifecycle] || 0) - (rank[a.lifecycle] || 0) ||
-          String(b.source.date).localeCompare(String(a.source.date))
-        );
-      });
-  }
-
   function recoveryMetrics(chains = evidenceChains()) {
-    let lost = 0,
-      targeted = 0,
-      recovered = 0,
-      closed = 0,
-      transferPassed = 0,
-      delayedPassed = 0,
-      delayedAttempted = 0;
-    chains.forEach(c => {
-      const initialLost = Math.max(0, Number(c.source.total || 0) - Number(c.source.earned || 0));
-      lost += initialLost;
-      if (c.repair) {
-        targeted += initialLost;
-        const candidates = laterAttempts(c.source, ['reattempt', 'fresh-transfer', 'delayed-retest']).filter(
-          a => Number(a.total) === Number(c.source.total),
-        );
-        const best = candidates.reduce(
-          (m, a) => Math.max(m, Number(a.earned || 0)),
-          Number(c.source.earned || 0),
-        );
-        recovered += Math.max(0, Math.min(initialLost, best - Number(c.source.earned || 0)));
-      }
-      if (c.lifecycle === 'Closed') closed++;
-      if (c.transfer) transferPassed++;
-      const delayedAny = laterAttempts(c.source, ['delayed-retest']);
-      if (delayedAny.length) delayedAttempted++;
-      if (c.delayed) delayedPassed++;
-    });
-    const repaired = chains.filter(c => c.repair).length;
-    return {
-      lost,
-      targeted,
-      recovered,
-      repaired,
-      closed,
-      transferPassed,
-      delayedPassed,
-      delayedAttempted,
-      closureRate: repaired ? Math.round((closed / repaired) * 100) : null,
-      transferRate: repaired ? Math.round((transferPassed / repaired) * 100) : null,
-      survivalRate: delayedAttempted ? Math.round((delayedPassed / delayedAttempted) * 100) : null,
-    };
+    return evidence().model.recovery(chains);
   }
-
   function calibrationMetrics() {
-    const rows = state.attempts || [];
-    let danger = 0,
-      fragile = 0,
-      secure = 0,
-      guesses = 0,
-      raw = 0,
-      total = 0,
-      trusted = 0,
-      trustedTotal = 0;
-    rows.forEach(a => {
-      const wrong = Number(a.earned) < Number(a.total);
-      if (a.confidence === 'high' && wrong) danger++;
-      if (a.confidence === 'low' && fullPass(a)) fragile++;
-      if (fullPass(a) && a.confidence === 'high') secure++;
-      guesses += Number(a.guesses || 0);
-      raw += Number(a.earned || 0);
-      total += Number(a.total || 0);
-      if (a.trustedEarned !== null && a.trustedEarned !== undefined && a.trustedEarned !== '') {
-        trusted += Number(a.trustedEarned || 0);
-        trustedTotal += Number(a.total || 0);
-      }
-    });
-    return {
-      danger,
-      fragile,
-      secure,
-      guesses,
-      rawAccuracy: pct(raw, total),
-      trustedAccuracy: pct(trusted, trustedTotal),
-      gap: total && trustedTotal ? Math.max(0, pct(raw, total) - pct(trusted, trustedTotal)) : null,
-    };
+    return PowerhouseCore.calibrationMetrics(state.attempts || []);
   }
 
   function subjectBalance() {

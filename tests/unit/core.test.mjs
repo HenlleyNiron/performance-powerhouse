@@ -425,3 +425,91 @@ describe('edge cases', () => {
     assert.match(a, /^[A-Za-z0-9._:-]+$/);
   });
 });
+
+describe('repair intelligence', () => {
+  const today = '2026-10-21';
+  const a = (overrides = {}) =>
+    core.sanitizeAttempt({
+      id: ids(),
+      date: '2026-10-15',
+      subject: 'physics',
+      topicKey: 'physics|1|5',
+      earned: 4,
+      total: 10,
+      error: 'C',
+      confidence: 'medium',
+      ...overrides,
+    });
+
+  test('ranks topics by repairPriorityScore and reports the dominant error family', () => {
+    const state = {
+      attempts: [
+        a({ topicKey: 'physics|1|5', earned: 4, error: 'C', confidence: 'high' }),
+        a({ topicKey: 'physics|1|5', earned: 7, error: 'C' }),
+        a({ topicKey: 'biology|0|0', subject: 'biology', earned: 9, error: 'P' }),
+        a({ topicKey: 'chemistry|0|0', subject: 'chemistry', earned: 10, error: '' }),
+      ],
+      retests: [],
+    };
+    const intel = core.repairIntelligence(state, today);
+    assert.deepEqual(plain(intel.priorities.map(p => p.topicKey)), ['physics|1|5', 'biology|0|0']);
+    const top = intel.priorities[0];
+    // lost 9×3 + recurrence 1×5 + confidence trap 1×4 + recent 2
+    assert.equal(top.score, 27 + 5 + 4 + 2);
+    assert.equal(top.dominantError, 'C');
+    assert.equal(intel.dominant, 'C');
+    assert.equal(intel.recentLost, 10);
+  });
+
+  test('retest debt raises priority, and overdue debt counts double', () => {
+    const src = a();
+    const base = { attempts: [src], retests: [] };
+    const withDebt = {
+      attempts: [src],
+      retests: [
+        { topicKey: src.topicKey, due: '2026-10-01', completedAt: null },
+        { topicKey: src.topicKey, due: '2026-12-01', completedAt: null },
+        { topicKey: src.topicKey, due: '2026-10-01', completedAt: '2026-10-02' },
+      ],
+    };
+    const before = core.repairIntelligence(base, today).priorities[0].score;
+    const after = core.repairIntelligence(withDebt, today);
+    assert.equal(after.priorities[0].due, 3);
+    assert.equal(after.priorities[0].score - before, 12);
+    assert.deepEqual([after.totalRetests, after.completedRetests], [3, 1]);
+  });
+
+  test('topicPriorities combines self-rating, evidence and due checks across all topics', () => {
+    const topics = [{ key: 'physics|0|0' }, { key: 'physics|0|1' }, { key: 'physics|0|2' }];
+    const state = {
+      ratings: { 'physics|0|2': 1 },
+      attempts: [a({ topicKey: 'physics|0|0', earned: 2, total: 10, error: 'K', confidence: 'high' })],
+      retests: [{ topicKey: 'physics|0|0', due: '2026-10-20', completedAt: null }],
+    };
+    const ranked = core.topicPriorities(state, topics, today);
+    assert.deepEqual(plain(ranked.map(t => t.key)), ['physics|0|0', 'physics|0|2']);
+    // lost capped at 10 → 8, 1 error ×2, 1 confidence trap ×3, 1 due check ×5
+    assert.equal(ranked[0].score, 8 + 2 + 3 + 5);
+    assert.equal(ranked[0].accuracy, 20);
+    assert.equal(ranked[1].score, 5);
+  });
+
+  test('stays fast for a year of heavy use', () => {
+    const topics = Array.from({ length: 600 }, (_, i) => ({
+      key: `physics|${Math.floor(i / 20)}|${i % 20}`,
+    }));
+    const attempts = Array.from({ length: 5000 }, (_, i) =>
+      a({ topicKey: topics[i % topics.length].key, earned: i % 10, error: i % 10 === 10 ? '' : 'M' }),
+    );
+    const retests = attempts.map((x, i) => ({
+      topicKey: x.topicKey,
+      due: '2026-10-10',
+      completedAt: i % 2 ? '2026-10-11' : null,
+    }));
+    const state = { ratings: {}, attempts, retests };
+    const t0 = performance.now();
+    core.repairIntelligence(state, today);
+    core.topicPriorities(state, topics, today);
+    assert.ok(performance.now() - t0 < 500, 'ranking 5,000 attempts should take well under a second');
+  });
+});

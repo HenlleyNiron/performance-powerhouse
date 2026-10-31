@@ -78,21 +78,37 @@
     saveState();
   }
 
+  // Derived evidence (per-topic attempt index, evidence chains) is cached until the
+  // record changes. Every mutation goes through saveState() and is followed by
+  // refreshAll(); both clear the cache, and replacing `state` (import, reset) does too.
+  let derived = { state: null, byTopic: null, chains: null };
+  function invalidateDerived() {
+    derived = { state: null, byTopic: null, chains: null };
+  }
+  function derivedCache() {
+    if (derived.state !== state) derived = { state, byTopic: null, chains: null };
+    return derived;
+  }
+  function attemptsByTopic() {
+    const cache = derivedCache();
+    if (!cache.byTopic) {
+      const map = new Map();
+      (state.attempts || []).forEach(a => {
+        if (!independentType(a)) return;
+        if (!map.has(a.topicKey)) map.set(a.topicKey, []);
+        map.get(a.topicKey).push(a);
+      });
+      const order = a => String(a.date) + String(a.createdAt || '');
+      map.forEach(list => list.sort((a, b) => order(a).localeCompare(order(b))));
+      cache.byTopic = map;
+    }
+    return cache.byTopic;
+  }
   function laterAttempts(source, types = null) {
-    return (state.attempts || [])
-      .filter(
-        a =>
-          a.topicKey === source.topicKey &&
-          a.id !== source.id &&
-          String(a.date || '') >= String(source.date || '') &&
-          independentType(a) &&
-          (!types || types.includes(a.type)),
-      )
-      .sort((a, b) =>
-        (String(a.date) + String(a.createdAt || '')).localeCompare(
-          String(b.date) + String(b.createdAt || ''),
-        ),
-      );
+    const from = String(source.date || '');
+    return (attemptsByTopic().get(source.topicKey) || []).filter(
+      a => a.id !== source.id && String(a.date || '') >= from && (!types || types.includes(a.type)),
+    );
   }
   function repairFor(source) {
     return (
@@ -107,6 +123,12 @@
   }
 
   function evidenceChains() {
+    const cache = derivedCache();
+    if (!cache.chains) cache.chains = computeEvidenceChains();
+    return cache.chains;
+  }
+
+  function computeEvidenceChains() {
     const sourceAttempts = (state.attempts || []).filter(
       a =>
         !['reattempt', 'fresh-transfer', 'delayed-retest'].includes(a.type) &&
@@ -1223,8 +1245,16 @@
     const oldRefresh = window.refreshAll;
     if (typeof oldRefresh === 'function') {
       window.refreshAll = function () {
+        invalidateDerived();
         oldRefresh();
         renderAllV5();
+      };
+    }
+    const oldSave = window.saveState;
+    if (typeof oldSave === 'function') {
+      window.saveState = function () {
+        invalidateDerived();
+        return oldSave();
       };
     }
     const oldRenderNext = window.renderNextAction;

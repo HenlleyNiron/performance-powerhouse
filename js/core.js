@@ -115,18 +115,39 @@
   // ---------------------------------------------------------------------- dates
 
   /** Calendar date (YYYY-MM-DD) for `now` in the given IANA time zone. */
+  // Building an Intl.DateTimeFormat is expensive, and "today" is asked for thousands of
+  // times per render (once per retest or attempt comparison). Formatters are cached per
+  // zone, and the answer is cached for the current wall-clock minute.
+  const formatters = new Map();
+  let todayCache = { zone: '', minute: -1, value: '' };
+
   function zonedToday(timeZone = DEFAULT_TIMEZONE, now = new Date()) {
+    const minute = Math.floor(now.getTime() / 60000);
+    if (todayCache.zone === timeZone && todayCache.minute === minute) return todayCache.value;
+    let value;
     try {
+      let fmt = formatters.get(timeZone);
+      if (!fmt) {
+        fmt = new Intl.DateTimeFormat('en-CA', {
+          timeZone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        });
+        formatters.set(timeZone, fmt);
+      }
       const parts = Object.fromEntries(
-        new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' })
+        fmt
           .formatToParts(now)
           .filter(p => p.type !== 'literal')
           .map(p => [p.type, p.value]),
       );
-      return `${parts.year}-${parts.month}-${parts.day}`;
+      value = `${parts.year}-${parts.month}-${parts.day}`;
     } catch (_) {
       return now.toISOString().slice(0, 10);
     }
+    todayCache = { zone: timeZone, minute, value };
+    return value;
   }
 
   /** Adds whole days to a calendar date without any local-time-zone drift. */
@@ -747,6 +768,137 @@
     return lost * 3 + recurrence * 5 + highConfidence * 4 + guesses * 1.5 + due * 4 + (recent ? 2 : 0);
   }
 
+  /**
+   * Error intelligence for the Repairs view, in one pass over the evidence:
+   * marks lost in the last 30 days, lost marks per error family, the dominant
+   * family, retest closure, and topics ranked by repairPriorityScore.
+   */
+  function repairIntelligence(state, today) {
+    const cutoff = addDays(today, -29);
+    const recentCutoff = addDays(today, -14);
+    const byTopic = new Map();
+    const byError = Object.fromEntries(Object.keys(ERROR_NAMES).map(k => [k, 0]));
+    let recentLost = 0;
+    state.attempts.forEach(a => {
+      const lost = Math.max(0, Number(a.total || 0) - Number(a.earned || 0));
+      const unsupported = Math.max(0, Number(a.guesses || 0));
+      if (a.date >= cutoff) recentLost += lost;
+      if (a.error) byError[a.error] = (byError[a.error] || 0) + lost;
+      if (!lost && !unsupported && !a.error) return;
+      let row = byTopic.get(a.topicKey);
+      if (!row) {
+        row = {
+          topicKey: a.topicKey,
+          lost: 0,
+          attempts: 0,
+          errorAttempts: 0,
+          highConfidence: 0,
+          guesses: 0,
+          latest: '',
+          errors: {},
+          due: 0,
+          score: 0,
+          dominantError: '',
+        };
+        byTopic.set(a.topicKey, row);
+      }
+      row.lost += lost;
+      row.attempts += 1;
+      row.guesses += unsupported;
+      if (a.date > row.latest) row.latest = a.date;
+      if (a.error) {
+        row.errorAttempts += 1;
+        row.errors[a.error] = (row.errors[a.error] || 0) + 1;
+      }
+      if (a.confidence === 'high' && lost > 0) row.highConfidence += 1;
+    });
+    let completedRetests = 0;
+    state.retests.forEach(r => {
+      if (r.completedAt) {
+        completedRetests += 1;
+        return;
+      }
+      const row = byTopic.get(r.topicKey);
+      if (row) row.due += r.due <= today ? 2 : 1;
+    });
+    const priorities = [...byTopic.values()]
+      .map(row => {
+        row.score = repairPriorityScore({ ...row, recent: row.latest >= recentCutoff });
+        row.dominantError = Object.entries(row.errors).sort((x, y) => y[1] - x[1])[0]?.[0] || '';
+        return row;
+      })
+      .sort((x, y) => y.score - x.score);
+    const dominant = Object.entries(byError).sort((x, y) => y[1] - x[1])[0];
+    return {
+      recentLost,
+      priorities,
+      byError,
+      dominant: dominant && dominant[1] > 0 ? dominant[0] : '',
+      totalRetests: state.retests.length,
+      completedRetests,
+    };
+  }
+
+  /**
+   * Command-view ranking across every syllabus topic: self-rated weakness, lost
+   * marks (capped), recurring errors, confidence traps and due retests. Indexes
+   * the evidence once, so cost grows with attempts + topics rather than their product.
+   */
+  function topicPriorities(state, topics, today, limit = 8) {
+    const stats = new Map();
+    const statFor = key => {
+      let s = stats.get(key);
+      if (!s) {
+        s = { count: 0, earned: 0, total: 0, errors: 0, confidenceTraps: 0, due: 0 };
+        stats.set(key, s);
+      }
+      return s;
+    };
+    state.attempts.forEach(a => {
+      const s = statFor(a.topicKey);
+      s.count += 1;
+      s.earned += Number(a.earned || 0);
+      s.total += Number(a.total || 0);
+      if (a.error) s.errors += 1;
+      if (a.confidence === 'high' && Number(a.earned) < Number(a.total)) s.confidenceTraps += 1;
+    });
+    state.retests.forEach(r => {
+      if (!r.completedAt && r.due <= today) statFor(r.topicKey).due += 1;
+    });
+    return topics
+      .map(topic => {
+        const s = stats.get(topic.key) || {
+          count: 0,
+          earned: 0,
+          total: 0,
+          errors: 0,
+          confidenceTraps: 0,
+          due: 0,
+        };
+        const rating = Number(state.ratings[topic.key] || 0);
+        const lost = Math.max(0, s.total - s.earned);
+        const score =
+          (rating === 1 ? 5 : rating === 2 ? 2 : 0) +
+          Math.min(lost, 10) +
+          s.errors * 2 +
+          s.confidenceTraps * 3 +
+          s.due * 5;
+        return {
+          ...topic,
+          count: s.count,
+          accuracy: s.total ? Math.round((s.earned / s.total) * 100) : null,
+          lost,
+          rating,
+          score,
+          due: s.due,
+          confidenceTraps: s.confidenceTraps,
+        };
+      })
+      .filter(t => t.score > 0)
+      .sort((x, y) => y.score - x.score || y.lost - x.lost)
+      .slice(0, limit);
+  }
+
   // ----------------------------------------------------------------- demo data
 
   /**
@@ -1108,6 +1260,8 @@
     inspectImport,
     lostMarksByError,
     repairPriorityScore,
+    repairIntelligence,
+    topicPriorities,
     buildDemoState,
   });
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -1442,26 +1442,7 @@ function topicAttemptStats(key) {
 }
 
 function priorityTopics(limit = 8) {
-  return allTopics()
-    .map(topic => {
-      const stats = topicAttemptStats(topic.key);
-      const rating = Number(state.ratings[topic.key] || 0);
-      const recurringErrors = state.attempts.filter(a => a.topicKey === topic.key && a.error).length;
-      const confidenceTraps = state.attempts.filter(
-        a => a.topicKey === topic.key && a.confidence === 'high' && Number(a.earned) < Number(a.total),
-      ).length;
-      const due = pendingRetests().filter(r => r.topicKey === topic.key && r.due <= todayISO()).length;
-      const score =
-        (rating === 1 ? 5 : rating === 2 ? 2 : 0) +
-        Math.min(stats.lost, 10) +
-        recurringErrors * 2 +
-        confidenceTraps * 3 +
-        due * 5;
-      return { ...topic, ...stats, rating, score, due, confidenceTraps };
-    })
-    .filter(t => t.score > 0)
-    .sort((a, b) => b.score - a.score || b.lost - a.lost)
-    .slice(0, limit);
+  return PowerhouseCore.topicPriorities(state, allTopics(), todayISO(), limit);
 }
 
 function markedAttemptsOn(date) {
@@ -2447,64 +2428,7 @@ function refreshDiagnosisHint() {
 }
 
 function repairIntelligence() {
-  const cutoff = addDays(todayISO(), -29);
-  const byTopic = new Map();
-  const byError = Object.fromEntries(Object.keys(ERROR_NAMES).map(k => [k, 0]));
-  let recentLost = 0;
-  state.attempts.forEach(a => {
-    const lost = Math.max(0, Number(a.total || 0) - Number(a.earned || 0));
-    const unsupported = Math.max(0, Number(a.guesses || 0));
-    if (a.date >= cutoff) recentLost += lost;
-    if (a.error) byError[a.error] = (byError[a.error] || 0) + lost;
-    if (!lost && !unsupported && !a.error) return;
-    const row = byTopic.get(a.topicKey) || {
-      topicKey: a.topicKey,
-      lost: 0,
-      attempts: 0,
-      errorAttempts: 0,
-      highConfidence: 0,
-      guesses: 0,
-      latest: '',
-      errors: {},
-      due: 0,
-      score: 0,
-    };
-    row.lost += lost;
-    row.attempts += 1;
-    row.guesses += unsupported;
-    row.latest = row.latest > a.date ? row.latest : a.date;
-    if (a.error) {
-      row.errorAttempts += 1;
-      row.errors[a.error] = (row.errors[a.error] || 0) + 1;
-    }
-    if (a.confidence === 'high' && lost > 0) row.highConfidence += 1;
-    byTopic.set(a.topicKey, row);
-  });
-  pendingRetests().forEach(r => {
-    const row = byTopic.get(r.topicKey);
-    if (row) row.due += r.due <= todayISO() ? 2 : 1;
-  });
-  const priorities = [...byTopic.values()]
-    .map(row => {
-      const recurrence = Math.max(0, row.errorAttempts - 1);
-      const recency = row.latest >= addDays(todayISO(), -14) ? 2 : 0;
-      row.score =
-        row.lost * 3 + recurrence * 5 + row.highConfidence * 4 + row.guesses * 1.5 + row.due * 4 + recency;
-      row.dominantError = Object.entries(row.errors).sort((a, b) => b[1] - a[1])[0]?.[0] || '';
-      return row;
-    })
-    .sort((a, b) => b.score - a.score);
-  const totalRetests = state.retests.length;
-  const completedRetests = state.retests.filter(r => r.completedAt).length;
-  const dominant = Object.entries(byError).sort((a, b) => b[1] - a[1])[0];
-  return {
-    recentLost,
-    priorities,
-    byError,
-    dominant: dominant && dominant[1] > 0 ? dominant[0] : '',
-    totalRetests,
-    completedRetests,
-  };
+  return PowerhouseCore.repairIntelligence(state, todayISO());
 }
 
 function renderRepairs() {

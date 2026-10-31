@@ -100,3 +100,63 @@ test.describe('offline use (service worker)', () => {
     await context.setOffline(false);
   });
 });
+
+test.describe('performance with a long study history', () => {
+  test('a full dashboard refresh with 3,000 attempts stays responsive', async ({ page }) => {
+    acceptDialogs(page);
+    const subjects = ['physics', 'chemistry', 'biology'];
+    const errors = ['K', 'C', 'R', 'M', 'P', 'T', 'A', 'G', ''];
+    let seed = 7;
+    const rand = n => {
+      seed = (seed * 1103515245 + 12345) % 2147483648;
+      return seed % n;
+    };
+    const attempts = [];
+    const retests = [];
+    for (let i = 0; i < 3000; i += 1) {
+      const subject = subjects[rand(3)];
+      const date = `2026-${String(1 + rand(10)).padStart(2, '0')}-${String(1 + rand(28)).padStart(2, '0')}`;
+      const total = [5, 10, 20][rand(3)];
+      const error = errors[rand(errors.length)];
+      const topicKey = `${subject}|${rand(7)}|${rand(9)}`;
+      attempts.push({
+        id: `a${i}`,
+        date,
+        subject,
+        topicKey,
+        type: 'topic-question',
+        question: 'q',
+        earned: error ? rand(total) : total,
+        total,
+        minutes: 10,
+        confidence: ['low', 'medium', 'high'][rand(3)],
+        error,
+        createdAt: `${date}T00:00:00Z`,
+      });
+      if (error)
+        retests.push({
+          id: `r${i}`,
+          sourceAttemptId: `a${i}`,
+          topicKey,
+          due: date,
+          stage: 1,
+          completedAt: null,
+          attempts: [],
+        });
+    }
+    await seedState(page, { attempts, retests });
+    await page.goto('/');
+    const median = await page.evaluate(() => {
+      const times = [];
+      for (let i = 0; i < 5; i += 1) {
+        const t0 = performance.now();
+        window.refreshAll();
+        times.push(performance.now() - t0);
+      }
+      return times.sort((x, y) => x - y)[2];
+    });
+    test.info().annotations.push({ type: 'refreshAll median (ms)', description: String(Math.round(median)) });
+    // 5.1.1 took ~9 s here; 5.2.0 takes ~0.2 s locally. The bound leaves room for slow CI runners.
+    expect(median).toBeLessThan(1500);
+  });
+});

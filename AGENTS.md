@@ -38,11 +38,13 @@ behind an explicit interface first.
 npm ci                 # dev tooling only (ESLint, Playwright, axe-core)
 npm start              # http://localhost:4173
 npm run lint
+npm run format         # Prettier; CI runs format:check
+npm run typecheck      # TypeScript strict check of js/core.js (JSDoc types)
 npm test               # unit + integrity tests (fast, no browser)
 npm run test:coverage  # same, with enforced coverage thresholds for js/core.js
 npm run validate:data  # Physics Intelligence dataset consistency
 npm run test:e2e       # browser, accessibility and offline tests; first run: npx playwright install chromium
-npm run check          # lint + coverage + browser tests
+npm run check          # lint + format + typecheck + coverage + browser tests
 ```
 
 On a machine that cannot download Playwright's browser, point the tests at an installed
@@ -70,7 +72,10 @@ Run `npm run check` before proposing a change.
 6. **Offline shell.** A new shipped file must be added to `ASSETS` in `sw.js` and to
    `PUBLISHED` in `scripts/build-site.mjs`; bump the cache name with the version.
 
-7. **Accessible by default.** New UI must pass the axe audit in `tests/e2e/a11y.spec.mjs`
+7. **Fast with long histories.** Never rescan all attempts per topic or per chain inside a render;
+   index once (see `topicPriorities`) or use the cached evidence chains in `v5-additions.js`. The
+   performance test in `tests/e2e/integration.spec.mjs` guards this.
+8. **Accessible by default.** New UI must pass the axe audit in `tests/e2e/a11y.spec.mjs`
    (labelled controls, sufficient contrast, keyboard-reachable scroll regions).
 
 ## Versioning and releases

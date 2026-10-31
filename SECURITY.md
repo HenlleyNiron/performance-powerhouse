@@ -31,6 +31,18 @@ Only the latest release on `main` (and the live demo built from it) receives fix
 Any future feature that transmits study data off-device is a security- and privacy-sensitive
 architectural change and needs an explicit design review.
 
+## Supply chain
+
+- Every GitHub Action is pinned to a full commit SHA and kept current by Dependabot; workflows run
+  with least-privilege permissions and do not persist checkout credentials.
+- [OpenSSF Scorecard](https://securityscorecards.dev/viewer/?uri=github.com/HenlleyNiron/performance-powerhouse)
+  assesses the repository weekly.
+- Release zips carry signed build provenance. Verify a download before self-hosting it:
+
+  ```bash
+  gh attestation verify performance-powerhouse-<version>.zip --repo HenlleyNiron/performance-powerhouse
+  ```
+
 ## Past advisories
 
 - **5.1.0 (2026-10-22): stored XSS via crafted backup import** — fixed. See `CHANGELOG.md`.

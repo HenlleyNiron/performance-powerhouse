@@ -8,6 +8,7 @@ It answers one question: *what is costing marks, and has it actually been fixed?
 
 [![CI](https://github.com/HenlleyNiron/performance-powerhouse/actions/workflows/ci.yml/badge.svg)](https://github.com/HenlleyNiron/performance-powerhouse/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/HenlleyNiron/performance-powerhouse/actions/workflows/codeql.yml/badge.svg)](https://github.com/HenlleyNiron/performance-powerhouse/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/HenlleyNiron/performance-powerhouse/badge)](https://securityscorecards.dev/viewer/?uri=github.com/HenlleyNiron/performance-powerhouse)
 [![Live demo](https://github.com/HenlleyNiron/performance-powerhouse/actions/workflows/pages.yml/badge.svg)](https://henlleyniron.github.io/performance-powerhouse/?demo=1)
 [![Latest release](https://img.shields.io/github/v/release/HenlleyNiron/performance-powerhouse?sort=semver)](https://github.com/HenlleyNiron/performance-powerhouse/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -116,16 +117,20 @@ Every push and pull request runs:
 
 | Check | What it proves |
 | --- | --- |
-| **Unit tests** (Node 22 and 24) | Retest lifecycle, sanitisation, migration defaults and import inspection, with enforced coverage of the core rules (≈99.9% of lines, ≈90% of branches) |
+| **Unit tests** (Node 22 and 24) | Retest lifecycle, repair ranking, sanitisation, migration defaults and import inspection, with enforced coverage of the core rules (≈99.9% of lines, ≈90% of branches) |
+| **Type checking** | The evidence core is checked by TypeScript in strict mode through JSDoc types — still plain JavaScript, no build step |
+| **Performance** | A browser test fails if a dashboard refresh with 3,000 logged attempts takes longer than 1.5 s (it takes ≈0.2 s) |
+| **Style** | ESLint and Prettier on every file |
 | **Integrity tests** | No duplicate ids or missing elements, links resolve, CSP on every page, offline assets exist, versions agree |
 | **Dataset validation** | Every Physics Intelligence total is reproducible from its per-year rows, no question sits in two families, and no question or answer text is published |
 | **Browser tests** (Chromium, desktop + Pixel 7) | Onboarding, attempt → retest flow, V4 migration, backup round-trip, hostile-backup import, demo mode, Study Tracker hand-off, full offline use, mobile layout |
 | **Accessibility** | Automated axe-core WCAG 2.1 AA audit of every panel, dialog and companion page |
-| **Security** | CodeQL analysis, Dependabot updates, and a **Codex** first-pass review on pull requests guided by [`AGENTS.md`](AGENTS.md) |
+| **Security** | CodeQL analysis, OpenSSF Scorecard, every Action pinned to a commit SHA, Dependabot updates, and a **Codex** first-pass review on pull requests guided by [`AGENTS.md`](AGENTS.md) |
 
 Releases are automatic: bumping the version on `main` tags it and publishes a
 [GitHub Release](https://github.com/HenlleyNiron/performance-powerhouse/releases) with the
-matching changelog section and a zipped static build.
+matching changelog section and a zipped static build with signed build provenance — verify a
+download with `gh attestation verify performance-powerhouse-<version>.zip --repo HenlleyNiron/performance-powerhouse`.
 
 ## Project history and AI-assisted development
 

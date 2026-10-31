@@ -3,6 +3,39 @@
 All notable changes to Performance Powerhouse. Versions follow the `package.json` version;
 storage-schema changes are called out explicitly.
 
+## 5.2.0 — 2026-10-31
+
+Storage schema unchanged (12).
+
+### Performance
+- **Dashboard refresh is about 45× faster for long study histories.** With 3,000 logged attempts
+  (roughly a year of daily use) every save froze the app for about 9 seconds; it now takes about
+  0.2 seconds. Three causes were fixed:
+  - the student's "today" built a new date formatter on every call, thousands of times per render;
+  - the V5 layer rebuilt every evidence chain about 50 times per refresh, each time rescanning all
+    attempts — chains and a per-topic index are now cached until the record changes;
+  - topic ranking rescanned all attempts and retests once per syllabus topic.
+- Output verified identical: all 15 panels rendered by the old and new code match on both the
+  3,000-attempt dataset and the demo record. A browser test now fails if a 3,000-attempt refresh
+  exceeds 1.5 seconds.
+
+### Changed
+- Repair and topic ranking moved into the tested core as `PowerhouseCore.repairIntelligence` and
+  `PowerhouseCore.topicPriorities`, each a single pass over the evidence.
+- All source formatted with Prettier (previously several files stored functions on single lines
+  of up to 3,924 characters). Verified by pixel-diffing 38 full-page screenshots before and after.
+  `.git-blame-ignore-revs` hides the formatting commit from `git blame`.
+- `js/core.js` is type-checked in TypeScript strict mode through JSDoc types (no build step).
+
+### Security and supply chain
+- Every GitHub Action is pinned to a full commit SHA; checkouts no longer persist credentials.
+- OpenSSF Scorecard runs weekly and publishes a public supply-chain score.
+- Release zips carry signed build provenance (`gh attestation verify`), proving they were built
+  by this repository's CI from the tagged commit.
+
+### CI
+- New checks: `format:check` and `typecheck`.
+
 ## 5.1.1 — 2026-10-23
 
 Storage schema unchanged (12).

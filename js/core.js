@@ -11,8 +11,70 @@
  * Loaded as a classic script so it works from file://, any static host and the
  * offline service-worker cache. It exposes a single frozen global: PowerhouseCore.
  */
+// @ts-check
 (function (root) {
   'use strict';
+
+  /**
+   * @typedef {'physics' | 'chemistry' | 'biology'} Subject
+   * @typedef {'K' | 'C' | 'R' | 'M' | 'P' | 'T' | 'A' | 'G' | ''} ErrorCode
+   *
+   * @typedef {object} Attempt  One marked piece of work.
+   * @property {string} id
+   * @property {string} date               Calendar date, YYYY-MM-DD (student's time zone).
+   * @property {Subject} subject
+   * @property {string} topicKey           "subject|unitIndex|topicIndex", or '' when unplaced.
+   * @property {string} type               A key of ATTEMPT_TYPE_NAMES.
+   * @property {string} question
+   * @property {number} earned             Raw marks awarded.
+   * @property {number | null} trustedEarned  Marks the student trusts after an honest re-mark.
+   * @property {number} total
+   * @property {number} minutes
+   * @property {number} items
+   * @property {number} guesses            Items answered by unsupported guessing.
+   * @property {'low' | 'medium' | 'high'} confidence
+   * @property {ErrorCode} error           Dominant error family for the lost marks.
+   * @property {string} note
+   * @property {string} createdAt
+   * @property {string | null} updatedAt
+   * @property {string | null} retestId    The scheduled check this attempt was launched from.
+   * @property {string | null} sessionId   Linked Study Tracker session.
+   *
+   * @typedef {object} RetestEntry
+   * @property {string} attemptId
+   * @property {string} date
+   * @property {boolean} passed
+   *
+   * @typedef {object} Retest  A scheduled verification check for a source attempt.
+   * @property {string} id
+   * @property {string | null} sourceAttemptId
+   * @property {string} topicKey
+   * @property {string} due                YYYY-MM-DD
+   * @property {1 | 2} stage               1 = fresh transfer, 2 = delayed stability.
+   * @property {string | null} completedAt
+   * @property {number} failures
+   * @property {RetestEntry[]} attempts
+   * @property {'passed' | 'failed-open'} [status]
+   * @property {string | null} [lastAttemptId]
+   * @property {string | null} [lastFailedAt]
+   *
+   * @typedef {object} RepairEvent
+   * @property {string} id
+   * @property {string} sourceAttemptId
+   * @property {string | null} completedAt
+   * @property {string | null} createdAt
+   * @property {string} rule
+   *
+   * @typedef {object} PowerhouseState  The complete local record (schema 12).
+   * @property {Attempt[]} attempts
+   * @property {Retest[]} retests
+   * @property {RepairEvent[]} [repairEvents]
+   * @property {Record<string, number>} [ratings]
+   * @property {{ retestIntervals: number[] } & Record<string, unknown>} [v5Settings]
+   *
+   * @typedef {object} NormalizeReport
+   * @property {Record<string, number>} dropped  Invalid records skipped, by collection.
+   */
 
   const BUILD = '5.1.1';
   const SCHEMA_VERSION = 12;
@@ -64,6 +126,10 @@
 
   // ---------------------------------------------------------------- primitives
 
+  /**
+   * @param {unknown} value
+   * @returns {value is Record<string, any>}
+   */
   const isPlainObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 
   function isISODate(value) {
@@ -158,7 +224,9 @@
   }
 
   function dateDiffDays(from, to) {
-    return Math.round((new Date(`${to}T12:00:00Z`) - new Date(`${from}T12:00:00Z`)) / 86400000);
+    return Math.round(
+      (new Date(`${to}T12:00:00Z`).getTime() - new Date(`${from}T12:00:00Z`).getTime()) / 86400000,
+    );
   }
 
   // ------------------------------------------------------------- evidence model
@@ -173,6 +241,7 @@
    * A clean pass: full raw marks, full trusted marks, no guessed items and no error
    * family. Anything less leaves the weakness open.
    */
+  /** @param {Partial<Attempt> | null | undefined} a */
   function isFullPass(a) {
     if (!a) return false;
     const total = Number(a.total);
@@ -182,8 +251,9 @@
   }
 
   /** Whether an attempt opens an evidence chain that needs transfer + delayed retests. */
+  /** @param {Partial<Attempt> | null | undefined} a */
   function needsRetest(a) {
-    if (!a || VERIFICATION_TYPES.includes(a.type)) return false;
+    if (!a || VERIFICATION_TYPES.includes(String(a.type))) return false;
     return Number(a.earned) < Number(a.total) || Boolean(a.error) || Number(a.guesses || 0) > 0;
   }
 
@@ -194,6 +264,12 @@
   }
 
   /** Builds the two scheduled checks (fresh transfer, delayed stability) for a source attempt. */
+  /**
+   * @param {Attempt} attempt
+   * @param {readonly number[]} [intervals]
+   * @param {() => string} [idFn]
+   * @returns {Retest[]}
+   */
   function createRetests(attempt, intervals = DEFAULT_RETEST_INTERVALS, idFn = makeId) {
     if (!needsRetest(attempt)) return [];
     const [first, second] = normalizeIntervals(intervals);
@@ -227,6 +303,11 @@
    * only that check is touched; otherwise a check is linked only if it is unambiguous.
    * Returns the updated retest, or null when nothing was eligible.
    */
+  /**
+   * @param {Retest[]} retests
+   * @param {Attempt} attempt
+   * @returns {Retest | null}
+   */
   function applyRetestOutcome(retests, attempt) {
     if (!attempt || !['fresh-transfer', 'delayed-retest'].includes(attempt.type)) return null;
     const stage = attempt.type === 'fresh-transfer' ? 1 : 2;
@@ -240,6 +321,7 @@
           r.sourceAttemptId !== attempt.id,
       )
       .sort((a, b) => a.due.localeCompare(b.due));
+    /** @type {Retest | null} */
     let retest = null;
     if (attempt.retestId) retest = eligible.find(r => r.id === attempt.retestId) || null;
     else if (eligible.length === 1) retest = eligible[0];
@@ -264,11 +346,16 @@
    * Re-derives a retest's outcome from the attempts that still exist, so that
    * deleting or correcting evidence can never leave a check falsely closed.
    */
+  /**
+   * @param {Retest} retest
+   * @param {Map<string, Attempt>} attemptsById
+   * @returns {Retest}
+   */
   function recomputeRetest(retest, attemptsById) {
     const entries = (retest.attempts || [])
       .filter(e => e && attemptsById.has(e.attemptId))
       .map(e => {
-        const a = attemptsById.get(e.attemptId);
+        const a = /** @type {Attempt} */ (attemptsById.get(e.attemptId));
         return { attemptId: a.id, date: a.date, passed: isFullPass(a) };
       })
       .sort((x, y) => x.date.localeCompare(y.date));
@@ -291,6 +378,11 @@
   }
 
   /** Removes an attempt and everything that depended on it. Mutates `state`. */
+  /**
+   * @param {PowerhouseState} state
+   * @param {string} attemptId
+   * @returns {{ removedRetests: number, reopened: number }}
+   */
   function deleteAttempt(state, attemptId) {
     state.attempts = state.attempts.filter(a => a.id !== attemptId);
     const before = state.retests.length;
@@ -314,6 +406,12 @@
    *  - a source attempt that now shows lost marks gets its checks scheduled;
    *  - untouched checks follow a corrected date/topic, or disappear if the
    *    correction shows full credit.
+   */
+  /**
+   * @param {PowerhouseState} state
+   * @param {Attempt} attempt
+   * @param {readonly number[]} [intervals]
+   * @param {() => string} [idFn]
    */
   function reconcileEditedAttempt(state, attempt, intervals = DEFAULT_RETEST_INTERVALS, idFn = makeId) {
     const byId = new Map(state.attempts.map(a => [a.id, a]));
@@ -380,6 +478,11 @@
     return out;
   }
 
+  /**
+   * @param {unknown} raw
+   * @param {() => string} [idFn]
+   * @returns {Attempt | null}
+   */
   function sanitizeAttempt(raw, idFn = makeId) {
     if (!isPlainObject(raw)) return null;
     const topicKey = typeof raw.topicKey === 'string' && TOPIC_KEY.test(raw.topicKey) ? raw.topicKey : '';
@@ -421,6 +524,11 @@
     };
   }
 
+  /**
+   * @param {unknown} raw
+   * @param {() => string} [idFn]
+   * @returns {Retest | null}
+   */
   function sanitizeRetest(raw, idFn = makeId) {
     if (!isPlainObject(raw)) return null;
     if (typeof raw.topicKey !== 'string' || !TOPIC_KEY.test(raw.topicKey) || !isISODate(raw.due)) return null;
@@ -431,6 +539,7 @@
           .filter(e => isPlainObject(e) && optionalId(e.attemptId) && isISODate(e.date))
           .map(e => ({ attemptId: e.attemptId, date: e.date, passed: e.passed === true }))
       : [];
+    /** @type {Retest} */
     const out = {
       id: safeId(raw.id, idFn),
       sourceAttemptId: optionalId(raw.sourceAttemptId),
@@ -694,19 +803,25 @@
    * Classifies an uploaded JSON document before anything is written.
    * kinds: 'backup' (core or unified V5 backup), 'legacy-ratings', 'other', 'invalid'.
    */
+  /** @param {any} parsed  Result of JSON.parse on the uploaded file (validated below). */
   function inspectImport(parsed) {
     if (!isPlainObject(parsed) && !Array.isArray(parsed)) {
       return { kind: 'invalid', message: 'That file is not a Performance Powerhouse backup.' };
     }
+    /** @type {any} */
     let core = parsed;
+    /** @type {Record<string, any> | null} */
     let studyTracker = null;
+    /** @type {Record<string, any> | null} */
     let physicsIntelligence = null;
-    if (isPlainObject(parsed) && parsed.product === 'A/L Performance Powerhouse') {
-      if (!isPlainObject(parsed.core))
+    /** @type {Record<string, any>} */
+    const doc = isPlainObject(parsed) ? parsed : {};
+    if (doc.product === 'A/L Performance Powerhouse') {
+      if (!isPlainObject(doc.core))
         return { kind: 'invalid', message: 'This backup is missing its core study record.' };
-      core = parsed.core;
-      if (isPlainObject(parsed.study_tracker)) studyTracker = parsed.study_tracker;
-      if (isPlainObject(parsed.physics_intelligence)) physicsIntelligence = parsed.physics_intelligence;
+      core = doc.core;
+      if (isPlainObject(doc.study_tracker)) studyTracker = doc.study_tracker;
+      if (isPlainObject(doc.physics_intelligence)) physicsIntelligence = doc.physics_intelligence;
     }
     if (
       isPlainObject(core) &&
@@ -772,6 +887,10 @@
    * Error intelligence for the Repairs view, in one pass over the evidence:
    * marks lost in the last 30 days, lost marks per error family, the dominant
    * family, retest closure, and topics ranked by repairPriorityScore.
+   */
+  /**
+   * @param {PowerhouseState} state
+   * @param {string} today  YYYY-MM-DD
    */
   function repairIntelligence(state, today) {
     const cutoff = addDays(today, -29);
@@ -844,6 +963,13 @@
    * marks (capped), recurring errors, confidence traps and due retests. Indexes
    * the evidence once, so cost grows with attempts + topics rather than their product.
    */
+  /**
+   * @template {{ key: string }} T
+   * @param {PowerhouseState} state
+   * @param {T[]} topics
+   * @param {string} today  YYYY-MM-DD
+   * @param {number} [limit]
+   */
   function topicPriorities(state, topics, today, limit = 8) {
     const stats = new Map();
     const statFor = key => {
@@ -875,7 +1001,7 @@
           confidenceTraps: 0,
           due: 0,
         };
-        const rating = Number(state.ratings[topic.key] || 0);
+        const rating = Number(state.ratings?.[topic.key] || 0);
         const lost = Math.max(0, s.total - s.earned);
         const score =
           (rating === 1 ? 5 : rating === 2 ? 2 : 0) +
@@ -905,6 +1031,7 @@
    * A small, deterministic and clearly fictional record used by `?demo=1` so
    * reviewers can see a populated dashboard without creating any data.
    */
+  /** @param {string} today  YYYY-MM-DD */
   function buildDemoState(today) {
     let n = 0;
     const idFn = () => `demo-${(++n).toString().padStart(3, '0')}`;
@@ -937,6 +1064,7 @@
     };
     state.lastExportedAt = `${addDays(today, -2)}T10:00:00.000Z`;
 
+    /** @type {Array<[number, Subject, string, string, string, number, number, number, Attempt['confidence'], ErrorCode, number, string]>} */
     const rows = [
       // [daysAgo, subject, topicKey, type, question, earned, total, minutes, confidence, error, guesses, note]
       [
@@ -1175,6 +1303,7 @@
           createdAt: `${date}T09:00:00.000Z`,
           items: type === 'mcq-set' ? 10 : 1,
         });
+        if (!attempt) return; // every demo row is valid; this narrows the type
         applyRetestOutcome(state.retests, attempt);
         state.attempts.push(attempt);
         state.retests.push(...createRetests(attempt, state.v5Settings.retestIntervals, idFn));

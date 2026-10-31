@@ -1,5 +1,14 @@
 import { test, expect } from '@playwright/test';
-import { APP_KEY, V4_KEY, acceptDialogs, colomboToday, logAttempt, readState, seedState, trackErrors } from './helpers.mjs';
+import {
+  APP_KEY,
+  V4_KEY,
+  acceptDialogs,
+  colomboToday,
+  logAttempt,
+  readState,
+  seedState,
+  trackErrors,
+} from './helpers.mjs';
 
 test.describe('first run', () => {
   test('onboarding creates a private profile', async ({ page }) => {
@@ -24,7 +33,9 @@ test.describe('navigation', () => {
     acceptDialogs(page);
     await seedState(page);
     await page.goto('/');
-    const panels = await page.locator('#app-tabs [data-panel]').evaluateAll(tabs => tabs.map(t => t.dataset.panel));
+    const panels = await page
+      .locator('#app-tabs [data-panel]')
+      .evaluateAll(tabs => tabs.map(t => t.dataset.panel));
     expect(panels.length).toBeGreaterThanOrEqual(10);
     for (const panel of panels) {
       await page.locator(`#app-tabs [data-panel="${panel}"]`).click();
@@ -82,10 +93,47 @@ test.describe('evidence loop', () => {
     const source = '2026-01-01';
     const topicKey = 'physics|1|2';
     await seedState(page, {
-      attempts: [{ id: 'src-1', date: colomboToday(-10), subject: 'physics', topicKey, type: 'topic-question', question: 'Source', earned: 4, total: 10, minutes: 20, items: 1, guesses: 0, confidence: 'medium', error: 'M', note: '', createdAt: `${source}T00:00:00Z`, trustedEarned: null }],
+      attempts: [
+        {
+          id: 'src-1',
+          date: colomboToday(-10),
+          subject: 'physics',
+          topicKey,
+          type: 'topic-question',
+          question: 'Source',
+          earned: 4,
+          total: 10,
+          minutes: 20,
+          items: 1,
+          guesses: 0,
+          confidence: 'medium',
+          error: 'M',
+          note: '',
+          createdAt: `${source}T00:00:00Z`,
+          trustedEarned: null,
+        },
+      ],
       retests: [
-        { id: 'rt-1', sourceAttemptId: 'src-1', topicKey, due: colomboToday(-7), stage: 1, completedAt: null, failures: 0, attempts: [] },
-        { id: 'rt-2', sourceAttemptId: 'src-1', topicKey, due: colomboToday(-3), stage: 2, completedAt: null, failures: 0, attempts: [] },
+        {
+          id: 'rt-1',
+          sourceAttemptId: 'src-1',
+          topicKey,
+          due: colomboToday(-7),
+          stage: 1,
+          completedAt: null,
+          failures: 0,
+          attempts: [],
+        },
+        {
+          id: 'rt-2',
+          sourceAttemptId: 'src-1',
+          topicKey,
+          due: colomboToday(-3),
+          stage: 2,
+          completedAt: null,
+          failures: 0,
+          attempts: [],
+        },
       ],
     });
     await page.goto('/');
@@ -114,15 +162,36 @@ test.describe('privacy and data safety', () => {
 
   test('a V4 record is migrated into V5 without touching the V4 key', async ({ page }) => {
     const v4 = {
-      productVersion: 'V4', profileSetupComplete: true,
+      productVersion: 'V4',
+      profileSetupComplete: true,
       profile: { name: 'Legacy Learner', year: '2026', target: '', line: '' },
       ratings: { 'biology|0|0': 1 },
-      attempts: [{ id: 'old-1', date: '2026-08-01', subject: 'biology', topicKey: 'biology|0|0', question: 'Old', earned: 5, total: 5, minutes: 10, confidence: 'medium', error: '', createdAt: '2026-08-01T00:00:00Z' }],
+      attempts: [
+        {
+          id: 'old-1',
+          date: '2026-08-01',
+          subject: 'biology',
+          topicKey: 'biology|0|0',
+          question: 'Old',
+          earned: 5,
+          total: 5,
+          minutes: 10,
+          confidence: 'medium',
+          error: '',
+          createdAt: '2026-08-01T00:00:00Z',
+        },
+      ],
       retests: [],
     };
-    await page.addInitScript(([key, value]) => {
-      if (!sessionStorage.getItem('__seeded')) { localStorage.setItem(key, value); sessionStorage.setItem('__seeded', '1'); }
-    }, [V4_KEY, JSON.stringify(v4)]);
+    await page.addInitScript(
+      ([key, value]) => {
+        if (!sessionStorage.getItem('__seeded')) {
+          localStorage.setItem(key, value);
+          sessionStorage.setItem('__seeded', '1');
+        }
+      },
+      [V4_KEY, JSON.stringify(v4)],
+    );
     await page.goto('/');
     const migrated = await readState(page);
     expect(migrated.profile.name).toBe('Legacy Learner');
@@ -130,7 +199,9 @@ test.describe('privacy and data safety', () => {
     expect(migrated.productVersion).toBe('V5');
     const original = await page.evaluate(key => JSON.parse(localStorage.getItem(key)), V4_KEY);
     expect(original.productVersion).toBe('V4');
-    const recovery = await page.evaluate(() => JSON.parse(localStorage.getItem('al_performance_powerhouse_v5_recovery') || '[]'));
+    const recovery = await page.evaluate(() =>
+      JSON.parse(localStorage.getItem('al_performance_powerhouse_v5_recovery') || '[]'),
+    );
     expect(recovery.some(r => String(r.label).startsWith('pre-v5-migration'))).toBe(true);
   });
 
@@ -140,16 +211,36 @@ test.describe('privacy and data safety', () => {
     await page.goto('/');
     await logAttempt(page, { earned: 7, total: 10, error: 'R' });
     await page.locator('#data-btn').click();
-    const [download] = await Promise.all([page.waitForEvent('download'), page.locator('#export-data').click()]);
-    const backup = JSON.parse(await (await download.createReadStream()).toArray().then(chunks => Buffer.concat(chunks).toString('utf8')));
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      page.locator('#export-data').click(),
+    ]);
+    const backup = JSON.parse(
+      await (
+        await download.createReadStream()
+      )
+        .toArray()
+        .then(chunks => Buffer.concat(chunks).toString('utf8')),
+    );
     expect(backup.product).toBe('A/L Performance Powerhouse');
     expect(backup.core.attempts).toHaveLength(1);
 
     // Wipe local data, then restore from the exported file.
-    await page.evaluate(key => localStorage.setItem(key, JSON.stringify({ profileSetupComplete: true, attempts: [], retests: [], ratings: {} })), APP_KEY);
+    await page.evaluate(
+      key =>
+        localStorage.setItem(
+          key,
+          JSON.stringify({ profileSetupComplete: true, attempts: [], retests: [], ratings: {} }),
+        ),
+      APP_KEY,
+    );
     await page.reload();
     await page.locator('#data-btn').click();
-    await page.locator('#import-file').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(backup)) });
+    await page.locator('#import-file').setInputFiles({
+      name: 'backup.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify(backup)),
+    });
     await expect.poll(async () => (await readState(page)).attempts.length).toBe(1);
   });
 });
@@ -177,7 +268,9 @@ test.describe('companion modules', () => {
 });
 
 test.describe('demo mode', () => {
-  test('?demo=1 shows a populated, clearly labelled record and writes nothing to storage', async ({ page }) => {
+  test('?demo=1 shows a populated, clearly labelled record and writes nothing to storage', async ({
+    page,
+  }) => {
     const errors = trackErrors(page);
     acceptDialogs(page);
     await page.goto('/?demo=1');
@@ -189,7 +282,11 @@ test.describe('demo mode', () => {
     }
     await page.evaluate(() => window.navigate('repairs'));
     await expect(page.locator('#repair-priority-list .queue-item').first()).toBeVisible();
-    expect(await page.evaluate(() => Object.keys(localStorage).filter(k => k.startsWith('al_performance_powerhouse')))).toEqual([]);
+    expect(
+      await page.evaluate(() =>
+        Object.keys(localStorage).filter(k => k.startsWith('al_performance_powerhouse')),
+      ),
+    ).toEqual([]);
     expect(errors).toEqual([]);
   });
 });

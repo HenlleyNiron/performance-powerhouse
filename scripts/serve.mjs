@@ -28,7 +28,8 @@ const BLOCKED = ['node_modules', '.git', 'tests', 'scripts', 'test-results', 'pl
 async function resolveFile(urlPath) {
   const decoded = decodeURIComponent(urlPath.split('?')[0]);
   const safe = normalize(decoded).replace(/^([/\\])+/, '');
-  if (BLOCKED.some(dir => safe === dir || safe.startsWith(dir + sep) || safe.startsWith(dir + '/'))) return null;
+  if (BLOCKED.some(dir => safe === dir || safe.startsWith(dir + sep) || safe.startsWith(dir + '/')))
+    return null;
   let file = join(ROOT, safe);
   if (!file.startsWith(ROOT)) return null;
   try {

@@ -1,128 +1,310 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-<meta name="referrer" content="no-referrer">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Validated G.C.E. A/L Physics MCQ distribution and current-era family intelligence for evidence-led revision.">
-  <title>Physics Intelligence | Performance Powerhouse</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <header class="topbar">
-    <div class="brand-mark" aria-hidden="true">A+</div>
-    <div class="brand-copy">
-      <strong>Performance Powerhouse V5</strong>
-      <span>Physics Intelligence · evidence over guesswork</span>
-    </div>
-    <div class="top-actions">
-      <button id="shareToggle" class="button button-quiet" type="button">Share mode</button>
-      <button id="exportBackup" class="button button-quiet private-only" type="button">Export data</button>
-      <label class="button button-quiet private-only file-button">Import data<input id="importBackup" type="file" accept="application/json"></label>
-    </div>
-  </header>
-
-  <nav class="subject-nav" aria-label="Powerhouse sections">
-    <a href="../index.html">Command</a><span class="active">Physics Intelligence</span><a href="../index.html#chemistry">Chemistry</a><a href="../index.html#biology">Biology</a><a href="../index.html#attempts">Evidence</a>
-  </nav>
-
-  <main>
-    <div id="shareBanner" class="share-banner" hidden>
-      <strong>Read-only share view.</strong> Private outcomes, timing, confidence and recommendations are excluded.
-    </div>
-
-    <section class="hero-grid" aria-labelledby="pageTitle">
-      <article class="panel hero-panel">
-        <p class="eyebrow">VALIDATED NAVIGATION LAYER</p>
-        <h1 id="pageTitle">Physics Intelligence</h1>
-        <p class="hero-copy">Use historical distribution to navigate the syllabus, then let your own timed-paper evidence decide what to repair. Frequency describes the past; it does not predict the next paper.</p>
-        <div class="status-pills"><span>primary units validated</span><span>current families validated</span><span>prediction prohibited</span></div>
-      </article>
-      <article class="panel loop-panel">
-        <p class="eyebrow">THE GOVERNING LOOP</p>
-        <h2>Attempt → mark → diagnose → repair → fresh transfer → delayed retest</h2>
-        <ol class="loop-list">
-          <li><b>01</b><span><strong>Attempt</strong><small>Closed book, official timing.</small></span></li>
-          <li><b>02</b><span><strong>Diagnose</strong><small>Record wrong, guessed and slow work.</small></span></li>
-          <li><b>03</b><span><strong>Repair</strong><small>Fix the unit or family, prove fresh transfer, then retest after delay.</small></span></li>
-        </ol>
-      </article>
-    </section>
-
-    <section class="metric-grid" aria-label="Validated overview">
-      <article class="metric"><span>VALIDATED MCQs</span><strong id="metricQuestions">—</strong><small>exact year-question keys</small></article>
-      <article class="metric"><span>EXAMINATION YEARS</span><strong id="metricYears">—</strong><small>2000–2025 inclusive</small></article>
-      <article class="metric"><span>CURRENT-ERA MCQs</span><strong id="metricCurrent">—</strong><small>2019–2025</small></article>
-      <article class="metric"><span>VALIDATED FAMILIES</span><strong id="metricFamilies">—</strong><small>350 unique memberships</small></article>
-    </section>
-
-    <section class="panel section-panel" id="distribution">
-      <div class="section-heading">
-        <div><p class="eyebrow physics">UNIT DISTRIBUTION EXPLORER</p><h2>Compare counts without confusing paper formats</h2></div>
-        <button id="downloadCsv" class="button button-accent" type="button">Download filtered CSV</button>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Validated G.C.E. A/L Physics MCQ distribution and current-era family intelligence for evidence-led revision."
+    />
+    <title>Physics Intelligence | Performance Powerhouse</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true">A+</div>
+      <div class="brand-copy">
+        <strong>Performance Powerhouse V5</strong>
+        <span>Physics Intelligence · evidence over guesswork</span>
       </div>
-      <div class="filter-grid">
-        <label>From year<select id="yearFrom"></select></label>
-        <label>To year<select id="yearTo"></select></label>
-        <label>Curriculum era<select id="eraFilter"><option value="all">All eras</option><option value="old_60_question">2000–2010 · 60 questions</option><option value="historical_50_question">2011–2018 · 50 questions</option><option value="current_2019_2025">2019–2025 · current era</option></select></label>
-        <label>Trend unit<select id="unitFilter"></select></label>
+      <div class="top-actions">
+        <button id="shareToggle" class="button button-quiet" type="button">Share mode</button>
+        <button id="exportBackup" class="button button-quiet private-only" type="button">Export data</button>
+        <label class="button button-quiet private-only file-button"
+          >Import data<input id="importBackup" type="file" accept="application/json"
+        /></label>
       </div>
-      <p class="method-note">Normalized percentage = unit count ÷ verified questions in that paper. The denominator is 60 through 2010 and 50 from 2011 onward.</p>
-      <div class="chart-grid">
-        <article class="chart-card"><div class="chart-title"><h3 id="trendTitle">Unit trend</h3><span id="trendSummary"></span></div><svg id="trendChart" role="img" aria-label="Selected unit percentage by year"></svg></article>
-        <article class="chart-card"><div class="chart-title"><h3>Selected-range unit mix</h3><span>counts and normalized share</span></div><div id="unitBars" class="bar-list"></div></article>
-      </div>
-      <div class="heatmap-card"><div class="chart-title"><h3>Year × unit heatmap</h3><span>cell values are normalized percentages</span></div><div id="heatmap" class="heatmap-wrap" role="region" aria-label="Year by unit heatmap" tabindex="0"></div></div>
-      <div class="table-wrap"><table><thead><tr><th>Unit</th><th>Count</th><th>Share</th><th>Mean per paper</th><th>Years represented</th></tr></thead><tbody id="unitTable"></tbody></table></div>
-    </section>
+    </header>
 
-    <section class="panel section-panel" id="families">
-      <div class="section-heading">
-        <div><p class="eyebrow physics">CURRENT-ERA FAMILY EXPLORER</p><h2>All 173 validated families, 2019–2025 only</h2></div>
-        <span id="familyCount" class="count-chip">—</span>
-      </div>
-      <div class="filter-grid family-filters">
-        <label>Search family or subtopic<input id="familySearch" type="search" placeholder="e.g. standing waves"></label>
-        <label>Unit<select id="familyUnit"><option value="all">All units</option></select></label>
-        <label>Minimum recurrence<select id="familyRecurrence"><option value="1">All families</option><option value="2">2+ questions</option><option value="3">3+ questions</option><option value="5">5+ questions</option></select></label>
-      </div>
-      <p class="method-note">Only family labels, syllabus mappings and year-question references are shown. Full question text is not reproduced.</p>
-      <div id="familyList" class="family-list"></div>
-      <button id="showMoreFamilies" class="button button-quiet" type="button">Show more families</button>
-    </section>
+    <nav class="subject-nav" aria-label="Powerhouse sections">
+      <a href="../index.html">Command</a><span class="active">Physics Intelligence</span
+      ><a href="../index.html#chemistry">Chemistry</a><a href="../index.html#biology">Biology</a
+      ><a href="../index.html#attempts">Evidence</a>
+    </nav>
 
-    <section class="panel section-panel private-only" id="performance">
-      <div class="section-heading">
-        <div><p class="eyebrow">PERSONAL PERFORMANCE OVERLAY</p><h2>Let your errors control the next repair</h2></div>
-        <span class="privacy-chip">Stored only in this browser</span>
+    <main>
+      <div id="shareBanner" class="share-banner" hidden>
+        <strong>Read-only share view.</strong> Private outcomes, timing, confidence and recommendations are
+        excluded.
       </div>
-      <p class="method-note">Revision Opportunity Score = 30% validated current-era frequency + 30% personal weakness + 15% repeated errors + 15% time loss + 10% confidence mismatch. It is a repair-priority score, never an examination probability.</p>
-      <form id="attemptForm" class="attempt-form">
-        <label>Family<select id="attemptFamily" required></select></label>
-        <label>Outcome<select id="attemptOutcome" required><option value="correct">Correct</option><option value="wrong">Wrong</option><option value="guessed">Guessed</option><option value="slow">Correct but slow</option><option value="unattempted">Unattempted</option></select></label>
-        <label>Time taken (seconds)<input id="attemptTime" type="number" min="0" max="1200" step="1" value="90" required></label>
-        <label>Confidence (1–5)<input id="attemptConfidence" type="number" min="1" max="5" value="3" required></label>
-        <button class="button button-accent" type="submit">Save outcome</button>
-      </form>
-      <div id="recommendations" class="recommendation-grid"></div>
-      <div class="table-wrap"><table><thead><tr><th>Priority</th><th>Family</th><th>Unit</th><th>Score</th><th>Your evidence</th><th>Action</th></tr></thead><tbody id="opportunityTable"></tbody></table></div>
-    </section>
 
-    <section class="panel section-panel" id="evidence">
-      <div class="section-heading"><div><p class="eyebrow">EVIDENCE & METHODOLOGY</p><h2>What the data can—and cannot—support</h2></div></div>
-      <div class="evidence-grid">
-        <article><h3 class="validated">Validated</h3><ul id="validatedList"></ul></article>
-        <article><h3 class="provisional">Provisional</h3><ul id="provisionalList"></ul></article>
-        <article><h3 class="unavailable">Unavailable / prohibited</h3><ul id="unavailableList"></ul></article>
-      </div>
-      <p>Historical frequency can reveal what has been examined and how emphasis changed across eras. It cannot guarantee what will appear next. Current-era evidence controls present strategy; low-frequency outcomes still require compulsory syllabus coverage.</p>
-      <p class="source-line">External comparison: <a id="externalLink" href="https://physics-dashboard-rouge.vercel.app/" target="_blank" rel="noreferrer">Hirun De Silva Physics Dashboard</a> — retained as a separately attributed aggregate benchmark, not merged into the validated question-level dataset.</p>
-    </section>
-  </main>
+      <section class="hero-grid" aria-labelledby="pageTitle">
+        <article class="panel hero-panel">
+          <p class="eyebrow">VALIDATED NAVIGATION LAYER</p>
+          <h1 id="pageTitle">Physics Intelligence</h1>
+          <p class="hero-copy">
+            Use historical distribution to navigate the syllabus, then let your own timed-paper evidence
+            decide what to repair. Frequency describes the past; it does not predict the next paper.
+          </p>
+          <div class="status-pills">
+            <span>primary units validated</span><span>current families validated</span
+            ><span>prediction prohibited</span>
+          </div>
+        </article>
+        <article class="panel loop-panel">
+          <p class="eyebrow">THE GOVERNING LOOP</p>
+          <h2>Attempt → mark → diagnose → repair → fresh transfer → delayed retest</h2>
+          <ol class="loop-list">
+            <li>
+              <b>01</b><span><strong>Attempt</strong><small>Closed book, official timing.</small></span>
+            </li>
+            <li>
+              <b>02</b
+              ><span><strong>Diagnose</strong><small>Record wrong, guessed and slow work.</small></span>
+            </li>
+            <li>
+              <b>03</b
+              ><span
+                ><strong>Repair</strong
+                ><small>Fix the unit or family, prove fresh transfer, then retest after delay.</small></span
+              >
+            </li>
+          </ol>
+        </article>
+      </section>
 
-  <footer><span>Physics Intelligence · validated checkpoint v5</span><span id="releaseHash">Loading evidence…</span></footer>
-  <script src="app.js" defer></script>
-</body>
+      <section class="metric-grid" aria-label="Validated overview">
+        <article class="metric">
+          <span>VALIDATED MCQs</span><strong id="metricQuestions">—</strong
+          ><small>exact year-question keys</small>
+        </article>
+        <article class="metric">
+          <span>EXAMINATION YEARS</span><strong id="metricYears">—</strong><small>2000–2025 inclusive</small>
+        </article>
+        <article class="metric">
+          <span>CURRENT-ERA MCQs</span><strong id="metricCurrent">—</strong><small>2019–2025</small>
+        </article>
+        <article class="metric">
+          <span>VALIDATED FAMILIES</span><strong id="metricFamilies">—</strong
+          ><small>350 unique memberships</small>
+        </article>
+      </section>
+
+      <section class="panel section-panel" id="distribution">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow physics">UNIT DISTRIBUTION EXPLORER</p>
+            <h2>Compare counts without confusing paper formats</h2>
+          </div>
+          <button id="downloadCsv" class="button button-accent" type="button">Download filtered CSV</button>
+        </div>
+        <div class="filter-grid">
+          <label>From year<select id="yearFrom"></select></label>
+          <label>To year<select id="yearTo"></select></label>
+          <label
+            >Curriculum era<select id="eraFilter">
+              <option value="all">All eras</option>
+              <option value="old_60_question">2000–2010 · 60 questions</option>
+              <option value="historical_50_question">2011–2018 · 50 questions</option>
+              <option value="current_2019_2025">2019–2025 · current era</option>
+            </select></label
+          >
+          <label>Trend unit<select id="unitFilter"></select></label>
+        </div>
+        <p class="method-note">
+          Normalized percentage = unit count ÷ verified questions in that paper. The denominator is 60 through
+          2010 and 50 from 2011 onward.
+        </p>
+        <div class="chart-grid">
+          <article class="chart-card">
+            <div class="chart-title">
+              <h3 id="trendTitle">Unit trend</h3>
+              <span id="trendSummary"></span>
+            </div>
+            <svg id="trendChart" role="img" aria-label="Selected unit percentage by year"></svg>
+          </article>
+          <article class="chart-card">
+            <div class="chart-title">
+              <h3>Selected-range unit mix</h3>
+              <span>counts and normalized share</span>
+            </div>
+            <div id="unitBars" class="bar-list"></div>
+          </article>
+        </div>
+        <div class="heatmap-card">
+          <div class="chart-title">
+            <h3>Year × unit heatmap</h3>
+            <span>cell values are normalized percentages</span>
+          </div>
+          <div
+            id="heatmap"
+            class="heatmap-wrap"
+            role="region"
+            aria-label="Year by unit heatmap"
+            tabindex="0"
+          ></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Unit</th>
+                <th>Count</th>
+                <th>Share</th>
+                <th>Mean per paper</th>
+                <th>Years represented</th>
+              </tr>
+            </thead>
+            <tbody id="unitTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel section-panel" id="families">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow physics">CURRENT-ERA FAMILY EXPLORER</p>
+            <h2>All 173 validated families, 2019–2025 only</h2>
+          </div>
+          <span id="familyCount" class="count-chip">—</span>
+        </div>
+        <div class="filter-grid family-filters">
+          <label
+            >Search family or subtopic<input
+              id="familySearch"
+              type="search"
+              placeholder="e.g. standing waves"
+          /></label>
+          <label
+            >Unit<select id="familyUnit">
+              <option value="all">All units</option>
+            </select></label
+          >
+          <label
+            >Minimum recurrence<select id="familyRecurrence">
+              <option value="1">All families</option>
+              <option value="2">2+ questions</option>
+              <option value="3">3+ questions</option>
+              <option value="5">5+ questions</option>
+            </select></label
+          >
+        </div>
+        <p class="method-note">
+          Only family labels, syllabus mappings and year-question references are shown. Full question text is
+          not reproduced.
+        </p>
+        <div id="familyList" class="family-list"></div>
+        <button id="showMoreFamilies" class="button button-quiet" type="button">Show more families</button>
+      </section>
+
+      <section class="panel section-panel private-only" id="performance">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">PERSONAL PERFORMANCE OVERLAY</p>
+            <h2>Let your errors control the next repair</h2>
+          </div>
+          <span class="privacy-chip">Stored only in this browser</span>
+        </div>
+        <p class="method-note">
+          Revision Opportunity Score = 30% validated current-era frequency + 30% personal weakness + 15%
+          repeated errors + 15% time loss + 10% confidence mismatch. It is a repair-priority score, never an
+          examination probability.
+        </p>
+        <form id="attemptForm" class="attempt-form">
+          <label>Family<select id="attemptFamily" required></select></label>
+          <label
+            >Outcome<select id="attemptOutcome" required>
+              <option value="correct">Correct</option>
+              <option value="wrong">Wrong</option>
+              <option value="guessed">Guessed</option>
+              <option value="slow">Correct but slow</option>
+              <option value="unattempted">Unattempted</option>
+            </select></label
+          >
+          <label
+            >Time taken (seconds)<input
+              id="attemptTime"
+              type="number"
+              min="0"
+              max="1200"
+              step="1"
+              value="90"
+              required
+          /></label>
+          <label
+            >Confidence (1–5)<input id="attemptConfidence" type="number" min="1" max="5" value="3" required
+          /></label>
+          <button class="button button-accent" type="submit">Save outcome</button>
+        </form>
+        <div id="recommendations" class="recommendation-grid"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Priority</th>
+                <th>Family</th>
+                <th>Unit</th>
+                <th>Score</th>
+                <th>Your evidence</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="opportunityTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel section-panel" id="evidence">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">EVIDENCE & METHODOLOGY</p>
+            <h2>What the data can—and cannot—support</h2>
+          </div>
+        </div>
+        <div class="evidence-grid">
+          <article>
+            <h3 class="validated">Validated</h3>
+            <ul id="validatedList"></ul>
+          </article>
+          <article>
+            <h3 class="provisional">Provisional</h3>
+            <ul id="provisionalList"></ul>
+          </article>
+          <article>
+            <h3 class="unavailable">Unavailable / prohibited</h3>
+            <ul id="unavailableList"></ul>
+          </article>
+        </div>
+        <p>
+          Historical frequency can reveal what has been examined and how emphasis changed across eras. It
+          cannot guarantee what will appear next. Current-era evidence controls present strategy;
+          low-frequency outcomes still require compulsory syllabus coverage.
+        </p>
+        <p class="source-line">
+          External comparison:
+          <a
+            id="externalLink"
+            href="https://physics-dashboard-rouge.vercel.app/"
+            target="_blank"
+            rel="noreferrer"
+            >Hirun De Silva Physics Dashboard</a
+          >
+          — retained as a separately attributed aggregate benchmark, not merged into the validated
+          question-level dataset.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      <span>Physics Intelligence · validated checkpoint v5</span
+      ><span id="releaseHash">Loading evidence…</span>
+    </footer>
+    <script src="app.js" defer></script>
+  </body>
 </html>

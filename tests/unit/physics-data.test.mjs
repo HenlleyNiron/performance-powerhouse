@@ -3,7 +3,13 @@ import { readFileSync } from 'node:fs';
 import { describe, test } from 'node:test';
 import { validatePhysicsData } from '../../scripts/validate-physics-data.mjs';
 
-const fresh = () => JSON.parse(readFileSync(new URL('../../physics-intelligence/assets/physics-intelligence-data.json', import.meta.url), 'utf8'));
+const fresh = () =>
+  JSON.parse(
+    readFileSync(
+      new URL('../../physics-intelligence/assets/physics-intelligence-data.json', import.meta.url),
+      'utf8',
+    ),
+  );
 
 describe('Physics Intelligence dataset', () => {
   test('the published dataset is internally consistent', () => {

@@ -1,71 +1,312 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-<meta name="referrer" content="no-referrer">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0d0f14">
-<title>Performance Powerhouse V5 · Study Tracker</title>
-<meta name="description" content="Local-first, timestamp-based study execution tracker linked to examination evidence.">
-<link rel="manifest" href="../manifest.webmanifest">
-<link rel="icon" href="../icon-192.png">
-<link rel="stylesheet" href="./tracker.css">
-</head>
-<body>
-<header class="topbar">
-  <a class="back" href="../" aria-label="Back to Performance Powerhouse">←</a>
-  <div class="brand"><span class="mark">A+</span><div><h1>Performance Powerhouse <b>V5</b></h1><p>Study Tracker · marks first, hours second</p></div></div>
-  <div class="top-actions"><button class="icon" id="share-btn" type="button" aria-pressed="false" title="Share-safe mode">◫</button><button class="icon" id="data-btn" type="button" title="Data export">⇩</button></div>
-</header>
-<div class="status-strip"><span id="sync-state">LOCAL · READY</span><span>Asia/Colombo · timestamp timer · offline-first</span></div>
-<main>
-  <section class="hero">
-    <div class="timer-card">
-      <div class="eyebrow">Current execution block</div>
-      <div id="other-tab-warning" class="other-tab hidden" role="alert"></div>
-      <div class="setup" id="setup-panel">
-        <div class="field"><label for="subject">Subject</label><select id="subject"><option value="physics">Physics</option><option value="chemistry">Chemistry</option><option value="biology">Biology</option></select></div>
-        <div class="field"><label for="type">Session type</label><select id="type"></select></div>
-        <div class="field wide"><label for="task">Exact task</label><input id="task" maxlength="140" placeholder="e.g. Current Electricity · 20-minute closed-book mixed set"></div>
-        <div class="field"><label for="planned">Planned minutes</label><input id="planned" type="number" min="5" max="360" value="30"></div>
-        <input id="topic-key" type="hidden">
-        <div class="setup-actions"><button class="primary" id="start-btn" type="button">Start block</button><button class="secondary" id="clear-prefill" type="button">Clear</button></div>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#0d0f14" />
+    <title>Performance Powerhouse V5 · Study Tracker</title>
+    <meta
+      name="description"
+      content="Local-first, timestamp-based study execution tracker linked to examination evidence."
+    />
+    <link rel="manifest" href="../manifest.webmanifest" />
+    <link rel="icon" href="../icon-192.png" />
+    <link rel="stylesheet" href="./tracker.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="back" href="../" aria-label="Back to Performance Powerhouse">←</a>
+      <div class="brand">
+        <span class="mark">A+</span>
+        <div>
+          <h1>Performance Powerhouse <b>V5</b></h1>
+          <p>Study Tracker · marks first, hours second</p>
+        </div>
       </div>
-      <div class="active hidden" id="active-panel">
-        <div class="active-meta"><span id="active-subject">Physics</span><span id="active-type">Timed question</span></div>
-        <h2 id="active-task">Closed-book attempt</h2>
-        <div class="clock" id="clock">00:00:00</div>
-        <div class="planned-line"><span id="planned-line">Plan 30m</span><span id="state-line">RUNNING</span></div>
-        <div class="timer-actions"><button class="secondary" id="pause-btn" type="button">Pause</button><button class="danger-lite" id="discard-btn" type="button">Discard</button><button class="primary" id="finish-btn" type="button">Finish → output</button></div>
+      <div class="top-actions">
+        <button class="icon" id="share-btn" type="button" aria-pressed="false" title="Share-safe mode">
+          ◫</button
+        ><button class="icon" id="data-btn" type="button" title="Data export">⇩</button>
       </div>
+    </header>
+    <div class="status-strip">
+      <span id="sync-state">LOCAL · READY</span><span>Asia/Colombo · timestamp timer · offline-first</span>
     </div>
-    <aside class="principle-card">
-      <div class="eyebrow">What did this time produce?</div>
-      <h2>Time is context. Evidence is the product.</h2>
-      <p>A long session with no checked output is not allowed to masquerade as mastery. Finish every block by stating what it produced.</p>
-      <div class="flow"><span>DECIDE</span><b>→</b><span>EXECUTE</span><b>→</b><span>OUTPUT</span><b>→</b><span>EVIDENCE</span></div>
-    </aside>
-  </section>
+    <main>
+      <section class="hero">
+        <div class="timer-card">
+          <div class="eyebrow">Current execution block</div>
+          <div id="other-tab-warning" class="other-tab hidden" role="alert"></div>
+          <div class="setup" id="setup-panel">
+            <div class="field">
+              <label for="subject">Subject</label
+              ><select id="subject">
+                <option value="physics">Physics</option>
+                <option value="chemistry">Chemistry</option>
+                <option value="biology">Biology</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="type">Session type</label
+              ><select id="type"></select>
+            </div>
+            <div class="field wide">
+              <label for="task">Exact task</label
+              ><input
+                id="task"
+                maxlength="140"
+                placeholder="e.g. Current Electricity · 20-minute closed-book mixed set"
+              />
+            </div>
+            <div class="field">
+              <label for="planned">Planned minutes</label
+              ><input id="planned" type="number" min="5" max="360" value="30" />
+            </div>
+            <input id="topic-key" type="hidden" />
+            <div class="setup-actions">
+              <button class="primary" id="start-btn" type="button">Start block</button
+              ><button class="secondary" id="clear-prefill" type="button">Clear</button>
+            </div>
+          </div>
+          <div class="active hidden" id="active-panel">
+            <div class="active-meta">
+              <span id="active-subject">Physics</span><span id="active-type">Timed question</span>
+            </div>
+            <h2 id="active-task">Closed-book attempt</h2>
+            <div class="clock" id="clock">00:00:00</div>
+            <div class="planned-line">
+              <span id="planned-line">Plan 30m</span><span id="state-line">RUNNING</span>
+            </div>
+            <div class="timer-actions">
+              <button class="secondary" id="pause-btn" type="button">Pause</button
+              ><button class="danger-lite" id="discard-btn" type="button">Discard</button
+              ><button class="primary" id="finish-btn" type="button">Finish → output</button>
+            </div>
+          </div>
+        </div>
+        <aside class="principle-card">
+          <div class="eyebrow">What did this time produce?</div>
+          <h2>Time is context. Evidence is the product.</h2>
+          <p>
+            A long session with no checked output is not allowed to masquerade as mastery. Finish every block
+            by stating what it produced.
+          </p>
+          <div class="flow">
+            <span>DECIDE</span><b>→</b><span>EXECUTE</span><b>→</b><span>OUTPUT</span><b>→</b
+            ><span>EVIDENCE</span>
+          </div>
+        </aside>
+      </section>
 
-  <section class="kpis" id="kpis"></section>
+      <section class="kpis" id="kpis"></section>
 
-  <section class="grid two">
-    <article class="panel"><div class="panel-head"><div><div class="eyebrow">Evidence conversion</div><h3>What recent time became</h3></div><select id="analytics-window" aria-label="Analytics window"><option value="7">7 days</option><option value="14">14 days</option><option value="30">30 days</option></select></div><div id="conversion"></div></article>
-    <article class="panel"><div class="panel-head"><div><div class="eyebrow">Subject balance</div><h3>Execution by subject</h3></div></div><div id="subjects"></div></article>
-  </section>
+      <section class="grid two">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Evidence conversion</div>
+              <h3>What recent time became</h3>
+            </div>
+            <select id="analytics-window" aria-label="Analytics window">
+              <option value="7">7 days</option>
+              <option value="14">14 days</option>
+              <option value="30">30 days</option>
+            </select>
+          </div>
+          <div id="conversion"></div>
+        </article>
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Subject balance</div>
+              <h3>Execution by subject</h3>
+            </div>
+          </div>
+          <div id="subjects"></div>
+        </article>
+      </section>
 
-  <section class="panel heat-panel"><div class="panel-head"><div><div class="eyebrow">Activity map</div><h3>Evidence-aware heatmap</h3><p>Switch the meaning of intensity. Hours are only one view.</p></div><select id="heat-mode" aria-label="Heatmap measure"><option value="evidence">Evidence sessions</option><option value="time">Tracked time</option><option value="repair">Repair / correction</option><option value="retest">Transfer / retest</option></select></div><div class="heatmap" id="heatmap"></div></section>
+      <section class="panel heat-panel">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">Activity map</div>
+            <h3>Evidence-aware heatmap</h3>
+            <p>Switch the meaning of intensity. Hours are only one view.</p>
+          </div>
+          <select id="heat-mode" aria-label="Heatmap measure">
+            <option value="evidence">Evidence sessions</option>
+            <option value="time">Tracked time</option>
+            <option value="repair">Repair / correction</option>
+            <option value="retest">Transfer / retest</option>
+          </select>
+        </div>
+        <div class="heatmap" id="heatmap"></div>
+      </section>
 
-  <section class="panel"><div class="panel-head"><div><div class="eyebrow">Session history</div><h3>Searchable execution record</h3><p>Correct mistakes safely. Session duration is derived from timestamps, not stored counters.</p></div><button class="secondary" id="quick-log-btn" type="button">Quick log completed block</button></div>
-    <div class="filters"><input id="search" type="search" placeholder="Search task, output or note…"><select id="filter-subject" aria-label="Filter history by subject"><option value="all">All subjects</option><option value="physics">Physics</option><option value="chemistry">Chemistry</option><option value="biology">Biology</option></select><select id="filter-class" aria-label="Filter history by evidence class"><option value="all">All evidence classes</option><option value="evidence">Evidence-producing</option><option value="supporting">Supporting</option><option value="passive">Passive/admin</option><option value="uncertain">Uncertain</option></select></div>
-    <div class="table-wrap"><table><thead><tr><th>Date</th><th>Subject</th><th>Type / task</th><th>Duration</th><th>Produced</th><th>Class</th><th></th></tr></thead><tbody id="history"></tbody></table></div>
-  </section>
-</main>
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">Session history</div>
+            <h3>Searchable execution record</h3>
+            <p>Correct mistakes safely. Session duration is derived from timestamps, not stored counters.</p>
+          </div>
+          <button class="secondary" id="quick-log-btn" type="button">Quick log completed block</button>
+        </div>
+        <div class="filters">
+          <input id="search" type="search" placeholder="Search task, output or note…" /><select
+            id="filter-subject"
+            aria-label="Filter history by subject"
+          >
+            <option value="all">All subjects</option>
+            <option value="physics">Physics</option>
+            <option value="chemistry">Chemistry</option>
+            <option value="biology">Biology</option></select
+          ><select id="filter-class" aria-label="Filter history by evidence class">
+            <option value="all">All evidence classes</option>
+            <option value="evidence">Evidence-producing</option>
+            <option value="supporting">Supporting</option>
+            <option value="passive">Passive/admin</option>
+            <option value="uncertain">Uncertain</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Subject</th>
+                <th>Type / task</th>
+                <th>Duration</th>
+                <th>Produced</th>
+                <th>Class</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="history"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
 
-<dialog id="finish-dialog"><form method="dialog" id="finish-form"><div class="dialog-head"><div><div class="eyebrow">Session completion</div><h2>What did this block produce?</h2></div><button class="icon" value="cancel" aria-label="Close">×</button></div><div class="dialog-body"><div class="field"><label for="output">Primary output</label><select id="output"><option value="marked-attempt">Marked attempt</option><option value="repair-completed">Repair / correction completed</option><option value="closed-book-reattempt">Closed-book reattempt</option><option value="fresh-transfer">Fresh transfer</option><option value="delayed-retest">Delayed retest</option><option value="closed-book-recall">Closed-book recall</option><option value="targeted-theory">Targeted theory repair</option><option value="lecture-segment">Necessary lecture segment</option><option value="practical-demo">Practical demonstration</option><option value="resource-admin">Resource / admin</option><option value="planning">Planning / system work</option><option value="none">No measurable output</option></select></div><div class="field"><label for="finish-note">Short note (optional)</label><textarea id="finish-note" maxlength="240" placeholder="e.g. Marked 14/20; method error exposed in sign convention."></textarea></div><label class="check"><input type="checkbox" id="open-evidence" checked> Open Powerhouse evidence logger after saving when this output should create exam evidence.</label><div class="dialog-actions"><button class="secondary" value="cancel">Cancel</button><button class="primary" id="save-finish" value="default">Save session</button></div></div></form></dialog>
-<dialog id="quick-dialog"><form method="dialog" id="quick-form"><div class="dialog-head"><div><div class="eyebrow">Manual correction</div><h2>Log a completed block</h2></div><button class="icon" value="cancel">×</button></div><div class="dialog-body"><div class="quick-grid"><div class="field"><label for="q-date">Date</label><input id="q-date" type="date"></div><div class="field"><label for="q-subject">Subject</label><select id="q-subject"><option value="physics">Physics</option><option value="chemistry">Chemistry</option><option value="biology">Biology</option></select></div><div class="field"><label for="q-type">Type</label><select id="q-type"></select></div><div class="field"><label for="q-minutes">Minutes</label><input id="q-minutes" type="number" min="1" max="720" value="30"></div><div class="field wide"><label for="q-task">Task</label><input id="q-task" maxlength="140"></div><div class="field wide"><label for="q-output">Produced</label><select id="q-output"></select></div></div><div class="dialog-actions"><button class="secondary" value="cancel">Cancel</button><button class="primary" id="save-quick" value="default">Save</button></div></div></form></dialog>
-<dialog id="data-dialog"><div class="dialog-head"><div><div class="eyebrow">Data portability</div><h2>Tracker backup</h2></div><button class="icon" data-close-data>×</button></div><div class="dialog-body"><p>Your tracker is local-first. Export before clearing browser/site data. Cross-device cloud sync is intentionally not shipped without a verified secure backend and per-user isolation.</p><div class="dialog-actions left"><button class="primary" id="export-json" type="button">Export JSON</button><button class="secondary" id="export-csv" type="button">Export CSV</button><button class="secondary" id="import-json" type="button">Import JSON</button></div><input id="import-file" type="file" accept="application/json,.json" hidden><div class="warning">Import validates the basic tracker shape and creates a local recovery snapshot before replacement.</div></div></dialog>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script src="./tracker.js"></script>
-</body></html>
+    <dialog id="finish-dialog">
+      <form method="dialog" id="finish-form">
+        <div class="dialog-head">
+          <div>
+            <div class="eyebrow">Session completion</div>
+            <h2>What did this block produce?</h2>
+          </div>
+          <button class="icon" value="cancel" aria-label="Close">×</button>
+        </div>
+        <div class="dialog-body">
+          <div class="field">
+            <label for="output">Primary output</label
+            ><select id="output">
+              <option value="marked-attempt">Marked attempt</option>
+              <option value="repair-completed">Repair / correction completed</option>
+              <option value="closed-book-reattempt">Closed-book reattempt</option>
+              <option value="fresh-transfer">Fresh transfer</option>
+              <option value="delayed-retest">Delayed retest</option>
+              <option value="closed-book-recall">Closed-book recall</option>
+              <option value="targeted-theory">Targeted theory repair</option>
+              <option value="lecture-segment">Necessary lecture segment</option>
+              <option value="practical-demo">Practical demonstration</option>
+              <option value="resource-admin">Resource / admin</option>
+              <option value="planning">Planning / system work</option>
+              <option value="none">No measurable output</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="finish-note">Short note (optional)</label
+            ><textarea
+              id="finish-note"
+              maxlength="240"
+              placeholder="e.g. Marked 14/20; method error exposed in sign convention."
+            ></textarea>
+          </div>
+          <label class="check"
+            ><input type="checkbox" id="open-evidence" checked /> Open Powerhouse evidence logger after saving
+            when this output should create exam evidence.</label
+          >
+          <div class="dialog-actions">
+            <button class="secondary" value="cancel">Cancel</button
+            ><button class="primary" id="save-finish" value="default">Save session</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="quick-dialog">
+      <form method="dialog" id="quick-form">
+        <div class="dialog-head">
+          <div>
+            <div class="eyebrow">Manual correction</div>
+            <h2>Log a completed block</h2>
+          </div>
+          <button class="icon" value="cancel">×</button>
+        </div>
+        <div class="dialog-body">
+          <div class="quick-grid">
+            <div class="field"><label for="q-date">Date</label><input id="q-date" type="date" /></div>
+            <div class="field">
+              <label for="q-subject">Subject</label
+              ><select id="q-subject">
+                <option value="physics">Physics</option>
+                <option value="chemistry">Chemistry</option>
+                <option value="biology">Biology</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="q-type">Type</label
+              ><select id="q-type"></select>
+            </div>
+            <div class="field">
+              <label for="q-minutes">Minutes</label
+              ><input id="q-minutes" type="number" min="1" max="720" value="30" />
+            </div>
+            <div class="field wide">
+              <label for="q-task">Task</label><input id="q-task" maxlength="140" />
+            </div>
+            <div class="field wide">
+              <label for="q-output">Produced</label
+              ><select id="q-output"></select>
+            </div>
+          </div>
+          <div class="dialog-actions">
+            <button class="secondary" value="cancel">Cancel</button
+            ><button class="primary" id="save-quick" value="default">Save</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="data-dialog">
+      <div class="dialog-head">
+        <div>
+          <div class="eyebrow">Data portability</div>
+          <h2>Tracker backup</h2>
+        </div>
+        <button class="icon" data-close-data>×</button>
+      </div>
+      <div class="dialog-body">
+        <p>
+          Your tracker is local-first. Export before clearing browser/site data. Cross-device cloud sync is
+          intentionally not shipped without a verified secure backend and per-user isolation.
+        </p>
+        <div class="dialog-actions left">
+          <button class="primary" id="export-json" type="button">Export JSON</button
+          ><button class="secondary" id="export-csv" type="button">Export CSV</button
+          ><button class="secondary" id="import-json" type="button">Import JSON</button>
+        </div>
+        <input id="import-file" type="file" accept="application/json,.json" hidden />
+        <div class="warning">
+          Import validates the basic tracker shape and creates a local recovery snapshot before replacement.
+        </div>
+      </div>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./tracker.js"></script>
+  </body>
+</html>

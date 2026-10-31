@@ -1,447 +1,1263 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-<meta name="referrer" content="no-referrer">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A/L Performance Powerhouse · V5 Exam Performance OS</title>
-<meta name="description" content="A local-first G.C.E. A/L Biological Science performance and error-correction system for honest attempts, diagnosis, repair, fresh transfer and delayed retesting.">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A/L Performance Powerhouse · V5 Exam Performance OS</title>
+    <meta
+      name="description"
+      content="A local-first G.C.E. A/L Biological Science performance and error-correction system for honest attempts, diagnosis, repair, fresh transfer and delayed retesting."
+    />
 
-<meta name="theme-color" content="#07111f">
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="./icon-192.png">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Performance Powerhouse">
-<meta property="og:description" content="A local-first study evidence system for G.C.E. A/L students: attempt, mark, diagnose, repair, reattempt, transfer and retest.">
-<meta property="og:image" content="https://henlleyniron.github.io/performance-powerhouse/social-preview.png">
-<meta name="twitter:card" content="summary_large_image">
+    <meta name="theme-color" content="#07111f" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icon-192.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Performance Powerhouse" />
+    <meta
+      property="og:description"
+      content="A local-first study evidence system for G.C.E. A/L students: attempt, mark, diagnose, repair, reattempt, transfer and retest."
+    />
+    <meta
+      property="og:image"
+      content="https://henlleyniron.github.io/performance-powerhouse/social-preview.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
 
-<link rel="stylesheet" href="./css/app.css">
-<link rel="stylesheet" href="./css/v5.css">
-</head>
-<body>
-
-<div class="app-header">
-  <div class="shell header-row">
-    <div class="brand"><div class="brand-mark" aria-hidden="true">A+</div><div><div class="brand-title-row"><h1>Performance Powerhouse V5</h1><span class="edition-badge">EXAM PERFORMANCE OS</span></div><p id="identity-line">A/L Bio Science · evidence over guesswork</p></div></div>
-    <div class="header-actions">
-      <button class="backup-chip" id="backup-health" type="button" title="Backup health">Backup —</button>
-      <button class="icon-btn" id="share-safe-btn" type="button" title="Share-safe mode" aria-label="Toggle share-safe mode">◫</button>
-      <button class="secondary-btn" id="quick-log-btn" type="button"><span aria-hidden="true">＋</span> <span class="label">Log evidence</span></button>
-      <button class="icon-btn" id="data-btn" type="button" title="Data and backup" aria-label="Data and backup">⋯</button>
-    </div>
-  </div>
-</div>
-
-<nav class="tabs" id="app-tabs" aria-label="Dashboard sections">
-  <button class="tab active" type="button" data-panel="command">Command</button>
-  <button class="tab" type="button" data-panel="physics">Physics</button>
-  <a class="tab tab-link" href="./physics-intelligence/">Physics Intelligence</a>
-  <button class="tab" type="button" data-panel="chemistry">Chemistry</button>
-  <button class="tab" type="button" data-panel="biology">Biology</button>
-  <button class="tab" type="button" data-panel="repairs">Repairs <span class="tab-badge" id="repair-due-badge">0</span></button>
-  <button class="tab" type="button" data-panel="course">Execution Guard <span class="tab-badge" id="course-status-badge">ON</span></button>
-  <button class="tab" type="button" data-panel="daily">Daily Output <span class="tab-badge" id="daily-today-badge">0</span></button>
-  <button class="tab" type="button" data-panel="planner">Syllabus Map</button>
-  <button class="tab" type="button" data-panel="attempts">Evidence <span class="tab-badge" id="attempt-count">0</span></button>
-  <button class="tab" type="button" data-panel="guide">Guide</button>
-</nav>
-
-<main>
-  <section class="content active" id="panel-command">
-    <div class="hero-grid">
-      <article class="focus-card">
-        <div class="eyebrow">Today's mark-producing command</div>
-        <h2 id="next-action-title">Log one honest timed attempt.</h2>
-        <p id="next-action-copy">The dashboard needs performance evidence before it can diagnose your highest-return repair.</p>
-        <div class="focus-meta" id="next-action-meta"><span class="pill">20 minutes</span><span class="pill">closed book</span><span class="pill">strict marking</span></div>
-        <div class="focus-actions"><button class="primary-btn" id="start-focus-btn" type="button">Start recommended block</button><button class="secondary-btn" id="paper-first-btn" type="button">Start 120-min paper block</button><button class="secondary-btn" id="course-correct-btn" type="button">Course-correct me</button></div>
-      </article>
-      <aside class="mission-card">
-        <div class="eyebrow">The governing loop</div><h3>Attempt → mark → diagnose → repair → reattempt → fresh transfer → delayed retest</h3>
-        <div class="mission-list">
-          <div class="mission-step"><span class="step-num">01</span><div><strong>Test honestly</strong><span>90/120-minute deep work by default. AI stays out of TEST.</span></div></div>
-          <div class="mission-step"><span class="step-num">02</span><div><strong>Diagnose the leak</strong><span>Raw score, trusted score, confidence, guesses and one primary cause.</span></div></div>
-          <div class="mission-step"><span class="step-num">03</span><div><strong>Close the loop</strong><span>Small repair, closed-book reattempt, a fresh transfer question, then delayed retest. Activity without closure does not count as mastery.</span></div></div>
+    <link rel="stylesheet" href="./css/app.css" />
+    <link rel="stylesheet" href="./css/v5.css" />
+  </head>
+  <body>
+    <div class="app-header">
+      <div class="shell header-row">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">A+</div>
+          <div>
+            <div class="brand-title-row">
+              <h1>Performance Powerhouse V5</h1>
+              <span class="edition-badge">EXAM PERFORMANCE OS</span>
+            </div>
+            <p id="identity-line">A/L Bio Science · evidence over guesswork</p>
+          </div>
         </div>
-      </aside>
-    </div>
-
-    <div class="kpi-grid" aria-label="Performance indicators">
-      <article class="kpi"><span class="kpi-label">Verified accuracy</span><strong class="kpi-value" id="kpi-accuracy">—</strong><div class="kpi-note">raw marks earned ÷ marks available</div></article>
-      <article class="kpi"><span class="kpi-label">Trusted accuracy</span><strong class="kpi-value" id="kpi-trusted">—</strong><div class="kpi-note">only attempts where unsupported/lucky marks were audited</div></article>
-      <article class="kpi"><span class="kpi-label">Retests due</span><strong class="kpi-value" id="kpi-due">0</strong><div class="kpi-note">unfinished delayed retrieval checks</div></article>
-      <article class="kpi"><span class="kpi-label">Evidence days · 7d</span><strong class="kpi-value" id="kpi-tested">0/7</strong><div class="kpi-note">days with at least one marked attempt</div></article>
-      <article class="kpi"><span class="kpi-label">2027 target</span><strong class="kpi-value" id="kpi-days">Unset</strong><div class="kpi-note" id="kpi-exam-note">Set a planning date only when useful</div></article>
-      <article class="kpi"><span class="kpi-label">Paper output · 7d</span><strong class="kpi-value" id="kpi-paper-output">0</strong><div class="kpi-note">paper sections and full papers</div></article>
-    </div>
-
-    <div class="subject-grid" id="subject-pulse"></div>
-
-    <section class="panel exam-panel" aria-labelledby="exam-timeline-title">
-      <div class="exam-panel-head">
-        <div>
-          <div class="eyebrow">2027 campaign · no fake countdowns</div>
-          <h3 id="exam-timeline-title">Build the attempt that you want to sit.</h3>
-          <p id="exam-timeline-summary">V5 stays aligned to your chosen A/L cycle without inventing an unofficial exam countdown.</p>
+        <div class="header-actions">
+          <button class="backup-chip" id="backup-health" type="button" title="Backup health">Backup —</button>
+          <button
+            class="icon-btn"
+            id="share-safe-btn"
+            type="button"
+            title="Share-safe mode"
+            aria-label="Toggle share-safe mode"
+          >
+            ◫
+          </button>
+          <button class="secondary-btn" id="quick-log-btn" type="button">
+            <span aria-hidden="true">＋</span> <span class="label">Log evidence</span>
+          </button>
+          <button
+            class="icon-btn"
+            id="data-btn"
+            type="button"
+            title="Data and backup"
+            aria-label="Data and backup"
+          >
+            ⋯
+          </button>
         </div>
-        <button class="secondary-btn" id="set-target-btn" type="button">Set planning target</button>
       </div>
-      <div class="campaign-grid" id="exam-timeline">
-        <article class="campaign-item"><b>01 · Base</b><strong>Routine before volume</strong><span>Protect sleep, then execute repeatable 90/120-minute blocks.</span></article>
-        <article class="campaign-item"><b>02 · Learn</b><strong>Official source boundary</strong><span>Use theory to repair exposed gaps—not to build an endless content queue.</span></article>
-        <article class="campaign-item"><b>03 · Prove</b><strong>Paper Engine every week</strong><span>Closed-book attempts, strict marking, confidence and root-cause evidence.</span></article>
-        <article class="campaign-item"><b>04 · Close</b><strong>Retest until stable</strong><span>Immediate correction is not mastery. Fresh delayed retrieval decides closure.</span></article>
-      </div>
-      <p class="exam-footnote">The target date is deliberately user-controlled. Do not anchor the system to an unofficial 2027 timetable; update it when you have a date you actually want to plan against.</p>
-    </section>
-
-    <div class="dashboard-grid">
-      <section class="panel"><div class="panel-head"><div><div class="eyebrow">Priority queue</div><h3>Delayed retests</h3><p id="retest-status">Mastery requires fresh retrieval after time has passed.</p></div></div><div class="queue" id="retest-queue"></div></section>
-      <section class="panel"><div class="panel-head"><div><div class="eyebrow">Diagnosis</div><h3>Marks lost by error family</h3><p>Attack the recurring cause—not the loudest chapter.</p></div></div><div class="error-bars" id="error-bars"></div></section>
-      <section class="panel"><div class="panel-head"><div><div class="eyebrow">Weak-signal scan</div><h3>Highest-return topics</h3><p>Low rating plus actual lost marks rises to the top.</p></div></div><div class="queue" id="priority-topics"></div></section>
-      <section class="panel"><div class="panel-head"><div><div class="eyebrow">Latest proof</div><h3>Recent attempts</h3><p>Plans do not enter this feed—only completed evidence.</p></div><button class="secondary-btn" id="view-all-btn" type="button">View all</button></div><div class="recent-list" id="recent-attempts"></div></section>
-      <section class="panel"><div class="panel-head"><div><div class="eyebrow">Calibration</div><h3>Confidence traps</h3><p>High confidence plus lost marks exposes dangerous blind spots.</p></div></div><div class="queue" id="calibration-risk"></div></section>
-    </div>
-  </section>
-
-  <section class="content" id="panel-physics" data-subject="physics"></section>
-  <section class="content" id="panel-chemistry" data-subject="chemistry"></section>
-  <section class="content" id="panel-biology" data-subject="biology"></section>
-
-  <section class="content" id="panel-planner">
-    <div class="lock-banner" id="planner-lock-banner">Execution Lock: syllabus planning is secondary to marked output. Complete one marked attempt today before redesigning the map, or explicitly override once.</div>
-    <div class="planner-hero">
-      <section class="panel planner-score">
-        <div class="eyebrow">Syllabus map · context, not proof</div>
-        <h2 id="planner-headline">0% period-weighted coverage</h2>
-        <p>Coverage percentages are navigation aids only. A unit marked 100% is not mastered until closed-book performance says so. V5 deliberately separates coverage context from evidence-backed mastery.</p>
-      </section>
-      <section class="panel planner-kpis" aria-label="Syllabus plan indicators">
-        <div class="planner-kpi"><span>Completed equivalent</span><b id="planner-done-periods">0</b></div>
-        <div class="planner-kpi"><span>Remaining allocation</span><b id="planner-remaining-periods">0</b></div>
-        <div class="planner-kpi"><span>Units finished</span><b id="planner-finished-units">0</b></div>
-        <div class="planner-kpi"><span>Largest unfinished block</span><b id="planner-next-block">—</b></div>
-      </section>
-    </div>
-    <div class="planner-subjects" id="planner-subjects"></div>
-    <section class="panel">
-      <div class="panel-head"><div><div class="eyebrow">Consolidated tracker</div><h3>Grade 12–13 period plan</h3><p>Progress is weighted by the allocation in the supplied spreadsheets, not by the number of rows.</p></div></div>
-      <div class="planner-toolbar">
-        <select class="filter-select" id="planner-subject-filter" aria-label="Filter syllabus subject"><option value="all">All subjects</option><option value="physics">Physics</option><option value="chemistry">Chemistry</option><option value="biology">Biology</option></select>
-        <select class="filter-select" id="planner-grade-filter" aria-label="Filter syllabus grade"><option value="all">All grades</option><option value="12">Grade 12</option><option value="13">Grade 13</option><option value="12–13">Spans Grades 12–13</option></select>
-        <button class="secondary-btn" id="planner-unfinished-only" type="button" aria-pressed="false">Unfinished only</button>
-      </div>
-      <div class="planner-list" id="planner-list"></div>
-      <details class="source-audit"><summary>Source reconciliation — what was corrected?</summary><div>The earlier workbook contains live <strong>#REF!</strong>, <strong>#NAME?</strong> and <strong>#DIV/0!</strong> errors. The refixed workbook removes those formula errors, but its Biology summary counts both unit totals and their child lessons, inflating 603 unique allocated periods to 1,041. Physics lists 585 named periods against a 600-period subject budget, so the missing 15 are retained transparently as “Unallocated / practical work”. Chemistry reconciles cleanly to 600. Friend completion values were not copied into your public template; every browser begins privately at zero.</div></details>
-    </section>
-  </section>
-
-
-  <section class="content" id="panel-course">
-    <div class="course-grid">
-      <section class="panel course-hero">
-        <div class="eyebrow">Course correction · brother mode</div>
-        <h2 id="cc-verdict">First move: produce evidence before optimizing the system.</h2>
-        <p id="cc-reason">V3 exists to interrupt the patterns that cost marks: over-planning, resource accumulation, unrealistic volume, repeated resets, AI during testing, and sacrificing recovery to “catch up”.</p>
-        <div class="course-status" id="cc-status-pills"></div>
-      </section>
-      <section class="panel">
-        <div class="panel-head"><div><div class="eyebrow">Execution gate</div><h3>Protect output from the system itself</h3><p>Planning is useful only after it serves a marked attempt.</p></div></div>
-        <div class="discipline-toggle"><div><strong style="font-size:11px">Execution Lock</strong><div class="muted" style="font-size:9px;margin-top:4px;line-height:1.45">Before the first marked attempt of the day, Syllabus Map asks for an explicit override.</div></div><input id="discipline-mode" type="checkbox" aria-label="Execution Lock"></div>
-        <div class="course-kpis" style="margin-top:10px">
-          <div class="course-kpi"><span>Marked output today</span><b id="cc-output-today">No</b></div>
-          <div class="course-kpi"><span>Retests overdue</span><b id="cc-overdue">0</b></div>
-          <div class="course-kpi"><span>Planning overrides · 7d</span><b id="cc-overrides">0</b></div>
-          <div class="course-kpi"><span>Backup health</span><b id="cc-backup">Due</b></div>
-        </div>
-      </section>
     </div>
 
-    <div class="dashboard-grid">
-      <section class="panel">
-        <div class="panel-head"><div><div class="eyebrow">Rabbit-hole interceptor</div><h3>Catch the urge before it steals the block</h3><p>Tap what you are about to do. V3 gives the replacement action.</p></div></div>
-        <div class="correction-rule-grid" id="correction-rule-grid"></div>
-        <div class="replacement-box"><strong id="cc-action-title">Default replacement</strong><p id="cc-action-copy">Open the current paper. Do one measurable question set. Mark it. Then decide what you actually need.</p></div>
-      </section>
+    <nav class="tabs" id="app-tabs" aria-label="Dashboard sections">
+      <button class="tab active" type="button" data-panel="command">Command</button>
+      <button class="tab" type="button" data-panel="physics">Physics</button>
+      <a class="tab tab-link" href="./physics-intelligence/">Physics Intelligence</a>
+      <button class="tab" type="button" data-panel="chemistry">Chemistry</button>
+      <button class="tab" type="button" data-panel="biology">Biology</button>
+      <button class="tab" type="button" data-panel="repairs">
+        Repairs <span class="tab-badge" id="repair-due-badge">0</span>
+      </button>
+      <button class="tab" type="button" data-panel="course">
+        Execution Guard <span class="tab-badge" id="course-status-badge">ON</span>
+      </button>
+      <button class="tab" type="button" data-panel="daily">
+        Daily Output <span class="tab-badge" id="daily-today-badge">0</span>
+      </button>
+      <button class="tab" type="button" data-panel="planner">Syllabus Map</button>
+      <button class="tab" type="button" data-panel="attempts">
+        Evidence <span class="tab-badge" id="attempt-count">0</span>
+      </button>
+      <button class="tab" type="button" data-panel="guide">Guide</button>
+    </nav>
 
-      <section class="panel">
-        <div class="panel-head"><div><div class="eyebrow">Bad-day recovery</div><h3>Minimum viable day · 60 minutes</h3><p>No fresh-start ceremony. Resume with the smallest complete evidence loop.</p></div></div>
-        <div class="rescue-plan">
-          <div class="rescue-step"><div><strong>30 min · attempt</strong><span>Closed-book questions from the current weakest/most due area.</span></div></div>
-          <div class="rescue-step"><div><strong>15 min · mark</strong><span>Official scheme. Count guesses, skipped items and exact lost points.</span></div></div>
-          <div class="rescue-step"><div><strong>10 min · repair</strong><span>Fix only the top one or two causes. No full lecture.</span></div></div>
-          <div class="rescue-step"><div><strong>5 min · reattempt</strong><span>Close sources and prove the repair immediately. Delayed retest remains scheduled.</span></div></div>
+    <main>
+      <section class="content active" id="panel-command">
+        <div class="hero-grid">
+          <article class="focus-card">
+            <div class="eyebrow">Today's mark-producing command</div>
+            <h2 id="next-action-title">Log one honest timed attempt.</h2>
+            <p id="next-action-copy">
+              The dashboard needs performance evidence before it can diagnose your highest-return repair.
+            </p>
+            <div class="focus-meta" id="next-action-meta">
+              <span class="pill">20 minutes</span><span class="pill">closed book</span
+              ><span class="pill">strict marking</span>
+            </div>
+            <div class="focus-actions">
+              <button class="primary-btn" id="start-focus-btn" type="button">Start recommended block</button
+              ><button class="secondary-btn" id="paper-first-btn" type="button">
+                Start 120-min paper block</button
+              ><button class="secondary-btn" id="course-correct-btn" type="button">Course-correct me</button>
+            </div>
+          </article>
+          <aside class="mission-card">
+            <div class="eyebrow">The governing loop</div>
+            <h3>Attempt → mark → diagnose → repair → reattempt → fresh transfer → delayed retest</h3>
+            <div class="mission-list">
+              <div class="mission-step">
+                <span class="step-num">01</span>
+                <div>
+                  <strong>Test honestly</strong
+                  ><span>90/120-minute deep work by default. AI stays out of TEST.</span>
+                </div>
+              </div>
+              <div class="mission-step">
+                <span class="step-num">02</span>
+                <div>
+                  <strong>Diagnose the leak</strong
+                  ><span>Raw score, trusted score, confidence, guesses and one primary cause.</span>
+                </div>
+              </div>
+              <div class="mission-step">
+                <span class="step-num">03</span>
+                <div>
+                  <strong>Close the loop</strong
+                  ><span
+                    >Small repair, closed-book reattempt, a fresh transfer question, then delayed retest.
+                    Activity without closure does not count as mastery.</span
+                  >
+                </div>
+              </div>
+            </div>
+          </aside>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:15px"><button class="primary-btn" id="start-rescue-btn" type="button">Start 30-min rescue attempt</button><button class="secondary-btn" id="log-evidence-course" type="button">Log completed evidence</button></div>
-      </section>
 
-      <section class="panel">
-        <div class="panel-head"><div><div class="eyebrow">Daily discipline audit</div><h3>Five checks—not another journal</h3><p>Tick once at the end of the day. This is about protecting execution.</p></div></div>
-        <div class="audit-grid" id="cc-audit-grid">
-          <label class="audit-row"><input type="checkbox" data-audit="sleepProtected"><span><strong>Sleep protected</strong><span>No late-night punishment session to compensate for lost time.</span></span></label>
-          <label class="audit-row"><input type="checkbox" data-audit="planningCapped"><span><strong>Planning/admin capped</strong><span>No prolonged timetable, tracker, file or dashboard redesign.</span></span></label>
-          <label class="audit-row"><input type="checkbox" data-audit="aiAfterOutput"><span><strong>AI stayed out of TEST</strong><span>AI may diagnose/repair after the closed-book attempt—not during it.</span></span></label>
-          <label class="audit-row"><input type="checkbox" data-audit="noResourceHunt"><span><strong>No untriggered resource hunt</strong><span>New material opened only because an identified error required it.</span></span></label>
-          <label class="audit-row"><input type="checkbox" data-audit="ownOutputFirst"><span><strong>Own output came first</strong><span>Helping others, long messages and side projects waited until the minimum academic output was done.</span></span></label>
+        <div class="kpi-grid" aria-label="Performance indicators">
+          <article class="kpi">
+            <span class="kpi-label">Verified accuracy</span
+            ><strong class="kpi-value" id="kpi-accuracy">—</strong>
+            <div class="kpi-note">raw marks earned ÷ marks available</div>
+          </article>
+          <article class="kpi">
+            <span class="kpi-label">Trusted accuracy</span
+            ><strong class="kpi-value" id="kpi-trusted">—</strong>
+            <div class="kpi-note">only attempts where unsupported/lucky marks were audited</div>
+          </article>
+          <article class="kpi">
+            <span class="kpi-label">Retests due</span><strong class="kpi-value" id="kpi-due">0</strong>
+            <div class="kpi-note">unfinished delayed retrieval checks</div>
+          </article>
+          <article class="kpi">
+            <span class="kpi-label">Evidence days · 7d</span
+            ><strong class="kpi-value" id="kpi-tested">0/7</strong>
+            <div class="kpi-note">days with at least one marked attempt</div>
+          </article>
+          <article class="kpi">
+            <span class="kpi-label">2027 target</span><strong class="kpi-value" id="kpi-days">Unset</strong>
+            <div class="kpi-note" id="kpi-exam-note">Set a planning date only when useful</div>
+          </article>
+          <article class="kpi">
+            <span class="kpi-label">Paper output · 7d</span
+            ><strong class="kpi-value" id="kpi-paper-output">0</strong>
+            <div class="kpi-note">paper sections and full papers</div>
+          </article>
         </div>
-        <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="secondary-btn" id="save-course-audit" type="button">Save today’s audit</button></div>
-      </section>
 
-      <section class="panel">
-        <div class="panel-head"><div><div class="eyebrow">7-day evidence review</div><h3>Change strategy only when the data earns it</h3><p>One bad paper is not a new life plan. Three repeated data points can justify a targeted change.</p></div></div>
-        <div class="week-review" id="cc-week-review"></div>
-      </section>
+        <div class="subject-grid" id="subject-pulse"></div>
 
-      <section class="panel">
-        <div class="panel-head"><div><div class="eyebrow">2027 planning anchor</div><h3>Target date without fake certainty</h3><p>Leave blank until a useful/official date exists. This is a planning anchor, not a prediction.</p></div></div>
-        <div class="target-row"><div class="field"><label for="target-date">Planning target date</label><input id="target-date" type="date"></div><button class="secondary-btn" id="save-target-date" type="button">Save target</button></div>
-        <div class="replacement-box" style="margin-top:12px"><strong>Course-change rule</strong><p id="cc-three-point-rule">No strategy overhaul is justified yet. Keep collecting clean evidence and close the current loops.</p></div>
-      </section>
+        <section class="panel exam-panel" aria-labelledby="exam-timeline-title">
+          <div class="exam-panel-head">
+            <div>
+              <div class="eyebrow">2027 campaign · no fake countdowns</div>
+              <h3 id="exam-timeline-title">Build the attempt that you want to sit.</h3>
+              <p id="exam-timeline-summary">
+                V5 stays aligned to your chosen A/L cycle without inventing an unofficial exam countdown.
+              </p>
+            </div>
+            <button class="secondary-btn" id="set-target-btn" type="button">Set planning target</button>
+          </div>
+          <div class="campaign-grid" id="exam-timeline">
+            <article class="campaign-item">
+              <b>01 · Base</b><strong>Routine before volume</strong
+              ><span>Protect sleep, then execute repeatable 90/120-minute blocks.</span>
+            </article>
+            <article class="campaign-item">
+              <b>02 · Learn</b><strong>Official source boundary</strong
+              ><span>Use theory to repair exposed gaps—not to build an endless content queue.</span>
+            </article>
+            <article class="campaign-item">
+              <b>03 · Prove</b><strong>Paper Engine every week</strong
+              ><span>Closed-book attempts, strict marking, confidence and root-cause evidence.</span>
+            </article>
+            <article class="campaign-item">
+              <b>04 · Close</b><strong>Retest until stable</strong
+              ><span>Immediate correction is not mastery. Fresh delayed retrieval decides closure.</span>
+            </article>
+          </div>
+          <p class="exam-footnote">
+            The target date is deliberately user-controlled. Do not anchor the system to an unofficial 2027
+            timetable; update it when you have a date you actually want to plan against.
+          </p>
+        </section>
 
-      <section class="panel">
-        <div class="panel-head"><div><div class="eyebrow">V3 doctrine</div><h3>What this site is allowed to do</h3></div></div>
-        <div class="week-review">
-          <div class="week-row"><span class="label">TEST</span><span class="value">Closed-book, timed, AI-free. The site measures; it does not rescue you mid-question.</span></div>
-          <div class="week-row"><span class="label">DIAGNOSE</span><span class="value">Score + confidence + guesses + one primary error cause. Do not write essays about every mistake.</span></div>
-          <div class="week-row"><span class="label">REPAIR</span><span class="value">Smallest intervention that fixes the cause. No chapter rewatch for one failed point.</span></div>
-          <div class="week-row"><span class="label">RETEST</span><span class="value">Fresh, delayed retrieval decides whether the repair survived.</span></div>
-          <div class="week-row"><span class="label">SYSTEM</span><span class="value">If Powerhouse starts consuming more time than it saves, Powerhouse itself is the problem.</span></div>
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Priority queue</div>
+                <h3>Delayed retests</h3>
+                <p id="retest-status">Mastery requires fresh retrieval after time has passed.</p>
+              </div>
+            </div>
+            <div class="queue" id="retest-queue"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Diagnosis</div>
+                <h3>Marks lost by error family</h3>
+                <p>Attack the recurring cause—not the loudest chapter.</p>
+              </div>
+            </div>
+            <div class="error-bars" id="error-bars"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Weak-signal scan</div>
+                <h3>Highest-return topics</h3>
+                <p>Low rating plus actual lost marks rises to the top.</p>
+              </div>
+            </div>
+            <div class="queue" id="priority-topics"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Latest proof</div>
+                <h3>Recent attempts</h3>
+                <p>Plans do not enter this feed—only completed evidence.</p>
+              </div>
+              <button class="secondary-btn" id="view-all-btn" type="button">View all</button>
+            </div>
+            <div class="recent-list" id="recent-attempts"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Calibration</div>
+                <h3>Confidence traps</h3>
+                <p>High confidence plus lost marks exposes dangerous blind spots.</p>
+              </div>
+            </div>
+            <div class="queue" id="calibration-risk"></div>
+          </section>
         </div>
       </section>
-    </div>
-  </section>
 
-  <section class="content" id="panel-daily">
-    <div class="daily-hero">
-      <section class="panel daily-summary-panel">
-        <div class="eyebrow">Daily execution layer</div>
-        <h2 id="daily-headline">Turn activity into measurable output.</h2>
-        <p class="muted">The useful daily-output layer is integrated into Powerhouse V3. Paper/error evidence stays authoritative; this layer tracks daily volume and target consistency. If work is already logged in Evidence, do not manually count it twice.</p>
-        <div class="daily-kpi-grid">
-          <div class="planner-kpi"><span>Today · target score</span><b id="daily-target-score">0%</b></div>
-          <div class="planner-kpi"><span>Today · outputs</span><b id="daily-output-count">0</b></div>
-          <div class="planner-kpi"><span>7-day active days</span><b id="daily-active-days">0/7</b></div>
-          <div class="planner-kpi"><span>Current streak</span><b id="daily-streak">0d</b></div>
+      <section class="content" id="panel-physics" data-subject="physics"></section>
+      <section class="content" id="panel-chemistry" data-subject="chemistry"></section>
+      <section class="content" id="panel-biology" data-subject="biology"></section>
+
+      <section class="content" id="panel-planner">
+        <div class="lock-banner" id="planner-lock-banner">
+          Execution Lock: syllabus planning is secondary to marked output. Complete one marked attempt today
+          before redesigning the map, or explicitly override once.
+        </div>
+        <div class="planner-hero">
+          <section class="panel planner-score">
+            <div class="eyebrow">Syllabus map · context, not proof</div>
+            <h2 id="planner-headline">0% period-weighted coverage</h2>
+            <p>
+              Coverage percentages are navigation aids only. A unit marked 100% is not mastered until
+              closed-book performance says so. V5 deliberately separates coverage context from evidence-backed
+              mastery.
+            </p>
+          </section>
+          <section class="panel planner-kpis" aria-label="Syllabus plan indicators">
+            <div class="planner-kpi"><span>Completed equivalent</span><b id="planner-done-periods">0</b></div>
+            <div class="planner-kpi">
+              <span>Remaining allocation</span><b id="planner-remaining-periods">0</b>
+            </div>
+            <div class="planner-kpi"><span>Units finished</span><b id="planner-finished-units">0</b></div>
+            <div class="planner-kpi">
+              <span>Largest unfinished block</span><b id="planner-next-block">—</b>
+            </div>
+          </section>
+        </div>
+        <div class="planner-subjects" id="planner-subjects"></div>
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Consolidated tracker</div>
+              <h3>Grade 12–13 period plan</h3>
+              <p>
+                Progress is weighted by the allocation in the supplied spreadsheets, not by the number of
+                rows.
+              </p>
+            </div>
+          </div>
+          <div class="planner-toolbar">
+            <select class="filter-select" id="planner-subject-filter" aria-label="Filter syllabus subject">
+              <option value="all">All subjects</option>
+              <option value="physics">Physics</option>
+              <option value="chemistry">Chemistry</option>
+              <option value="biology">Biology</option>
+            </select>
+            <select class="filter-select" id="planner-grade-filter" aria-label="Filter syllabus grade">
+              <option value="all">All grades</option>
+              <option value="12">Grade 12</option>
+              <option value="13">Grade 13</option>
+              <option value="12–13">Spans Grades 12–13</option>
+            </select>
+            <button class="secondary-btn" id="planner-unfinished-only" type="button" aria-pressed="false">
+              Unfinished only
+            </button>
+          </div>
+          <div class="planner-list" id="planner-list"></div>
+          <details class="source-audit">
+            <summary>Source reconciliation — what was corrected?</summary>
+            <div>
+              The earlier workbook contains live <strong>#REF!</strong>, <strong>#NAME?</strong> and
+              <strong>#DIV/0!</strong> errors. The refixed workbook removes those formula errors, but its
+              Biology summary counts both unit totals and their child lessons, inflating 603 unique allocated
+              periods to 1,041. Physics lists 585 named periods against a 600-period subject budget, so the
+              missing 15 are retained transparently as “Unallocated / practical work”. Chemistry reconciles
+              cleanly to 600. Friend completion values were not copied into your public template; every
+              browser begins privately at zero.
+            </div>
+          </details>
+        </section>
+      </section>
+
+      <section class="content" id="panel-course">
+        <div class="course-grid">
+          <section class="panel course-hero">
+            <div class="eyebrow">Course correction · brother mode</div>
+            <h2 id="cc-verdict">First move: produce evidence before optimizing the system.</h2>
+            <p id="cc-reason">
+              V3 exists to interrupt the patterns that cost marks: over-planning, resource accumulation,
+              unrealistic volume, repeated resets, AI during testing, and sacrificing recovery to “catch up”.
+            </p>
+            <div class="course-status" id="cc-status-pills"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Execution gate</div>
+                <h3>Protect output from the system itself</h3>
+                <p>Planning is useful only after it serves a marked attempt.</p>
+              </div>
+            </div>
+            <div class="discipline-toggle">
+              <div>
+                <strong style="font-size: 11px">Execution Lock</strong>
+                <div class="muted" style="font-size: 9px; margin-top: 4px; line-height: 1.45">
+                  Before the first marked attempt of the day, Syllabus Map asks for an explicit override.
+                </div>
+              </div>
+              <input id="discipline-mode" type="checkbox" aria-label="Execution Lock" />
+            </div>
+            <div class="course-kpis" style="margin-top: 10px">
+              <div class="course-kpi"><span>Marked output today</span><b id="cc-output-today">No</b></div>
+              <div class="course-kpi"><span>Retests overdue</span><b id="cc-overdue">0</b></div>
+              <div class="course-kpi"><span>Planning overrides · 7d</span><b id="cc-overrides">0</b></div>
+              <div class="course-kpi"><span>Backup health</span><b id="cc-backup">Due</b></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Rabbit-hole interceptor</div>
+                <h3>Catch the urge before it steals the block</h3>
+                <p>Tap what you are about to do. V3 gives the replacement action.</p>
+              </div>
+            </div>
+            <div class="correction-rule-grid" id="correction-rule-grid"></div>
+            <div class="replacement-box">
+              <strong id="cc-action-title">Default replacement</strong>
+              <p id="cc-action-copy">
+                Open the current paper. Do one measurable question set. Mark it. Then decide what you actually
+                need.
+              </p>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Bad-day recovery</div>
+                <h3>Minimum viable day · 60 minutes</h3>
+                <p>No fresh-start ceremony. Resume with the smallest complete evidence loop.</p>
+              </div>
+            </div>
+            <div class="rescue-plan">
+              <div class="rescue-step">
+                <div>
+                  <strong>30 min · attempt</strong
+                  ><span>Closed-book questions from the current weakest/most due area.</span>
+                </div>
+              </div>
+              <div class="rescue-step">
+                <div>
+                  <strong>15 min · mark</strong
+                  ><span>Official scheme. Count guesses, skipped items and exact lost points.</span>
+                </div>
+              </div>
+              <div class="rescue-step">
+                <div>
+                  <strong>10 min · repair</strong
+                  ><span>Fix only the top one or two causes. No full lecture.</span>
+                </div>
+              </div>
+              <div class="rescue-step">
+                <div>
+                  <strong>5 min · reattempt</strong
+                  ><span
+                    >Close sources and prove the repair immediately. Delayed retest remains scheduled.</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px">
+              <button class="primary-btn" id="start-rescue-btn" type="button">
+                Start 30-min rescue attempt</button
+              ><button class="secondary-btn" id="log-evidence-course" type="button">
+                Log completed evidence
+              </button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Daily discipline audit</div>
+                <h3>Five checks—not another journal</h3>
+                <p>Tick once at the end of the day. This is about protecting execution.</p>
+              </div>
+            </div>
+            <div class="audit-grid" id="cc-audit-grid">
+              <label class="audit-row"
+                ><input type="checkbox" data-audit="sleepProtected" /><span
+                  ><strong>Sleep protected</strong
+                  ><span>No late-night punishment session to compensate for lost time.</span></span
+                ></label
+              >
+              <label class="audit-row"
+                ><input type="checkbox" data-audit="planningCapped" /><span
+                  ><strong>Planning/admin capped</strong
+                  ><span>No prolonged timetable, tracker, file or dashboard redesign.</span></span
+                ></label
+              >
+              <label class="audit-row"
+                ><input type="checkbox" data-audit="aiAfterOutput" /><span
+                  ><strong>AI stayed out of TEST</strong
+                  ><span>AI may diagnose/repair after the closed-book attempt—not during it.</span></span
+                ></label
+              >
+              <label class="audit-row"
+                ><input type="checkbox" data-audit="noResourceHunt" /><span
+                  ><strong>No untriggered resource hunt</strong
+                  ><span>New material opened only because an identified error required it.</span></span
+                ></label
+              >
+              <label class="audit-row"
+                ><input type="checkbox" data-audit="ownOutputFirst" /><span
+                  ><strong>Own output came first</strong
+                  ><span
+                    >Helping others, long messages and side projects waited until the minimum academic output
+                    was done.</span
+                  ></span
+                ></label
+              >
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 12px">
+              <button class="secondary-btn" id="save-course-audit" type="button">Save today’s audit</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">7-day evidence review</div>
+                <h3>Change strategy only when the data earns it</h3>
+                <p>
+                  One bad paper is not a new life plan. Three repeated data points can justify a targeted
+                  change.
+                </p>
+              </div>
+            </div>
+            <div class="week-review" id="cc-week-review"></div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">2027 planning anchor</div>
+                <h3>Target date without fake certainty</h3>
+                <p>
+                  Leave blank until a useful/official date exists. This is a planning anchor, not a
+                  prediction.
+                </p>
+              </div>
+            </div>
+            <div class="target-row">
+              <div class="field">
+                <label for="target-date">Planning target date</label><input id="target-date" type="date" />
+              </div>
+              <button class="secondary-btn" id="save-target-date" type="button">Save target</button>
+            </div>
+            <div class="replacement-box" style="margin-top: 12px">
+              <strong>Course-change rule</strong>
+              <p id="cc-three-point-rule">
+                No strategy overhaul is justified yet. Keep collecting clean evidence and close the current
+                loops.
+              </p>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">V3 doctrine</div>
+                <h3>What this site is allowed to do</h3>
+              </div>
+            </div>
+            <div class="week-review">
+              <div class="week-row">
+                <span class="label">TEST</span
+                ><span class="value"
+                  >Closed-book, timed, AI-free. The site measures; it does not rescue you mid-question.</span
+                >
+              </div>
+              <div class="week-row">
+                <span class="label">DIAGNOSE</span
+                ><span class="value"
+                  >Score + confidence + guesses + one primary error cause. Do not write essays about every
+                  mistake.</span
+                >
+              </div>
+              <div class="week-row">
+                <span class="label">REPAIR</span
+                ><span class="value"
+                  >Smallest intervention that fixes the cause. No chapter rewatch for one failed point.</span
+                >
+              </div>
+              <div class="week-row">
+                <span class="label">RETEST</span
+                ><span class="value">Fresh, delayed retrieval decides whether the repair survived.</span>
+              </div>
+              <div class="week-row">
+                <span class="label">SYSTEM</span
+                ><span class="value"
+                  >If Powerhouse starts consuming more time than it saves, Powerhouse itself is the
+                  problem.</span
+                >
+              </div>
+            </div>
+          </section>
         </div>
       </section>
-      <section class="panel">
-        <div class="panel-head"><div><div class="eyebrow">Today's scoreboard</div><h3 id="daily-date-label">Today</h3><p>Manual extras + evidence-derived activity.</p></div></div>
-        <div class="daily-progress-list" id="daily-progress-list"></div>
-      </section>
-    </div>
 
-    <section class="panel" style="margin-bottom:14px">
-      <div class="panel-head">
-        <div><div class="eyebrow">Log extra output</div><h3>Daily progress entry</h3><p>Use this for drills or work you did not already log in the Evidence ledger.</p></div>
-      </div>
-      <form id="daily-form">
-        <div class="daily-form-toolbar">
-          <div class="field"><label for="daily-date">Date</label><input id="daily-date" type="date" required></div>
-          <div class="field daily-note-field"><label for="daily-note">Optional note</label><input id="daily-note" maxlength="140" placeholder="e.g. Evening MCQ repair block"></div>
+      <section class="content" id="panel-daily">
+        <div class="daily-hero">
+          <section class="panel daily-summary-panel">
+            <div class="eyebrow">Daily execution layer</div>
+            <h2 id="daily-headline">Turn activity into measurable output.</h2>
+            <p class="muted">
+              The useful daily-output layer is integrated into Powerhouse V3. Paper/error evidence stays
+              authoritative; this layer tracks daily volume and target consistency. If work is already logged
+              in Evidence, do not manually count it twice.
+            </p>
+            <div class="daily-kpi-grid">
+              <div class="planner-kpi">
+                <span>Today · target score</span><b id="daily-target-score">0%</b>
+              </div>
+              <div class="planner-kpi"><span>Today · outputs</span><b id="daily-output-count">0</b></div>
+              <div class="planner-kpi"><span>7-day active days</span><b id="daily-active-days">0/7</b></div>
+              <div class="planner-kpi"><span>Current streak</span><b id="daily-streak">0d</b></div>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Today's scoreboard</div>
+                <h3 id="daily-date-label">Today</h3>
+                <p>Manual extras + evidence-derived activity.</p>
+              </div>
+            </div>
+            <div class="daily-progress-list" id="daily-progress-list"></div>
+          </section>
         </div>
-        <div class="daily-subject-grid" id="daily-input-grid"></div>
-        <div class="dialog-actions" style="padding-top:14px"><button class="primary-btn" type="submit">Save daily output</button></div>
+
+        <section class="panel" style="margin-bottom: 14px">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Log extra output</div>
+              <h3>Daily progress entry</h3>
+              <p>Use this for drills or work you did not already log in the Evidence ledger.</p>
+            </div>
+          </div>
+          <form id="daily-form">
+            <div class="daily-form-toolbar">
+              <div class="field">
+                <label for="daily-date">Date</label><input id="daily-date" type="date" required />
+              </div>
+              <div class="field daily-note-field">
+                <label for="daily-note">Optional note</label
+                ><input id="daily-note" maxlength="140" placeholder="e.g. Evening MCQ repair block" />
+              </div>
+            </div>
+            <div class="daily-subject-grid" id="daily-input-grid"></div>
+            <div class="dialog-actions" style="padding-top: 14px">
+              <button class="primary-btn" type="submit">Save daily output</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel" style="margin-bottom: 14px">
+          <details class="daily-targets-details">
+            <summary><strong>Daily targets</strong> · editable, local-only</summary>
+            <p class="muted" style="font-size: 10px; line-height: 1.6; margin: 10px 0 14px">
+              Targets are optional. V3 deliberately starts them at zero so you do not create a three-subject
+              daily quota monster. Add a target only when it helps execution; 0 excludes the field from
+              scoring.
+            </p>
+            <div class="daily-subject-grid" id="daily-target-grid"></div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 12px">
+              <button class="secondary-btn" id="save-daily-targets" type="button">Save targets</button>
+            </div>
+          </details>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Execution history</div>
+              <h3>Daily output ledger</h3>
+              <p>
+                Manual entries remain editable by deletion/re-entry; the underlying JSON backup preserves the
+                full record.
+              </p>
+            </div>
+          </div>
+          <div style="overflow: auto">
+            <table class="attempt-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Physics</th>
+                  <th>Chemistry</th>
+                  <th>Biology</th>
+                  <th>Note</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="daily-history-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section class="content" id="panel-repairs">
+        <section class="repair-hero panel">
+          <div>
+            <div class="eyebrow">Error Intelligence · marks first</div>
+            <h2>Repair what is repeatedly costing marks.</h2>
+            <p>
+              V5 ranks weaknesses using your own evidence: marks lost, recurrence, confidence traps and
+              unfinished retests. This is not a prediction engine; it is a repair-priority engine.
+            </p>
+          </div>
+          <button class="primary-btn" id="repair-log-btn" type="button">Log repair evidence</button>
+        </section>
+        <div class="kpi-grid repair-kpis">
+          <article class="kpi">
+            <span class="kpi-label">Lost marks · 30d</span
+            ><strong class="kpi-value" id="repair-kpi-loss">0</strong>
+            <div class="kpi-note">recorded marks lost in recent attempts</div>
+          </article>
+          <article class="kpi">
+            <span class="kpi-label">Dominant family</span
+            ><strong class="kpi-value compact" id="repair-kpi-family">—</strong>
+            <div class="kpi-note">largest current source of lost marks</div>
+          </article>
+          <article class="kpi">
+            <span class="kpi-label">Retest closure</span
+            ><strong class="kpi-value" id="repair-kpi-closure">—</strong>
+            <div class="kpi-note">scheduled checks completed</div>
+          </article>
+          <article class="kpi">
+            <span class="kpi-label">Active priorities</span
+            ><strong class="kpi-value" id="repair-kpi-active">0</strong>
+            <div class="kpi-note">topics with meaningful repair evidence</div>
+          </article>
+        </div>
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Next repairs</div>
+                <h3>Highest-return weaknesses</h3>
+                <p>Composite priority = marks lost + recurrence + calibration risk + retest debt.</p>
+              </div>
+            </div>
+            <div class="queue" id="repair-priority-list"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Closure queue</div>
+                <h3>Fresh transfer & delayed retest</h3>
+                <p>A correction is not closed just because the old answer now looks obvious.</p>
+              </div>
+            </div>
+            <div class="queue" id="repair-transfer-list"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Subject lens</div>
+                <h3>Diagnose the right failure</h3>
+                <p>The same wrong mark can require a different repair in each subject.</p>
+              </div>
+            </div>
+            <div class="subject-playbooks" id="subject-playbooks"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="eyebrow">Closure standard</div>
+                <h3>When may I call an error fixed?</h3>
+              </div>
+            </div>
+            <div class="closure-steps">
+              <div><b>1 · Repair</b><span>Fix the smallest actual cause.</span></div>
+              <div><b>2 · Reattempt</b><span>Close the source and reproduce the reasoning.</span></div>
+              <div>
+                <b>3 · Fresh transfer</b><span>Pass a different question testing the same idea.</span>
+              </div>
+              <div>
+                <b>4 · Delayed retest</b><span>Prove the correction survives after time has passed.</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="content" id="panel-guide">
+        <section class="guide-hero panel">
+          <div class="eyebrow">60-second orientation</div>
+          <h2>Powerhouse is not a timetable. It is an evidence-and-repair system.</h2>
+          <p>
+            The central question is simple:
+            <strong>What is costing me marks, and have I actually fixed it?</strong> Everything else is
+            secondary.
+          </p>
+        </section>
+        <div class="guide-grid">
+          <article class="guide-card">
+            <span class="guide-num">01</span>
+            <h3>TEST</h3>
+            <p>
+              Attempt closed-book and under a real time limit. Keep the first attempt clean: no notes, Google
+              or AI.
+            </p>
+          </article>
+          <article class="guide-card">
+            <span class="guide-num">02</span>
+            <h3>MARK</h3>
+            <p>
+              Mark strictly. Record raw score, confidence and guesses. A lucky correct answer is not secure
+              mastery.
+            </p>
+          </article>
+          <article class="guide-card">
+            <span class="guide-num">03</span>
+            <h3>DIAGNOSE</h3>
+            <p>
+              Name the primary cause: knowledge, retrieval, concept, method, presentation, timing, attention
+              or unsupported guess.
+            </p>
+          </article>
+          <article class="guide-card">
+            <span class="guide-num">04</span>
+            <h3>REPAIR</h3>
+            <p>
+              Repair the smallest thing that actually failed. Do not restart an entire chapter for one narrow
+              error.
+            </p>
+          </article>
+          <article class="guide-card">
+            <span class="guide-num">05</span>
+            <h3>TRANSFER</h3>
+            <p>
+              Reattempt closed-book, then use a fresh question. Memorising the previous marking scheme is not
+              transfer.
+            </p>
+          </article>
+          <article class="guide-card">
+            <span class="guide-num">06</span>
+            <h3>RETEST</h3>
+            <p>Return after a delay. Only repeated clean retrieval closes the loop.</p>
+          </article>
+        </div>
+        <div class="dashboard-grid guide-lower">
+          <section class="panel">
+            <div class="eyebrow">Use AI in the right phase</div>
+            <h3>AI belongs after TEST.</h3>
+            <p class="guide-copy">
+              Use AI to explain a diagnosed gap, compare your reasoning, generate a fresh transfer question or
+              compress a correction rule. Do not use it to contaminate the first attempt.
+            </p>
+          </section>
+          <section class="panel">
+            <div class="eyebrow">Local-first privacy</div>
+            <h3>Your marks stay in this browser.</h3>
+            <p class="guide-copy">
+              V5 does not require an account or central marks database. Export a JSON backup regularly.
+              Share-safe mode hides personal performance details before screenshots.
+            </p>
+          </section>
+          <section class="panel">
+            <div class="eyebrow">Do not optimise the tracker</div>
+            <h3>The tracker is not the work.</h3>
+            <p class="guide-copy">
+              If you are spending more time redesigning dashboards than answering and correcting questions,
+              stop. One honest marked attempt is more useful than another system rebuild.
+            </p>
+          </section>
+          <section class="panel">
+            <div class="eyebrow">Recommended progression</div>
+            <h3>Build exam skill gradually.</h3>
+            <p class="guide-copy">
+              Topic questions → mixed questions → paper sections → full timed papers. Let performance evidence
+              decide the next repair.
+            </p>
+          </section>
+          <section class="panel">
+            <div class="eyebrow">Validated Physics layer</div>
+            <h3>Open Physics Intelligence.</h3>
+            <p class="guide-copy">
+              Explore the validated 2000–2025 MCQ distribution and 2019–2025 question families without
+              treating historical frequency as prediction.
+            </p>
+            <p style="margin: 12px 0 0">
+              <a class="secondary-btn tab-link" href="./physics-intelligence/">Open Physics Intelligence →</a>
+            </p>
+          </section>
+        </div>
+      </section>
+
+      <section class="content" id="panel-attempts">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="eyebrow">Evidence ledger</div>
+              <h3>Completed question attempts</h3>
+              <p>Raw score, trusted score, time, confidence, guesses and causes of lost marks.</p>
+            </div>
+            <button class="primary-btn" id="log-from-ledger" type="button">Log attempt</button>
+          </div>
+          <div style="overflow: auto">
+            <table class="attempt-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Subject</th>
+                  <th>Type</th>
+                  <th>Question / topic</th>
+                  <th>Score</th>
+                  <th>Confidence</th>
+                  <th>Error</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="attempt-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="attempt-dialog">
+      <form id="attempt-form">
+        <div class="dialog-head">
+          <div>
+            <div class="eyebrow">Performance evidence</div>
+            <h2>Log a completed attempt</h2>
+          </div>
+          <button class="icon-btn" type="button" data-close-dialog aria-label="Close">×</button>
+        </div>
+        <div class="dialog-body">
+          <div class="form-grid">
+            <div class="field">
+              <label for="attempt-subject">Subject</label
+              ><select id="attempt-subject" required>
+                <option value="physics">Physics</option>
+                <option value="chemistry">Chemistry</option>
+                <option value="biology">Biology</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="attempt-date">Date</label><input id="attempt-date" type="date" required />
+            </div>
+            <div class="field full">
+              <label for="attempt-type">Attempt type</label
+              ><select id="attempt-type" required>
+                <option value="topic-question">Topic question</option>
+                <option value="mcq-set">MCQ set</option>
+                <option value="structured-essay">Structured essay</option>
+                <option value="essay">Essay</option>
+                <option value="mixed-set">Mixed question set</option>
+                <option value="mcq-section">MCQ section</option>
+                <option value="structured-section">Structured section</option>
+                <option value="practical-data">Practical / data-analysis task</option>
+                <option value="paper-section">Paper section</option>
+                <option value="full-paper">Full paper</option>
+                <option value="reattempt">Closed-book reattempt</option>
+                <option value="fresh-transfer">Fresh transfer question</option>
+                <option value="delayed-retest">Delayed retest</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label for="attempt-topic">Syllabus topic</label
+              ><select id="attempt-topic" required></select>
+            </div>
+            <div class="field full">
+              <label for="attempt-question">Question / paper reference</label
+              ><input
+                id="attempt-question"
+                maxlength="120"
+                placeholder="e.g. 2023 Paper II, Q4(b)"
+                required
+              />
+            </div>
+            <div class="field">
+              <label for="marks-earned">Marks earned</label
+              ><input id="marks-earned" type="number" min="0" step="0.5" required />
+            </div>
+            <div class="field">
+              <label for="marks-total">Marks available</label
+              ><input id="marks-total" type="number" min="0.5" step="0.5" required />
+            </div>
+            <div class="field">
+              <label for="trusted-earned">Trusted marks (optional)</label
+              ><input
+                id="trusted-earned"
+                type="number"
+                min="0"
+                step="0.5"
+                placeholder="e.g. raw 18 → trusted 16"
+              />
+              <div class="trusted-note">
+                Raw marks minus unsupported/lucky marks. Leave blank if you did not audit this attempt.
+              </div>
+            </div>
+            <div class="field">
+              <label for="attempt-minutes">Minutes used</label
+              ><input id="attempt-minutes" type="number" min="1" max="360" required />
+            </div>
+            <div class="field">
+              <label for="attempt-items">Questions / items completed</label
+              ><input id="attempt-items" type="number" min="1" max="500" step="1" value="1" required />
+            </div>
+            <div class="field">
+              <label for="attempt-confidence">Confidence before marking</label
+              ><select id="attempt-confidence" required>
+                <option value="low">Low / guessed</option>
+                <option value="medium">Medium / unsure</option>
+                <option value="high">High / expected correct</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="attempt-guesses">Guessed / unsupported items</label
+              ><input id="attempt-guesses" type="number" min="0" max="500" step="1" value="0" />
+            </div>
+            <div class="field full">
+              <label for="attempt-error">Dominant error family</label
+              ><select id="attempt-error">
+                <option value="">None — full-credit performance</option>
+                <option value="K">K — knowledge gap</option>
+                <option value="C">C — conceptual model</option>
+                <option value="R">R — retrieval failure</option>
+                <option value="M">M — method / calculation</option>
+                <option value="P">P — presentation / scheme language</option>
+                <option value="T">T — timing / selection</option>
+                <option value="A">A — attention / misreading</option>
+                <option value="G">G — lucky / unsupported guess</option>
+              </select>
+              <div class="error-key">
+                <span><b>K/R</b> recall then delay</span><span><b>C</b> explain-back + fresh Q</span
+                ><span><b>M</b> mixed procedure set</span><span><b>P</b> scheme-perfect rewrite</span
+                ><span><b>T/A</b> explicit exam rule</span><span><b>G</b> fresh Q + justify choice</span>
+              </div>
+              <div class="diagnosis-hint" id="attempt-diagnosis-hint"></div>
+            </div>
+            <div class="field full">
+              <label for="attempt-note">Correction / prevention rule</label
+              ><textarea
+                id="attempt-note"
+                maxlength="360"
+                placeholder="One precise rule that prevents this mark loss next time."
+              ></textarea>
+            </div>
+          </div>
+          <div class="dialog-actions">
+            <button class="secondary-btn" type="button" data-close-dialog>Cancel</button
+            ><button class="primary-btn" type="submit">Save evidence + update repair queue</button>
+          </div>
+        </div>
       </form>
-    </section>
+    </dialog>
 
-    <section class="panel" style="margin-bottom:14px">
-      <details class="daily-targets-details">
-        <summary><strong>Daily targets</strong> · editable, local-only</summary>
-        <p class="muted" style="font-size:10px;line-height:1.6;margin:10px 0 14px">Targets are optional. V3 deliberately starts them at zero so you do not create a three-subject daily quota monster. Add a target only when it helps execution; 0 excludes the field from scoring.</p>
-        <div class="daily-subject-grid" id="daily-target-grid"></div>
-        <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="secondary-btn" id="save-daily-targets" type="button">Save targets</button></div>
-      </details>
-    </section>
-
-    <section class="panel">
-      <div class="panel-head"><div><div class="eyebrow">Execution history</div><h3>Daily output ledger</h3><p>Manual entries remain editable by deletion/re-entry; the underlying JSON backup preserves the full record.</p></div></div>
-      <div style="overflow:auto"><table class="attempt-table"><thead><tr><th>Date</th><th>Physics</th><th>Chemistry</th><th>Biology</th><th>Note</th><th></th></tr></thead><tbody id="daily-history-body"></tbody></table></div>
-    </section>
-  </section>
-
-
-  <section class="content" id="panel-repairs">
-    <section class="repair-hero panel">
-      <div>
-        <div class="eyebrow">Error Intelligence · marks first</div>
-        <h2>Repair what is repeatedly costing marks.</h2>
-        <p>V5 ranks weaknesses using your own evidence: marks lost, recurrence, confidence traps and unfinished retests. This is not a prediction engine; it is a repair-priority engine.</p>
-      </div>
-      <button class="primary-btn" id="repair-log-btn" type="button">Log repair evidence</button>
-    </section>
-    <div class="kpi-grid repair-kpis">
-      <article class="kpi"><span class="kpi-label">Lost marks · 30d</span><strong class="kpi-value" id="repair-kpi-loss">0</strong><div class="kpi-note">recorded marks lost in recent attempts</div></article>
-      <article class="kpi"><span class="kpi-label">Dominant family</span><strong class="kpi-value compact" id="repair-kpi-family">—</strong><div class="kpi-note">largest current source of lost marks</div></article>
-      <article class="kpi"><span class="kpi-label">Retest closure</span><strong class="kpi-value" id="repair-kpi-closure">—</strong><div class="kpi-note">scheduled checks completed</div></article>
-      <article class="kpi"><span class="kpi-label">Active priorities</span><strong class="kpi-value" id="repair-kpi-active">0</strong><div class="kpi-note">topics with meaningful repair evidence</div></article>
-    </div>
-    <div class="dashboard-grid">
-      <section class="panel"><div class="panel-head"><div><div class="eyebrow">Next repairs</div><h3>Highest-return weaknesses</h3><p>Composite priority = marks lost + recurrence + calibration risk + retest debt.</p></div></div><div class="queue" id="repair-priority-list"></div></section>
-      <section class="panel"><div class="panel-head"><div><div class="eyebrow">Closure queue</div><h3>Fresh transfer & delayed retest</h3><p>A correction is not closed just because the old answer now looks obvious.</p></div></div><div class="queue" id="repair-transfer-list"></div></section>
-      <section class="panel"><div class="panel-head"><div><div class="eyebrow">Subject lens</div><h3>Diagnose the right failure</h3><p>The same wrong mark can require a different repair in each subject.</p></div></div><div class="subject-playbooks" id="subject-playbooks"></div></section>
-      <section class="panel"><div class="panel-head"><div><div class="eyebrow">Closure standard</div><h3>When may I call an error fixed?</h3></div></div>
-        <div class="closure-steps">
-          <div><b>1 · Repair</b><span>Fix the smallest actual cause.</span></div>
-          <div><b>2 · Reattempt</b><span>Close the source and reproduce the reasoning.</span></div>
-          <div><b>3 · Fresh transfer</b><span>Pass a different question testing the same idea.</span></div>
-          <div><b>4 · Delayed retest</b><span>Prove the correction survives after time has passed.</span></div>
+    <dialog id="timer-dialog">
+      <div class="dialog-head">
+        <div>
+          <div class="eyebrow">Deep work · V5</div>
+          <h2 id="timer-topic">Closed-book attempt</h2>
         </div>
-      </section>
-    </div>
-  </section>
-
-  <section class="content" id="panel-guide">
-    <section class="guide-hero panel">
-      <div class="eyebrow">60-second orientation</div>
-      <h2>Powerhouse is not a timetable. It is an evidence-and-repair system.</h2>
-      <p>The central question is simple: <strong>What is costing me marks, and have I actually fixed it?</strong> Everything else is secondary.</p>
-    </section>
-    <div class="guide-grid">
-      <article class="guide-card"><span class="guide-num">01</span><h3>TEST</h3><p>Attempt closed-book and under a real time limit. Keep the first attempt clean: no notes, Google or AI.</p></article>
-      <article class="guide-card"><span class="guide-num">02</span><h3>MARK</h3><p>Mark strictly. Record raw score, confidence and guesses. A lucky correct answer is not secure mastery.</p></article>
-      <article class="guide-card"><span class="guide-num">03</span><h3>DIAGNOSE</h3><p>Name the primary cause: knowledge, retrieval, concept, method, presentation, timing, attention or unsupported guess.</p></article>
-      <article class="guide-card"><span class="guide-num">04</span><h3>REPAIR</h3><p>Repair the smallest thing that actually failed. Do not restart an entire chapter for one narrow error.</p></article>
-      <article class="guide-card"><span class="guide-num">05</span><h3>TRANSFER</h3><p>Reattempt closed-book, then use a fresh question. Memorising the previous marking scheme is not transfer.</p></article>
-      <article class="guide-card"><span class="guide-num">06</span><h3>RETEST</h3><p>Return after a delay. Only repeated clean retrieval closes the loop.</p></article>
-    </div>
-    <div class="dashboard-grid guide-lower">
-      <section class="panel"><div class="eyebrow">Use AI in the right phase</div><h3>AI belongs after TEST.</h3><p class="guide-copy">Use AI to explain a diagnosed gap, compare your reasoning, generate a fresh transfer question or compress a correction rule. Do not use it to contaminate the first attempt.</p></section>
-      <section class="panel"><div class="eyebrow">Local-first privacy</div><h3>Your marks stay in this browser.</h3><p class="guide-copy">V5 does not require an account or central marks database. Export a JSON backup regularly. Share-safe mode hides personal performance details before screenshots.</p></section>
-      <section class="panel"><div class="eyebrow">Do not optimise the tracker</div><h3>The tracker is not the work.</h3><p class="guide-copy">If you are spending more time redesigning dashboards than answering and correcting questions, stop. One honest marked attempt is more useful than another system rebuild.</p></section>
-      <section class="panel"><div class="eyebrow">Recommended progression</div><h3>Build exam skill gradually.</h3><p class="guide-copy">Topic questions → mixed questions → paper sections → full timed papers. Let performance evidence decide the next repair.</p></section>
-      <section class="panel"><div class="eyebrow">Validated Physics layer</div><h3>Open Physics Intelligence.</h3><p class="guide-copy">Explore the validated 2000–2025 MCQ distribution and 2019–2025 question families without treating historical frequency as prediction.</p><p style="margin:12px 0 0"><a class="secondary-btn tab-link" href="./physics-intelligence/">Open Physics Intelligence →</a></p></section>
-    </div>
-  </section>
-
-  <section class="content" id="panel-attempts">
-    <section class="panel">
-      <div class="panel-head"><div><div class="eyebrow">Evidence ledger</div><h3>Completed question attempts</h3><p>Raw score, trusted score, time, confidence, guesses and causes of lost marks.</p></div><button class="primary-btn" id="log-from-ledger" type="button">Log attempt</button></div>
-      <div style="overflow:auto"><table class="attempt-table"><thead><tr><th>Date</th><th>Subject</th><th>Type</th><th>Question / topic</th><th>Score</th><th>Confidence</th><th>Error</th><th></th></tr></thead><tbody id="attempt-table-body"></tbody></table></div>
-    </section>
-  </section>
-</main>
-
-<dialog id="attempt-dialog">
-  <form id="attempt-form">
-    <div class="dialog-head"><div><div class="eyebrow">Performance evidence</div><h2>Log a completed attempt</h2></div><button class="icon-btn" type="button" data-close-dialog aria-label="Close">×</button></div>
-    <div class="dialog-body">
-      <div class="form-grid">
-        <div class="field"><label for="attempt-subject">Subject</label><select id="attempt-subject" required><option value="physics">Physics</option><option value="chemistry">Chemistry</option><option value="biology">Biology</option></select></div>
-        <div class="field"><label for="attempt-date">Date</label><input id="attempt-date" type="date" required></div>
-        <div class="field full"><label for="attempt-type">Attempt type</label><select id="attempt-type" required><option value="topic-question">Topic question</option><option value="mcq-set">MCQ set</option><option value="structured-essay">Structured essay</option><option value="essay">Essay</option><option value="mixed-set">Mixed question set</option><option value="mcq-section">MCQ section</option><option value="structured-section">Structured section</option><option value="practical-data">Practical / data-analysis task</option><option value="paper-section">Paper section</option><option value="full-paper">Full paper</option><option value="reattempt">Closed-book reattempt</option><option value="fresh-transfer">Fresh transfer question</option><option value="delayed-retest">Delayed retest</option></select></div>
-        <div class="field full"><label for="attempt-topic">Syllabus topic</label><select id="attempt-topic" required></select></div>
-        <div class="field full"><label for="attempt-question">Question / paper reference</label><input id="attempt-question" maxlength="120" placeholder="e.g. 2023 Paper II, Q4(b)" required></div>
-        <div class="field"><label for="marks-earned">Marks earned</label><input id="marks-earned" type="number" min="0" step="0.5" required></div>
-        <div class="field"><label for="marks-total">Marks available</label><input id="marks-total" type="number" min="0.5" step="0.5" required></div><div class="field"><label for="trusted-earned">Trusted marks (optional)</label><input id="trusted-earned" type="number" min="0" step="0.5" placeholder="e.g. raw 18 → trusted 16"><div class="trusted-note">Raw marks minus unsupported/lucky marks. Leave blank if you did not audit this attempt.</div></div>
-        <div class="field"><label for="attempt-minutes">Minutes used</label><input id="attempt-minutes" type="number" min="1" max="360" required></div>
-        <div class="field"><label for="attempt-items">Questions / items completed</label><input id="attempt-items" type="number" min="1" max="500" step="1" value="1" required></div>
-        <div class="field"><label for="attempt-confidence">Confidence before marking</label><select id="attempt-confidence" required><option value="low">Low / guessed</option><option value="medium">Medium / unsure</option><option value="high">High / expected correct</option></select></div>
-        <div class="field"><label for="attempt-guesses">Guessed / unsupported items</label><input id="attempt-guesses" type="number" min="0" max="500" step="1" value="0"></div>
-        <div class="field full"><label for="attempt-error">Dominant error family</label><select id="attempt-error"><option value="">None — full-credit performance</option><option value="K">K — knowledge gap</option><option value="C">C — conceptual model</option><option value="R">R — retrieval failure</option><option value="M">M — method / calculation</option><option value="P">P — presentation / scheme language</option><option value="T">T — timing / selection</option><option value="A">A — attention / misreading</option><option value="G">G — lucky / unsupported guess</option></select><div class="error-key"><span><b>K/R</b> recall then delay</span><span><b>C</b> explain-back + fresh Q</span><span><b>M</b> mixed procedure set</span><span><b>P</b> scheme-perfect rewrite</span><span><b>T/A</b> explicit exam rule</span><span><b>G</b> fresh Q + justify choice</span></div><div class="diagnosis-hint" id="attempt-diagnosis-hint"></div></div>
-        <div class="field full"><label for="attempt-note">Correction / prevention rule</label><textarea id="attempt-note" maxlength="360" placeholder="One precise rule that prevents this mark loss next time."></textarea></div>
+        <button class="icon-btn" type="button" data-close-timer aria-label="Close">×</button>
       </div>
-      <div class="dialog-actions"><button class="secondary-btn" type="button" data-close-dialog>Cancel</button><button class="primary-btn" type="submit">Save evidence + update repair queue</button></div>
-    </div>
-  </form>
-</dialog>
-
-<dialog id="timer-dialog">
-  <div class="dialog-head"><div><div class="eyebrow">Deep work · V5</div><h2 id="timer-topic">Closed-book attempt</h2></div><button class="icon-btn" type="button" data-close-timer aria-label="Close">×</button></div>
-  <div class="dialog-body">
-    <div class="timer-phase" id="timer-phase">TEST · AI-free · closed book</div>
-    <div class="timer-presets"><button class="secondary-btn" type="button" data-timer-preset="30">30 · rescue</button><button class="secondary-btn" type="button" data-timer-preset="60">60 · standard</button><button class="secondary-btn on" type="button" data-timer-preset="90">90 · deep</button><button class="secondary-btn" type="button" data-timer-preset="120">120 · full</button></div>
-    <div class="timer-display" id="timer-display">90:00</div>
-    <div class="timer-controls"><button class="secondary-btn" id="timer-reset" type="button">Reset</button><button class="primary-btn" id="timer-toggle" type="button">Start</button><button class="secondary-btn" id="timer-skip" type="button">Finish + log</button></div>
-    <div class="timer-note" id="timer-note">Your preferred mode is long-form focus. Phone away; no notes or AI during TEST. When the block ends, mark and diagnose before opening more resources.</div>
-  </div>
-</dialog>
-
-<dialog id="data-dialog">
-  <div class="dialog-head"><div><div class="eyebrow">Local data</div><h2>Backup & identity</h2></div><button class="icon-btn" type="button" data-close-data aria-label="Close">×</button></div>
-  <div class="dialog-body"><div class="form-grid"><div class="field"><label for="profile-name">Student name</label><input id="profile-name" maxlength="80"></div><div class="field"><label for="profile-year">Exam year</label><input id="profile-year" maxlength="8" inputmode="numeric" placeholder="2027"></div><div class="field full"><label for="profile-target">Target / goal (optional)</label><input id="profile-target" maxlength="100" placeholder="e.g. 3 As · Medicine"></div><div class="field full"><label for="profile-line">Display line</label><input id="profile-line" maxlength="140"></div></div><div class="privacy-box"><b>Local-first by design.</b><span>Your marks, ratings and corrections stay in this browser. V5 does not require a central account. Export a backup regularly because clearing browser/site data can erase local progress.</span></div><p class="muted" id="backup-status" style="font-size:10px;line-height:1.6;margin:12px 0 6px">No backup recorded yet.</p><p class="muted" id="recovery-status" style="font-size:10px;line-height:1.6;margin:0 0 16px">Recovery snapshots: 0 · V5 keeps up to 12</p><div style="display:flex;flex-wrap:wrap;gap:8px"><button class="primary-btn" id="save-profile" type="button">Save identity</button><button class="secondary-btn" id="export-data" type="button">Export JSON backup</button><button class="secondary-btn" id="import-data" type="button">Import backup / legacy data</button><button class="danger-btn" id="reset-data" type="button">Reset all data</button></div><input class="hidden" id="import-file" type="file" accept="application/json,.json"></div>
-</dialog>
-
-<dialog id="welcome-dialog">
-  <form id="welcome-form">
-    <div class="dialog-head"><div><div class="eyebrow">V5 Exam Performance OS · local-first</div><h2>Build your private A/L performance system</h2></div></div>
-    <div class="dialog-body">
-      <p class="muted" style="font-size:11px;line-height:1.7;margin:0 0 18px">This dashboard is for G.C.E. A/L Biological Science students studying Physics, Chemistry and Biology. Your performance data stays only in this browser unless you export it yourself.</p>
-      <div class="form-grid">
-        <div class="field full"><label for="welcome-name">Your name</label><input id="welcome-name" maxlength="80" placeholder="e.g. Student" autocomplete="name" required></div>
-        <div class="field"><label for="welcome-year">Exam year</label><input id="welcome-year" maxlength="8" inputmode="numeric" value="2027" required></div>
-        <div class="field"><label for="welcome-target">Target (optional)</label><input id="welcome-target" maxlength="100" placeholder="e.g. 3 As · Medicine"></div>
-        <div class="field full"><label for="welcome-goal">Display line</label><input id="welcome-goal" maxlength="140" value="2027 A/L Bio Science · evidence over guesswork" required></div>
+      <div class="dialog-body">
+        <div class="timer-phase" id="timer-phase">TEST · AI-free · closed book</div>
+        <div class="timer-presets">
+          <button class="secondary-btn" type="button" data-timer-preset="30">30 · rescue</button
+          ><button class="secondary-btn" type="button" data-timer-preset="60">60 · standard</button
+          ><button class="secondary-btn on" type="button" data-timer-preset="90">90 · deep</button
+          ><button class="secondary-btn" type="button" data-timer-preset="120">120 · full</button>
+        </div>
+        <div class="timer-display" id="timer-display">90:00</div>
+        <div class="timer-controls">
+          <button class="secondary-btn" id="timer-reset" type="button">Reset</button
+          ><button class="primary-btn" id="timer-toggle" type="button">Start</button
+          ><button class="secondary-btn" id="timer-skip" type="button">Finish + log</button>
+        </div>
+        <div class="timer-note" id="timer-note">
+          Your preferred mode is long-form focus. Phone away; no notes or AI during TEST. When the block ends,
+          mark and diagnose before opening more resources.
+        </div>
       </div>
-      <div class="onboarding-loop"><span>1 · TEST</span><span>2 · DIAGNOSE</span><span>3 · REPAIR</span><span>4 · TRANSFER</span><span>5 · RETEST</span></div>
-      <div class="dialog-actions"><a class="secondary-btn demo-link" href="./?demo=1">Explore sample data</a><button class="secondary-btn" id="welcome-import" type="button">Restore a backup</button><button class="primary-btn" type="submit">Enter my Powerhouse</button></div>
+    </dialog>
+
+    <dialog id="data-dialog">
+      <div class="dialog-head">
+        <div>
+          <div class="eyebrow">Local data</div>
+          <h2>Backup & identity</h2>
+        </div>
+        <button class="icon-btn" type="button" data-close-data aria-label="Close">×</button>
+      </div>
+      <div class="dialog-body">
+        <div class="form-grid">
+          <div class="field">
+            <label for="profile-name">Student name</label><input id="profile-name" maxlength="80" />
+          </div>
+          <div class="field">
+            <label for="profile-year">Exam year</label
+            ><input id="profile-year" maxlength="8" inputmode="numeric" placeholder="2027" />
+          </div>
+          <div class="field full">
+            <label for="profile-target">Target / goal (optional)</label
+            ><input id="profile-target" maxlength="100" placeholder="e.g. 3 As · Medicine" />
+          </div>
+          <div class="field full">
+            <label for="profile-line">Display line</label><input id="profile-line" maxlength="140" />
+          </div>
+        </div>
+        <div class="privacy-box">
+          <b>Local-first by design.</b
+          ><span
+            >Your marks, ratings and corrections stay in this browser. V5 does not require a central account.
+            Export a backup regularly because clearing browser/site data can erase local progress.</span
+          >
+        </div>
+        <p class="muted" id="backup-status" style="font-size: 10px; line-height: 1.6; margin: 12px 0 6px">
+          No backup recorded yet.
+        </p>
+        <p class="muted" id="recovery-status" style="font-size: 10px; line-height: 1.6; margin: 0 0 16px">
+          Recovery snapshots: 0 · V5 keeps up to 12
+        </p>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <button class="primary-btn" id="save-profile" type="button">Save identity</button
+          ><button class="secondary-btn" id="export-data" type="button">Export JSON backup</button
+          ><button class="secondary-btn" id="import-data" type="button">Import backup / legacy data</button
+          ><button class="danger-btn" id="reset-data" type="button">Reset all data</button>
+        </div>
+        <input class="hidden" id="import-file" type="file" accept="application/json,.json" />
+      </div>
+    </dialog>
+
+    <dialog id="welcome-dialog">
+      <form id="welcome-form">
+        <div class="dialog-head">
+          <div>
+            <div class="eyebrow">V5 Exam Performance OS · local-first</div>
+            <h2>Build your private A/L performance system</h2>
+          </div>
+        </div>
+        <div class="dialog-body">
+          <p class="muted" style="font-size: 11px; line-height: 1.7; margin: 0 0 18px">
+            This dashboard is for G.C.E. A/L Biological Science students studying Physics, Chemistry and
+            Biology. Your performance data stays only in this browser unless you export it yourself.
+          </p>
+          <div class="form-grid">
+            <div class="field full">
+              <label for="welcome-name">Your name</label
+              ><input
+                id="welcome-name"
+                maxlength="80"
+                placeholder="e.g. Student"
+                autocomplete="name"
+                required
+              />
+            </div>
+            <div class="field">
+              <label for="welcome-year">Exam year</label
+              ><input id="welcome-year" maxlength="8" inputmode="numeric" value="2027" required />
+            </div>
+            <div class="field">
+              <label for="welcome-target">Target (optional)</label
+              ><input id="welcome-target" maxlength="100" placeholder="e.g. 3 As · Medicine" />
+            </div>
+            <div class="field full">
+              <label for="welcome-goal">Display line</label
+              ><input
+                id="welcome-goal"
+                maxlength="140"
+                value="2027 A/L Bio Science · evidence over guesswork"
+                required
+              />
+            </div>
+          </div>
+          <div class="onboarding-loop">
+            <span>1 · TEST</span><span>2 · DIAGNOSE</span><span>3 · REPAIR</span><span>4 · TRANSFER</span
+            ><span>5 · RETEST</span>
+          </div>
+          <div class="dialog-actions">
+            <a class="secondary-btn demo-link" href="./?demo=1">Explore sample data</a
+            ><button class="secondary-btn" id="welcome-import" type="button">Restore a backup</button
+            ><button class="primary-btn" type="submit">Enter my Powerhouse</button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <button class="mobile-log" id="mobile-quick-log" type="button">＋ Log evidence</button>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <div class="hidden" aria-hidden="true">
+      <div id="wm-layer"></div>
+
+      <header>
+        <h1>A/L Bio Science · Self Analysis</h1>
+        <div class="owner">Legacy dashboard migration shell</div>
+      </header>
+
+      <div class="legend">
+        <span><span class="dot" style="background: var(--red)"></span>W — Weak</span>
+        <span><span class="dot" style="background: var(--orange)"></span>M — Medium</span>
+        <span><span class="dot" style="background: var(--green)"></span>S — Strong</span>
+      </div>
+
+      <div class="tabs" id="tabs">
+        <div class="tab active" data-sub="overview">Overview</div>
+        <div class="tab" data-sub="physics">Physics</div>
+        <div class="tab" data-sub="chemistry">Chemistry</div>
+        <div class="tab" data-sub="biology">Biology</div>
+      </div>
+
+      <div class="content active" id="overview">
+        <div class="ov-grid">
+          <div class="ov-card phy">
+            <div class="lbl">Physics</div>
+            <div class="big" id="phy-pct">—</div>
+            <div class="sm" id="phy-done">0 / 0</div>
+          </div>
+          <div class="ov-card chem">
+            <div class="lbl">Chemistry</div>
+            <div class="big" id="chem-pct">—</div>
+            <div class="sm" id="chem-done">0 / 0</div>
+          </div>
+          <div class="ov-card bio">
+            <div class="lbl">Biology</div>
+            <div class="big" id="bio-pct">—</div>
+            <div class="sm" id="bio-done">0 / 0</div>
+          </div>
+        </div>
+        <div class="prog-sec">
+          <h3>Confidence %</h3>
+          <div class="prog-row">
+            <div class="prog-top">
+              <span style="color: var(--phy); font-weight: 600; font-size: 12px">Physics</span
+              ><span
+                id="phy-p2"
+                style="font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted)"
+                >—</span
+              >
+            </div>
+            <div class="bar-track"><div class="bar-fill phy-fill" id="phy-bar" style="width: 0%"></div></div>
+          </div>
+          <div class="prog-row" style="margin-top: 10px">
+            <div class="prog-top">
+              <span style="color: var(--chem); font-weight: 600; font-size: 12px">Chemistry</span
+              ><span
+                id="chem-p2"
+                style="font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted)"
+                >—</span
+              >
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill chem-fill" id="chem-bar" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="prog-row" style="margin-top: 10px">
+            <div class="prog-top">
+              <span style="color: var(--bio); font-weight: 600; font-size: 12px">Biology</span
+              ><span
+                id="bio-p2"
+                style="font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted)"
+                >—</span
+              >
+            </div>
+            <div class="bar-track"><div class="bar-fill bio-fill" id="bio-bar" style="width: 0%"></div></div>
+          </div>
+        </div>
+        <div class="weak-box">
+          <h3>⚠ Weak Topics</h3>
+          <div id="weak-list">
+            <span style="color: var(--muted); font-size: 11px">Rate topics to see your weak areas here.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content" id="physics"></div>
+      <div class="content" id="chemistry"></div>
+      <div class="content" id="biology"></div>
+
+      <div class="save-note">Legacy local-rating migration shell</div>
     </div>
-  </form>
-</dialog>
 
-<button class="mobile-log" id="mobile-quick-log" type="button">＋ Log evidence</button>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-<div class="hidden" aria-hidden="true">
-
-<div id="wm-layer"></div>
-
-<header>
-  <h1>A/L Bio Science · Self Analysis</h1>
-  <div class="owner">Legacy dashboard migration shell</div>
-</header>
-
-<div class="legend">
-  <span><span class="dot" style="background:var(--red)"></span>W — Weak</span>
-  <span><span class="dot" style="background:var(--orange)"></span>M — Medium</span>
-  <span><span class="dot" style="background:var(--green)"></span>S — Strong</span>
-</div>
-
-<div class="tabs" id="tabs">
-  <div class="tab active" data-sub="overview">Overview</div>
-  <div class="tab" data-sub="physics">Physics</div>
-  <div class="tab" data-sub="chemistry">Chemistry</div>
-  <div class="tab" data-sub="biology">Biology</div>
-</div>
-
-<div class="content active" id="overview">
-  <div class="ov-grid">
-    <div class="ov-card phy"><div class="lbl">Physics</div><div class="big" id="phy-pct">—</div><div class="sm" id="phy-done">0 / 0</div></div>
-    <div class="ov-card chem"><div class="lbl">Chemistry</div><div class="big" id="chem-pct">—</div><div class="sm" id="chem-done">0 / 0</div></div>
-    <div class="ov-card bio"><div class="lbl">Biology</div><div class="big" id="bio-pct">—</div><div class="sm" id="bio-done">0 / 0</div></div>
-  </div>
-  <div class="prog-sec">
-    <h3>Confidence %</h3>
-    <div class="prog-row">
-      <div class="prog-top"><span style="color:var(--phy);font-weight:600;font-size:12px">Physics</span><span id="phy-p2" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">—</span></div>
-      <div class="bar-track"><div class="bar-fill phy-fill" id="phy-bar" style="width:0%"></div></div>
-    </div>
-    <div class="prog-row" style="margin-top:10px">
-      <div class="prog-top"><span style="color:var(--chem);font-weight:600;font-size:12px">Chemistry</span><span id="chem-p2" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">—</span></div>
-      <div class="bar-track"><div class="bar-fill chem-fill" id="chem-bar" style="width:0%"></div></div>
-    </div>
-    <div class="prog-row" style="margin-top:10px">
-      <div class="prog-top"><span style="color:var(--bio);font-weight:600;font-size:12px">Biology</span><span id="bio-p2" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">—</span></div>
-      <div class="bar-track"><div class="bar-fill bio-fill" id="bio-bar" style="width:0%"></div></div>
-    </div>
-  </div>
-  <div class="weak-box">
-    <h3>⚠ Weak Topics</h3>
-    <div id="weak-list"><span style="color:var(--muted);font-size:11px">Rate topics to see your weak areas here.</span></div>
-  </div>
-</div>
-
-<div class="content" id="physics"></div>
-<div class="content" id="chemistry"></div>
-<div class="content" id="biology"></div>
-
-<div class="save-note">Legacy local-rating migration shell</div>
-</div>
-
-<script src="./js/core.js"></script>
-<script src="./js/app.js"></script>
-<script src="./js/v5-additions.js"></script>
-</body>
+    <script src="./js/core.js"></script>
+    <script src="./js/app.js"></script>
+    <script src="./js/v5-additions.js"></script>
+  </body>
 </html>

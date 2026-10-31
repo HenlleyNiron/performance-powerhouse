@@ -7,7 +7,12 @@ export const RECOVERY_KEY = 'al_performance_powerhouse_v5_recovery';
 /** Today's date in Asia/Colombo, matching the application's own clock. */
 export function colomboToday(offsetDays = 0) {
   const parts = Object.fromEntries(
-    new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Colombo', year: 'numeric', month: '2-digit', day: '2-digit' })
+    new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Colombo',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
       .formatToParts(new Date())
       .filter(p => p.type !== 'literal')
       .map(p => [p.type, p.value]),
@@ -45,12 +50,15 @@ export async function seedState(page, extra = {}) {
     retests: [],
     ...extra,
   };
-  await page.addInitScript(([key, value]) => {
-    if (!sessionStorage.getItem('__seeded')) {
-      localStorage.setItem(key, value);
-      sessionStorage.setItem('__seeded', '1');
-    }
-  }, [APP_KEY, JSON.stringify(seed)]);
+  await page.addInitScript(
+    ([key, value]) => {
+      if (!sessionStorage.getItem('__seeded')) {
+        localStorage.setItem(key, value);
+        sessionStorage.setItem('__seeded', '1');
+      }
+    },
+    [APP_KEY, JSON.stringify(seed)],
+  );
 }
 
 export async function readState(page) {
@@ -58,7 +66,22 @@ export async function readState(page) {
 }
 
 /** Opens the attempt dialog and fills a marked attempt. */
-export async function logAttempt(page, { subject = 'physics', type = 'topic-question', topicIndex = 0, question = 'Test question', earned, total, minutes = 20, error = '', confidence = 'medium', guesses = 0, date } = {}) {
+export async function logAttempt(
+  page,
+  {
+    subject = 'physics',
+    type = 'topic-question',
+    topicIndex = 0,
+    question = 'Test question',
+    earned,
+    total,
+    minutes = 20,
+    error = '',
+    confidence = 'medium',
+    guesses = 0,
+    date,
+  } = {},
+) {
   await page.locator('#quick-log-btn').click();
   const dialog = page.locator('#attempt-dialog');
   await expect(dialog).toBeVisible();

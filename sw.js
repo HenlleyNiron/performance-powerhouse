@@ -24,13 +24,12 @@ const ASSETS = [
   './physics-intelligence/assets/physics-intelligence-data.json',
 ];
 
-const CACHEABLE_URLS = new Set(
-  ASSETS.map(asset => new URL(asset, self.registration.scope).href),
-);
+const CACHEABLE_URLS = new Set(ASSETS.map(asset => new URL(asset, self.registration.scope).href));
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE)
+    caches
+      .open(CACHE)
       .then(cache => cache.addAll(ASSETS))
       .then(() => self.skipWaiting()),
   );
@@ -38,12 +37,13 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(
-        keys
-          .filter(key => key.startsWith(CACHE_PREFIX) && key !== CACHE)
-          .map(key => caches.delete(key)),
-      ))
+    caches
+      .keys()
+      .then(keys =>
+        Promise.all(
+          keys.filter(key => key.startsWith(CACHE_PREFIX) && key !== CACHE).map(key => caches.delete(key)),
+        ),
+      )
       .then(() => self.clients.claim()),
   );
 });
@@ -87,17 +87,18 @@ self.addEventListener('fetch', event => {
   normalizedUrl.search = '';
   const isAppAsset = CACHEABLE_URLS.has(normalizedUrl.href);
 
-  event.respondWith((async () => {
-    try {
-      const response = await fetch(request);
-      if (isAppAsset && canStore(response)) {
-        const cacheWrite = caches.open(CACHE)
-          .then(cache => cache.put(request, response.clone()));
-        event.waitUntil(cacheWrite);
+  event.respondWith(
+    (async () => {
+      try {
+        const response = await fetch(request);
+        if (isAppAsset && canStore(response)) {
+          const cacheWrite = caches.open(CACHE).then(cache => cache.put(request, response.clone()));
+          event.waitUntil(cacheWrite);
+        }
+        return response;
+      } catch {
+        return offlineResponse(request, url);
       }
-      return response;
-    } catch {
-      return offlineResponse(request, url);
-    }
-  })());
+    })(),
+  );
 });

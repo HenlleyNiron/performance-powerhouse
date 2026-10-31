@@ -4,15 +4,40 @@ import { acceptDialogs, readState, seedState, trackErrors } from './helpers.mjs'
 const TRACKER_KEY = 'al_performance_powerhouse_study_tracker_v1';
 
 test.describe('Study Tracker → evidence ledger hand-off', () => {
-  test('a finished tracker session opens a prefilled attempt and links back to the session', async ({ page }) => {
+  test('a finished tracker session opens a prefilled attempt and links back to the session', async ({
+    page,
+  }) => {
     const errors = trackErrors(page);
     acceptDialogs(page);
     await seedState(page);
-    await page.addInitScript(([key, value]) => {
-      if (!localStorage.getItem(key)) localStorage.setItem(key, value);
-    }, [TRACKER_KEY, JSON.stringify({ version: 1, sessions: [{ id: 'sess-1', date: '2026-10-20', subject: 'chemistry', type: 'closed-book-reattempt', task: 'Kc reattempt', status: 'complete', durationMs: 25 * 60000 }], activeSession: null, settings: {} })]);
+    await page.addInitScript(
+      ([key, value]) => {
+        if (!localStorage.getItem(key)) localStorage.setItem(key, value);
+      },
+      [
+        TRACKER_KEY,
+        JSON.stringify({
+          version: 1,
+          sessions: [
+            {
+              id: 'sess-1',
+              date: '2026-10-20',
+              subject: 'chemistry',
+              type: 'closed-book-reattempt',
+              task: 'Kc reattempt',
+              status: 'complete',
+              durationMs: 25 * 60000,
+            },
+          ],
+          activeSession: null,
+          settings: {},
+        }),
+      ],
+    );
 
-    await page.goto('/?logEvidence=1&subject=chemistry&type=reattempt&sessionId=sess-1&minutes=25&question=Kc%20reattempt');
+    await page.goto(
+      '/?logEvidence=1&subject=chemistry&type=reattempt&sessionId=sess-1&minutes=25&question=Kc%20reattempt',
+    );
     const dialog = page.locator('#attempt-dialog');
     await expect(dialog).toBeVisible();
     await expect(page.locator('#attempt-subject')).toHaveValue('chemistry');
@@ -46,15 +71,21 @@ test.describe('offline use (service worker)', () => {
     await page.evaluate(async () => {
       await navigator.serviceWorker.ready;
       if (!navigator.serviceWorker.controller) {
-        await new Promise(resolve => navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true }));
+        await new Promise(resolve =>
+          navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true }),
+        );
       }
     });
     // Wait until the precache is complete before cutting the network.
-    await expect.poll(() => page.evaluate(async () => {
-      const keys = await caches.keys();
-      const cache = await caches.open(keys.find(k => k.startsWith('powerhouse-')));
-      return (await cache.keys()).length;
-    })).toBeGreaterThan(15);
+    await expect
+      .poll(() =>
+        page.evaluate(async () => {
+          const keys = await caches.keys();
+          const cache = await caches.open(keys.find(k => k.startsWith('powerhouse-')));
+          return (await cache.keys()).length;
+        }),
+      )
+      .toBeGreaterThan(15);
 
     await context.setOffline(true);
     await page.reload();

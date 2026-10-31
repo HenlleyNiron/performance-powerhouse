@@ -1,68 +1,751 @@
 (() => {
-'use strict';
-const STORE='al_performance_powerhouse_study_tracker_v1';
-const RECOVERY='al_performance_powerhouse_study_tracker_v1_recovery';
-const LOCK='al_performance_powerhouse_study_tracker_active_lock_v1';
-const CORE='al_performance_powerhouse_v5';
-const CHANNEL='al-performance-powerhouse-study-tracker-v1';
-const randomTabId=()=>crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`;let tabId;try{tabId=sessionStorage.getItem('pp_tracker_tab')||randomTabId();sessionStorage.setItem('pp_tracker_tab',tabId)}catch(_){tabId=randomTabId()}
-const bc='BroadcastChannel'in window?new BroadcastChannel(CHANNEL):null;
-const $=id=>document.getElementById(id);
-const TYPES={
-'timed-question':['Timed question','evidence'],'mixed-question-set':['Mixed question set','evidence'],'mcq-set':['MCQ set','evidence'],'structured-questions':['Structured questions','evidence'],'essay':['Essay','evidence'],'timed-paper':['Timed paper / paper section','evidence'],'marking-correction':['Marking / correction','evidence'],'closed-book-reattempt':['Closed-book reattempt','evidence'],'repair':['Repair','evidence'],'fresh-transfer':['Fresh transfer','evidence'],'delayed-retest':['Delayed retest','evidence'],'active-recall':['Active recall','supporting'],'targeted-theory':['Targeted theory repair','supporting'],'lecture-segment':['Necessary lecture segment','supporting'],'practical-demo':['Practical demonstration','supporting'],'resource-admin':['Resource / admin','passive'],'planning':['Planning / system work','passive']};
-const OUTPUT_CLASS={'marked-attempt':'evidence','repair-completed':'evidence','closed-book-reattempt':'evidence','fresh-transfer':'evidence','delayed-retest':'evidence','closed-book-recall':'supporting','targeted-theory':'supporting','lecture-segment':'supporting','practical-demo':'supporting','resource-admin':'passive','planning':'passive','none':'passive'};
-let state=load();let displayTick=null;let heartbeat=null;let pendingFinish=null;let shareSafe=false;
-function uid(){return crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`}
-function colomboDate(d=new Date()){try{const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Colombo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));return`${p.year}-${p.month}-${p.day}`}catch(_){return d.toISOString().slice(0,10)}}
-function addDays(date,n){const d=new Date(`${date}T12:00:00Z`);d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
-function blank(){return{version:1,schemaVersion:1,product:'Performance Powerhouse Study Tracker',timezone:'Asia/Colombo',sessions:[],activeSession:null,settings:{shareSafe:false},updatedAt:null}}
-function load(){try{const s=JSON.parse(localStorage.getItem(STORE)||'null');if(!s||typeof s!=='object')return blank();return{...blank(),...s,sessions:Array.isArray(s.sessions)?s.sessions:[],settings:{...blank().settings,...(s.settings||{})}}}catch(_){return blank()}}
-function save(){state.updatedAt=new Date().toISOString();localStorage.setItem(STORE,JSON.stringify(state));bc?.postMessage({type:'state',tabId,activeSession:state.activeSession});}
-function snapshot(label){try{const r=JSON.parse(localStorage.getItem(RECOVERY)||'[]');r.unshift({id:uid(),at:new Date().toISOString(),label,state:JSON.parse(JSON.stringify(state))});localStorage.setItem(RECOVERY,JSON.stringify(r.slice(0,10)))}catch(_){}}
-function toast(m){const e=$('toast');e.textContent=m;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2200)}
-function typeOptions(){return Object.entries(TYPES).map(([v,[l]])=>`<option value="${v}">${l}</option>`).join('')}
-function outputOptions(){return [...$('output').options].map(o=>`<option value="${o.value}">${o.textContent}</option>`).join('')}
-function elapsed(a=state.activeSession){if(!a)return 0;const base=Number(a.accumulatedMs||0);return a.status==='running'&&a.startedAt?base+Math.max(0,Date.now()-Number(a.startedAt)):base}
-function fmt(ms){let s=Math.floor(Math.max(0,ms)/1000),h=Math.floor(s/3600);s%=3600;const m=Math.floor(s/60);s%=60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
-function fmtMin(ms){const m=Math.round(Number(ms||0)/60000);return m<60?`${m}m`:`${Math.floor(m/60)}h ${m%60}m`}
-function lock(){try{return JSON.parse(localStorage.getItem(LOCK)||'null')}catch(_){return null}}
-function lockFresh(l=lock()){return l&&Date.now()-Number(l.heartbeat||0)<12000}
-function writeLock(){const a=state.activeSession;if(!a||a.ownerTab!==tabId)return;localStorage.setItem(LOCK,JSON.stringify({sessionId:a.id,tabId,heartbeat:Date.now()}));bc?.postMessage({type:'heartbeat',sessionId:a.id,tabId});}
-function clearLock(){const l=lock();if(l?.tabId===tabId)localStorage.removeItem(LOCK)}
-function isOtherTabOwner(){const a=state.activeSession,l=lock();return !!(a&&l&&l.sessionId===a.id&&l.tabId!==tabId&&lockFresh(l))}
-function startHeartbeat(){clearInterval(heartbeat);if(state.activeSession?.ownerTab===tabId){writeLock();heartbeat=setInterval(writeLock,4000)}}
-function stopHeartbeat(){clearInterval(heartbeat);heartbeat=null}
-function takeOwnership(){if(!state.activeSession)return;state.activeSession.ownerTab=tabId;save();writeLock();startHeartbeat();render();toast('Recovered active session in this tab.')}
-function prefill(){const p=new URLSearchParams(location.search);if(p.get('subject'))$('subject').value=p.get('subject');if(p.get('type')&&TYPES[p.get('type')])$('type').value=p.get('type');if(p.get('task'))$('task').value=p.get('task');if(p.get('minutes'))$('planned').value=Math.max(5,Number(p.get('minutes'))||30);if(p.get('topicKey'))$('topic-key').value=p.get('topicKey');if(p.get('share')==='1')setShare(true);if(p.get('start')==='1'&&!state.activeSession)setTimeout(()=>startSession(),80)}
-function startSession(){if(state.activeSession){toast('A session is already active.');return}const task=$('task').value.trim();if(!task){toast('Enter the exact task first.');$('task').focus();return}const now=Date.now();state.activeSession={id:uid(),subject:$('subject').value,type:$('type').value,task,topicKey:$('topic-key').value||'',plannedMinutes:Math.max(5,Number($('planned').value)||30),status:'running',startedAt:now,accumulatedMs:0,createdAt:new Date().toISOString(),date:colomboDate(),ownerTab:tabId};save();writeLock();startHeartbeat();render();toast('Block started. Timer uses timestamps, not tick counting.')}
-function pauseResume(){const a=state.activeSession;if(!a)return;if(isOtherTabOwner()){toast('This active session is owned by another live tab.');return}if(a.ownerTab!==tabId)takeOwnership();if(a.status==='running'){a.accumulatedMs=elapsed(a);a.startedAt=null;a.status='paused'}else{a.startedAt=Date.now();a.status='running'}save();render()}
-function askFinish(){const a=state.activeSession;if(!a)return;if(isOtherTabOwner()){toast('Finish the session in its active tab or recover it after the lock becomes stale.');return}if(a.ownerTab!==tabId)takeOwnership();pendingFinish={...a,durationMs:elapsed(a),endedAt:new Date().toISOString()};$('output').value=defaultOutput(a.type);$('finish-note').value='';$('open-evidence').checked=['evidence'].includes(TYPES[a.type]?.[1]);$('finish-dialog').showModal()}
-function defaultOutput(type){const m={'timed-question':'marked-attempt','mixed-question-set':'marked-attempt','mcq-set':'marked-attempt','structured-questions':'marked-attempt','essay':'marked-attempt','timed-paper':'marked-attempt','marking-correction':'repair-completed','closed-book-reattempt':'closed-book-reattempt','repair':'repair-completed','fresh-transfer':'fresh-transfer','delayed-retest':'delayed-retest','active-recall':'closed-book-recall','targeted-theory':'targeted-theory','lecture-segment':'lecture-segment','practical-demo':'practical-demo','resource-admin':'resource-admin','planning':'planning'};return m[type]||'none'}
-function saveFinished(){if(!pendingFinish)return;const output=$('output').value,note=$('finish-note').value.trim();const s={...pendingFinish,status:'complete',output,note,evidenceClass:OUTPUT_CLASS[output]||TYPES[pendingFinish.type]?.[1]||'uncertain',ownerTab:null};state.sessions.push(s);state.activeSession=null;snapshot('session-completed');save();clearLock();stopHeartbeat();$('finish-dialog').close();render();const shouldOpen=$('open-evidence').checked&&s.evidenceClass==='evidence'&&['marked-attempt','closed-book-reattempt','fresh-transfer','delayed-retest'].includes(output);pendingFinish=null;if(shouldOpen){const map={'marked-attempt':attemptTypeForSession(s.type),'closed-book-reattempt':'reattempt','fresh-transfer':'fresh-transfer','delayed-retest':'delayed-retest'};const params=new URLSearchParams({logEvidence:'1',subject:s.subject,type:map[output]||'topic-question'});if(s.topicKey)params.set('topicKey',s.topicKey);params.set('sessionId',s.id);params.set('minutes',String(Math.max(1,Math.round(s.durationMs/60000))));params.set('question',s.task);location.href=`../?${params}`;return}toast('Session saved. Its output classification now feeds V5 analytics.')}
-function attemptTypeForSession(t){return{'timed-paper':'paper-section','mcq-set':'mcq-set','structured-questions':'structured-section','essay':'essay','mixed-question-set':'mixed-set','timed-question':'topic-question'}[t]||'topic-question'}
-function discard(){if(!state.activeSession)return;if(!confirm('Discard this active session? It will not count as completed study evidence.'))return;snapshot('pre-discard');state.activeSession=null;save();clearLock();stopHeartbeat();render();toast('Active session discarded.')}
-function quickLog(){ $('quick-form').dataset.editId='';$('q-date').value=colomboDate();$('q-subject').value='physics';$('q-type').value='timed-question';$('q-minutes').value=30;$('q-task').value='';$('q-output').value='marked-attempt';$('quick-dialog').showModal() }
-function editQuick(id){const s=state.sessions.find(x=>x.id===id);if(!s)return;$('quick-form').dataset.editId=id;$('q-date').value=s.date;$('q-subject').value=s.subject;$('q-type').value=s.type;$('q-minutes').value=Math.max(1,Math.round(Number(s.durationMs||0)/60000));$('q-task').value=s.task||'';$('q-output').value=s.output||defaultOutput(s.type);$('quick-dialog').showModal()}
-function saveQuick(){const task=$('q-task').value.trim();if(!task){toast('Enter the completed task.');return}const mins=Math.max(1,Number($('q-minutes').value)||1),out=$('q-output').value,editId=$('quick-form').dataset.editId||'',old=editId?state.sessions.find(x=>x.id===editId):null;const end=new Date(),start=new Date(end.getTime()-mins*60000);const row={...(old||{}),id:editId||uid(),date:$('q-date').value,subject:$('q-subject').value,type:$('q-type').value,task,plannedMinutes:mins,status:'complete',startedAt:start.getTime(),endedAt:old?.endedAt||end.toISOString(),durationMs:mins*60000,output:out,note:old?.note||'Manual completed-block entry',evidenceClass:OUTPUT_CLASS[out]||TYPES[$('q-type').value]?.[1]||'uncertain',createdAt:old?.createdAt||new Date().toISOString(),updatedAt:editId?new Date().toISOString():null,ownerTab:null};if(editId){const i=state.sessions.findIndex(x=>x.id===editId);if(i>=0)state.sessions[i]=row}else state.sessions.push(row);snapshot(editId?'session-edited':'manual-session');save();$('quick-form').dataset.editId='';$('quick-dialog').close();render();toast(editId?'Session corrected; ID preserved.':'Completed block logged.')}
-function setShare(on){shareSafe=!!on;document.body.classList.toggle('share-safe',shareSafe);$('share-btn').setAttribute('aria-pressed',String(shareSafe));state.settings.shareSafe=shareSafe;save()}
-function classification(s){return s.evidenceClass||TYPES[s.type]?.[1]||'uncertain'}
-function windowSessions(days){const floor=addDays(colomboDate(),-(days-1));return state.sessions.filter(s=>s.status==='complete'&&s.date>=floor&&s.date<=colomboDate())}
-function metrics(days=7){const rows=windowSessions(days),m={total:0,evidence:0,supporting:0,passive:0,uncertain:0,count:rows.length};rows.forEach(s=>{const min=Number(s.durationMs||0)/60000;m.total+=min;m[classification(s)]+=min});return m}
-function render(){renderTimer();renderAnalytics();renderHistory();$('sync-state').textContent=state.activeSession?'LOCAL · ACTIVE':'LOCAL · READY'}
-function renderTimer(){const a=state.activeSession,other=isOtherTabOwner();$('setup-panel').classList.toggle('hidden',!!a);$('active-panel').classList.toggle('hidden',!a);$('other-tab-warning').classList.toggle('hidden',!other);if(other){const l=lock();$('other-tab-warning').innerHTML=`This session is active in another tab. V5 will not double-count it. ${lockFresh(l)?'The live lock is healthy.':'The lock looks stale.'} <button class="secondary" id="takeover-btn" type="button">Recover here</button>`;setTimeout(()=>$('takeover-btn')?.addEventListener('click',takeOwnership),0)}if(!a){clearInterval(displayTick);displayTick=null;return}$('active-subject').textContent=a.subject[0].toUpperCase()+a.subject.slice(1);$('active-type').textContent=TYPES[a.type]?.[0]||a.type;$('active-task').textContent=a.task;$('planned-line').textContent=`Plan ${a.plannedMinutes}m · actual ${fmtMin(elapsed(a))}`;$('state-line').textContent=other?'LOCKED IN OTHER TAB':a.status.toUpperCase();$('pause-btn').textContent=a.status==='running'?'Pause':'Resume';$('pause-btn').disabled=other;$('finish-btn').disabled=other;$('discard-btn').disabled=other;const tick=()=>{$('clock').textContent=fmt(elapsed(a));$('planned-line').textContent=`Plan ${a.plannedMinutes}m · actual ${fmtMin(elapsed(a))}`};tick();if(!displayTick)displayTick=setInterval(tick,1000)}
-function renderAnalytics(){const days=Number($('analytics-window')?.value||7),m=metrics(days),today=metrics(1);$('kpis').innerHTML=`<article class="kpi"><span>Tracked today</span><strong>${fmtMin(today.total*60000)}</strong><small>behavioural context only</small></article><article class="kpi"><span>Evidence-producing today</span><strong>${fmtMin(today.evidence*60000)}</strong><small>attempt / mark / repair / transfer / retest</small></article><article class="kpi"><span>Evidence conversion · ${days}d</span><strong>${m.total?Math.round(m.evidence/m.total*100)+'%':'—'}</strong><small>not a mastery score</small></article><article class="kpi"><span>Passive/admin · ${days}d</span><strong>${fmtMin(m.passive*60000)}</strong><small>visible so productive procrastination cannot hide</small></article>`;const cats=[['Evidence-producing','evidence'],['Supporting','supporting'],['Passive / admin','passive'],['Uncertain','uncertain']];$('conversion').innerHTML=`<div class="conversion-bars">${cats.map(([l,k])=>`<div class="bar-row"><label>${l}</label><div class="bar"><i style="width:${m.total?Math.round(m[k]/m.total*100):0}%"></i></div><b>${Math.round(m[k])}m</b></div>`).join('')}</div>`;const subs=['physics','chemistry','biology'];const all=windowSessions(days);$('subjects').innerHTML=subs.map(s=>{const rows=all.filter(x=>x.subject===s),min=rows.reduce((n,x)=>n+Number(x.durationMs||0)/60000,0),ev=rows.filter(x=>classification(x)==='evidence').length,total=all.reduce((n,x)=>n+Number(x.durationMs||0)/60000,0);return`<div class="subject-row"><span style="color:var(--${s==='physics'?'phy':s==='chemistry'?'chem':'bio'})">${s[0].toUpperCase()+s.slice(1)}</span><div class="bar"><i style="width:${total?Math.round(min/total*100):0}%;background:var(--${s==='physics'?'phy':s==='chemistry'?'chem':'bio'})"></i></div><b>${ev} ev · ${Math.round(min)}m</b></div>`}).join('');renderHeatmap()}
-function renderHeatmap(){const mode=$('heat-mode')?.value||'evidence',dates=Array.from({length:35},(_,i)=>addDays(colomboDate(),-(34-i))),map={};dates.forEach(d=>map[d]=0);state.sessions.filter(s=>s.status==='complete'&&s.date in map).forEach(s=>{if(mode==='time')map[s.date]+=Number(s.durationMs||0)/60000;else if(mode==='evidence'&&classification(s)==='evidence')map[s.date]++;else if(mode==='repair'&&['repair','marking-correction'].includes(s.type))map[s.date]++;else if(mode==='retest'&&['fresh-transfer','delayed-retest','closed-book-reattempt'].includes(s.type))map[s.date]++});const vals=Object.values(map),max=Math.max(1,...vals);$('heatmap').innerHTML=dates.map(d=>{const v=map[d],level=v?Math.min(4,Math.ceil(v/max*4)):0;return`<div class="heat" data-level="${level}" title="${d} · ${mode}: ${Math.round(v*10)/10}"><b>${d.slice(5)}</b><span>${mode==='time'?Math.round(v)+'m':v}</span></div>`}).join('')}
-function renderHistory(){const term=$('search')?.value.trim().toLowerCase()||'',sub=$('filter-subject')?.value||'all',cls=$('filter-class')?.value||'all';let rows=[...state.sessions].filter(s=>s.status==='complete'&&(sub==='all'||s.subject===sub)&&(cls==='all'||classification(s)===cls)&&(!term||`${s.task} ${s.note} ${s.output} ${TYPES[s.type]?.[0]}`.toLowerCase().includes(term))).sort((a,b)=>String(b.endedAt||b.createdAt).localeCompare(String(a.endedAt||a.createdAt)));$('history').innerHTML=rows.length?rows.map(s=>`<tr><td>${s.date}</td><td>${s.subject[0].toUpperCase()+s.subject.slice(1)}</td><td><div class="task-title">${esc(TYPES[s.type]?.[0]||s.type)} · ${esc(s.task)}</div><div class="task-note">${esc(s.note||'')}</div></td><td>${fmtMin(s.durationMs)}</td><td>${esc(outputLabel(s.output))}</td><td><span class="class-pill ${classification(s)}">${classification(s)}</span></td><td><button class="secondary" data-edit="${s.id}" type="button">Edit</button> <button class="danger-lite" data-delete="${s.id}" type="button">Delete</button></td></tr>`).join(''):'<tr><td colspan="7">No completed sessions match these filters.</td></tr>'}
-function outputLabel(v){return [...$('output').options].find(o=>o.value===v)?.textContent||v||'—'}
-function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function deleteSession(id){const s=state.sessions.find(x=>x.id===id);if(!s||!confirm(`Delete this ${s.date} session?`))return;snapshot('pre-session-delete');state.sessions=state.sessions.filter(x=>x.id!==id);save();render();toast('Session deleted. Recovery snapshot retained.')}
-function exportJSON(){dl(`powerhouse-study-tracker-${colomboDate()}.json`,JSON.stringify(state,null,2),'application/json')}
-function exportCSV(){const head=['id','date','subject','type','task','planned_minutes','duration_minutes','output','evidence_class','note','started_at','ended_at'];const rows=[head,...state.sessions.map(s=>[s.id,s.date,s.subject,s.type,s.task,s.plannedMinutes,Math.round(Number(s.durationMs||0)/60000),s.output,classification(s),s.note||'',s.createdAt||s.startedAt,s.endedAt])];dl(`powerhouse-study-tracker-${colomboDate()}.csv`,rows.map(r=>r.map(csv).join(',')).join('\n'),'text/csv')}
-function csv(v){return`"${String(v??'').replaceAll('"','""')}"`}
-function dl(name,text,type){const b=new Blob([text],{type}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),500)}
-function importFile(file){const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x||typeof x!=='object'||!Array.isArray(x.sessions))throw 0;snapshot('pre-import');state={...blank(),...x,sessions:x.sessions.filter(s=>s&&typeof s==='object'),settings:{...blank().settings,...(x.settings||{})}};save();render();$('data-dialog').close();toast(`Imported ${state.sessions.length} tracker session(s).`)}catch(_){toast('Tracker JSON rejected: invalid or unsupported shape.')}};r.readAsText(file)}
-function bind(){
-$('start-btn').addEventListener('click',startSession);$('pause-btn').addEventListener('click',pauseResume);$('finish-btn').addEventListener('click',askFinish);$('discard-btn').addEventListener('click',discard);$('save-finish').addEventListener('click',e=>{e.preventDefault();saveFinished()});$('clear-prefill').addEventListener('click',()=>{$('task').value='';$('topic-key').value='';history.replaceState({},'',location.pathname)});$('analytics-window').addEventListener('change',renderAnalytics);$('heat-mode').addEventListener('change',renderHeatmap);['search','filter-subject','filter-class'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',renderHistory));$('quick-log-btn').addEventListener('click',quickLog);$('save-quick').addEventListener('click',e=>{e.preventDefault();saveQuick()});$('history').addEventListener('click',e=>{const edit=e.target.closest('[data-edit]');if(edit){editQuick(edit.dataset.edit);return}const b=e.target.closest('[data-delete]');if(b)deleteSession(b.dataset.delete)});$('share-btn').addEventListener('click',()=>setShare(!shareSafe));$('data-btn').addEventListener('click',()=>$('data-dialog').showModal());document.querySelector('[data-close-data]').addEventListener('click',()=>$('data-dialog').close());$('export-json').addEventListener('click',exportJSON);$('export-csv').addEventListener('click',exportCSV);$('import-json').addEventListener('click',()=>$('import-file').click());$('import-file').addEventListener('change',e=>{if(e.target.files[0])importFile(e.target.files[0]);e.target.value=''});window.addEventListener('storage',e=>{if([STORE,LOCK].includes(e.key)){state=load();render()}});bc?.addEventListener('message',()=>{state=load();render()});window.addEventListener('beforeunload',()=>{if(state.activeSession?.ownerTab===tabId)writeLock()})}
-function init(){ $('type').innerHTML=typeOptions();$('q-type').innerHTML=typeOptions();$('q-output').innerHTML=outputOptions();shareSafe=!!state.settings.shareSafe;document.body.classList.toggle('share-safe',shareSafe);$('share-btn').setAttribute('aria-pressed',String(shareSafe));bind();prefill();if(state.activeSession){const l=lock();if(!lockFresh(l)){takeOwnership()}else if(l.tabId===tabId){startHeartbeat()}}render();if('serviceWorker'in navigator)navigator.serviceWorker.register('../sw.js').catch(()=>{});const core=(()=>{try{return JSON.parse(localStorage.getItem(CORE)||'null')}catch(_){return null}})();if(core?.v5Settings?.shareSafe&&!shareSafe)setShare(true)}
-init();
+  'use strict';
+  const STORE = 'al_performance_powerhouse_study_tracker_v1';
+  const RECOVERY = 'al_performance_powerhouse_study_tracker_v1_recovery';
+  const LOCK = 'al_performance_powerhouse_study_tracker_active_lock_v1';
+  const CORE = 'al_performance_powerhouse_v5';
+  const CHANNEL = 'al-performance-powerhouse-study-tracker-v1';
+  const randomTabId = () =>
+    crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  let tabId;
+  try {
+    tabId = sessionStorage.getItem('pp_tracker_tab') || randomTabId();
+    sessionStorage.setItem('pp_tracker_tab', tabId);
+  } catch (_) {
+    tabId = randomTabId();
+  }
+  const bc = 'BroadcastChannel' in window ? new BroadcastChannel(CHANNEL) : null;
+  const $ = id => document.getElementById(id);
+  const TYPES = {
+    'timed-question': ['Timed question', 'evidence'],
+    'mixed-question-set': ['Mixed question set', 'evidence'],
+    'mcq-set': ['MCQ set', 'evidence'],
+    'structured-questions': ['Structured questions', 'evidence'],
+    essay: ['Essay', 'evidence'],
+    'timed-paper': ['Timed paper / paper section', 'evidence'],
+    'marking-correction': ['Marking / correction', 'evidence'],
+    'closed-book-reattempt': ['Closed-book reattempt', 'evidence'],
+    repair: ['Repair', 'evidence'],
+    'fresh-transfer': ['Fresh transfer', 'evidence'],
+    'delayed-retest': ['Delayed retest', 'evidence'],
+    'active-recall': ['Active recall', 'supporting'],
+    'targeted-theory': ['Targeted theory repair', 'supporting'],
+    'lecture-segment': ['Necessary lecture segment', 'supporting'],
+    'practical-demo': ['Practical demonstration', 'supporting'],
+    'resource-admin': ['Resource / admin', 'passive'],
+    planning: ['Planning / system work', 'passive'],
+  };
+  const OUTPUT_CLASS = {
+    'marked-attempt': 'evidence',
+    'repair-completed': 'evidence',
+    'closed-book-reattempt': 'evidence',
+    'fresh-transfer': 'evidence',
+    'delayed-retest': 'evidence',
+    'closed-book-recall': 'supporting',
+    'targeted-theory': 'supporting',
+    'lecture-segment': 'supporting',
+    'practical-demo': 'supporting',
+    'resource-admin': 'passive',
+    planning: 'passive',
+    none: 'passive',
+  };
+  let state = load();
+  let displayTick = null;
+  let heartbeat = null;
+  let pendingFinish = null;
+  let shareSafe = false;
+  function uid() {
+    return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+  function colomboDate(d = new Date()) {
+    try {
+      const p = Object.fromEntries(
+        new Intl.DateTimeFormat('en-CA', {
+          timeZone: 'Asia/Colombo',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        })
+          .formatToParts(d)
+          .filter(x => x.type !== 'literal')
+          .map(x => [x.type, x.value]),
+      );
+      return `${p.year}-${p.month}-${p.day}`;
+    } catch (_) {
+      return d.toISOString().slice(0, 10);
+    }
+  }
+  function addDays(date, n) {
+    const d = new Date(`${date}T12:00:00Z`);
+    d.setUTCDate(d.getUTCDate() + n);
+    return d.toISOString().slice(0, 10);
+  }
+  function blank() {
+    return {
+      version: 1,
+      schemaVersion: 1,
+      product: 'Performance Powerhouse Study Tracker',
+      timezone: 'Asia/Colombo',
+      sessions: [],
+      activeSession: null,
+      settings: { shareSafe: false },
+      updatedAt: null,
+    };
+  }
+  function load() {
+    try {
+      const s = JSON.parse(localStorage.getItem(STORE) || 'null');
+      if (!s || typeof s !== 'object') return blank();
+      return {
+        ...blank(),
+        ...s,
+        sessions: Array.isArray(s.sessions) ? s.sessions : [],
+        settings: { ...blank().settings, ...(s.settings || {}) },
+      };
+    } catch (_) {
+      return blank();
+    }
+  }
+  function save() {
+    state.updatedAt = new Date().toISOString();
+    localStorage.setItem(STORE, JSON.stringify(state));
+    bc?.postMessage({ type: 'state', tabId, activeSession: state.activeSession });
+  }
+  function snapshot(label) {
+    try {
+      const r = JSON.parse(localStorage.getItem(RECOVERY) || '[]');
+      r.unshift({ id: uid(), at: new Date().toISOString(), label, state: JSON.parse(JSON.stringify(state)) });
+      localStorage.setItem(RECOVERY, JSON.stringify(r.slice(0, 10)));
+    } catch (_) {}
+  }
+  function toast(m) {
+    const e = $('toast');
+    e.textContent = m;
+    e.classList.add('show');
+    clearTimeout(toast.t);
+    toast.t = setTimeout(() => e.classList.remove('show'), 2200);
+  }
+  function typeOptions() {
+    return Object.entries(TYPES)
+      .map(([v, [l]]) => `<option value="${v}">${l}</option>`)
+      .join('');
+  }
+  function outputOptions() {
+    return [...$('output').options].map(o => `<option value="${o.value}">${o.textContent}</option>`).join('');
+  }
+  function elapsed(a = state.activeSession) {
+    if (!a) return 0;
+    const base = Number(a.accumulatedMs || 0);
+    return a.status === 'running' && a.startedAt
+      ? base + Math.max(0, Date.now() - Number(a.startedAt))
+      : base;
+  }
+  function fmt(ms) {
+    let s = Math.floor(Math.max(0, ms) / 1000),
+      h = Math.floor(s / 3600);
+    s %= 3600;
+    const m = Math.floor(s / 60);
+    s %= 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+  function fmtMin(ms) {
+    const m = Math.round(Number(ms || 0) / 60000);
+    return m < 60 ? `${m}m` : `${Math.floor(m / 60)}h ${m % 60}m`;
+  }
+  function lock() {
+    try {
+      return JSON.parse(localStorage.getItem(LOCK) || 'null');
+    } catch (_) {
+      return null;
+    }
+  }
+  function lockFresh(l = lock()) {
+    return l && Date.now() - Number(l.heartbeat || 0) < 12000;
+  }
+  function writeLock() {
+    const a = state.activeSession;
+    if (!a || a.ownerTab !== tabId) return;
+    localStorage.setItem(LOCK, JSON.stringify({ sessionId: a.id, tabId, heartbeat: Date.now() }));
+    bc?.postMessage({ type: 'heartbeat', sessionId: a.id, tabId });
+  }
+  function clearLock() {
+    const l = lock();
+    if (l?.tabId === tabId) localStorage.removeItem(LOCK);
+  }
+  function isOtherTabOwner() {
+    const a = state.activeSession,
+      l = lock();
+    return !!(a && l && l.sessionId === a.id && l.tabId !== tabId && lockFresh(l));
+  }
+  function startHeartbeat() {
+    clearInterval(heartbeat);
+    if (state.activeSession?.ownerTab === tabId) {
+      writeLock();
+      heartbeat = setInterval(writeLock, 4000);
+    }
+  }
+  function stopHeartbeat() {
+    clearInterval(heartbeat);
+    heartbeat = null;
+  }
+  function takeOwnership() {
+    if (!state.activeSession) return;
+    state.activeSession.ownerTab = tabId;
+    save();
+    writeLock();
+    startHeartbeat();
+    render();
+    toast('Recovered active session in this tab.');
+  }
+  function prefill() {
+    const p = new URLSearchParams(location.search);
+    if (p.get('subject')) $('subject').value = p.get('subject');
+    if (p.get('type') && TYPES[p.get('type')]) $('type').value = p.get('type');
+    if (p.get('task')) $('task').value = p.get('task');
+    if (p.get('minutes')) $('planned').value = Math.max(5, Number(p.get('minutes')) || 30);
+    if (p.get('topicKey')) $('topic-key').value = p.get('topicKey');
+    if (p.get('share') === '1') setShare(true);
+    if (p.get('start') === '1' && !state.activeSession) setTimeout(() => startSession(), 80);
+  }
+  function startSession() {
+    if (state.activeSession) {
+      toast('A session is already active.');
+      return;
+    }
+    const task = $('task').value.trim();
+    if (!task) {
+      toast('Enter the exact task first.');
+      $('task').focus();
+      return;
+    }
+    const now = Date.now();
+    state.activeSession = {
+      id: uid(),
+      subject: $('subject').value,
+      type: $('type').value,
+      task,
+      topicKey: $('topic-key').value || '',
+      plannedMinutes: Math.max(5, Number($('planned').value) || 30),
+      status: 'running',
+      startedAt: now,
+      accumulatedMs: 0,
+      createdAt: new Date().toISOString(),
+      date: colomboDate(),
+      ownerTab: tabId,
+    };
+    save();
+    writeLock();
+    startHeartbeat();
+    render();
+    toast('Block started. Timer uses timestamps, not tick counting.');
+  }
+  function pauseResume() {
+    const a = state.activeSession;
+    if (!a) return;
+    if (isOtherTabOwner()) {
+      toast('This active session is owned by another live tab.');
+      return;
+    }
+    if (a.ownerTab !== tabId) takeOwnership();
+    if (a.status === 'running') {
+      a.accumulatedMs = elapsed(a);
+      a.startedAt = null;
+      a.status = 'paused';
+    } else {
+      a.startedAt = Date.now();
+      a.status = 'running';
+    }
+    save();
+    render();
+  }
+  function askFinish() {
+    const a = state.activeSession;
+    if (!a) return;
+    if (isOtherTabOwner()) {
+      toast('Finish the session in its active tab or recover it after the lock becomes stale.');
+      return;
+    }
+    if (a.ownerTab !== tabId) takeOwnership();
+    pendingFinish = { ...a, durationMs: elapsed(a), endedAt: new Date().toISOString() };
+    $('output').value = defaultOutput(a.type);
+    $('finish-note').value = '';
+    $('open-evidence').checked = ['evidence'].includes(TYPES[a.type]?.[1]);
+    $('finish-dialog').showModal();
+  }
+  function defaultOutput(type) {
+    const m = {
+      'timed-question': 'marked-attempt',
+      'mixed-question-set': 'marked-attempt',
+      'mcq-set': 'marked-attempt',
+      'structured-questions': 'marked-attempt',
+      essay: 'marked-attempt',
+      'timed-paper': 'marked-attempt',
+      'marking-correction': 'repair-completed',
+      'closed-book-reattempt': 'closed-book-reattempt',
+      repair: 'repair-completed',
+      'fresh-transfer': 'fresh-transfer',
+      'delayed-retest': 'delayed-retest',
+      'active-recall': 'closed-book-recall',
+      'targeted-theory': 'targeted-theory',
+      'lecture-segment': 'lecture-segment',
+      'practical-demo': 'practical-demo',
+      'resource-admin': 'resource-admin',
+      planning: 'planning',
+    };
+    return m[type] || 'none';
+  }
+  function saveFinished() {
+    if (!pendingFinish) return;
+    const output = $('output').value,
+      note = $('finish-note').value.trim();
+    const s = {
+      ...pendingFinish,
+      status: 'complete',
+      output,
+      note,
+      evidenceClass: OUTPUT_CLASS[output] || TYPES[pendingFinish.type]?.[1] || 'uncertain',
+      ownerTab: null,
+    };
+    state.sessions.push(s);
+    state.activeSession = null;
+    snapshot('session-completed');
+    save();
+    clearLock();
+    stopHeartbeat();
+    $('finish-dialog').close();
+    render();
+    const shouldOpen =
+      $('open-evidence').checked &&
+      s.evidenceClass === 'evidence' &&
+      ['marked-attempt', 'closed-book-reattempt', 'fresh-transfer', 'delayed-retest'].includes(output);
+    pendingFinish = null;
+    if (shouldOpen) {
+      const map = {
+        'marked-attempt': attemptTypeForSession(s.type),
+        'closed-book-reattempt': 'reattempt',
+        'fresh-transfer': 'fresh-transfer',
+        'delayed-retest': 'delayed-retest',
+      };
+      const params = new URLSearchParams({
+        logEvidence: '1',
+        subject: s.subject,
+        type: map[output] || 'topic-question',
+      });
+      if (s.topicKey) params.set('topicKey', s.topicKey);
+      params.set('sessionId', s.id);
+      params.set('minutes', String(Math.max(1, Math.round(s.durationMs / 60000))));
+      params.set('question', s.task);
+      location.href = `../?${params}`;
+      return;
+    }
+    toast('Session saved. Its output classification now feeds V5 analytics.');
+  }
+  function attemptTypeForSession(t) {
+    return (
+      {
+        'timed-paper': 'paper-section',
+        'mcq-set': 'mcq-set',
+        'structured-questions': 'structured-section',
+        essay: 'essay',
+        'mixed-question-set': 'mixed-set',
+        'timed-question': 'topic-question',
+      }[t] || 'topic-question'
+    );
+  }
+  function discard() {
+    if (!state.activeSession) return;
+    if (!confirm('Discard this active session? It will not count as completed study evidence.')) return;
+    snapshot('pre-discard');
+    state.activeSession = null;
+    save();
+    clearLock();
+    stopHeartbeat();
+    render();
+    toast('Active session discarded.');
+  }
+  function quickLog() {
+    $('quick-form').dataset.editId = '';
+    $('q-date').value = colomboDate();
+    $('q-subject').value = 'physics';
+    $('q-type').value = 'timed-question';
+    $('q-minutes').value = 30;
+    $('q-task').value = '';
+    $('q-output').value = 'marked-attempt';
+    $('quick-dialog').showModal();
+  }
+  function editQuick(id) {
+    const s = state.sessions.find(x => x.id === id);
+    if (!s) return;
+    $('quick-form').dataset.editId = id;
+    $('q-date').value = s.date;
+    $('q-subject').value = s.subject;
+    $('q-type').value = s.type;
+    $('q-minutes').value = Math.max(1, Math.round(Number(s.durationMs || 0) / 60000));
+    $('q-task').value = s.task || '';
+    $('q-output').value = s.output || defaultOutput(s.type);
+    $('quick-dialog').showModal();
+  }
+  function saveQuick() {
+    const task = $('q-task').value.trim();
+    if (!task) {
+      toast('Enter the completed task.');
+      return;
+    }
+    const mins = Math.max(1, Number($('q-minutes').value) || 1),
+      out = $('q-output').value,
+      editId = $('quick-form').dataset.editId || '',
+      old = editId ? state.sessions.find(x => x.id === editId) : null;
+    const end = new Date(),
+      start = new Date(end.getTime() - mins * 60000);
+    const row = {
+      ...(old || {}),
+      id: editId || uid(),
+      date: $('q-date').value,
+      subject: $('q-subject').value,
+      type: $('q-type').value,
+      task,
+      plannedMinutes: mins,
+      status: 'complete',
+      startedAt: start.getTime(),
+      endedAt: old?.endedAt || end.toISOString(),
+      durationMs: mins * 60000,
+      output: out,
+      note: old?.note || 'Manual completed-block entry',
+      evidenceClass: OUTPUT_CLASS[out] || TYPES[$('q-type').value]?.[1] || 'uncertain',
+      createdAt: old?.createdAt || new Date().toISOString(),
+      updatedAt: editId ? new Date().toISOString() : null,
+      ownerTab: null,
+    };
+    if (editId) {
+      const i = state.sessions.findIndex(x => x.id === editId);
+      if (i >= 0) state.sessions[i] = row;
+    } else state.sessions.push(row);
+    snapshot(editId ? 'session-edited' : 'manual-session');
+    save();
+    $('quick-form').dataset.editId = '';
+    $('quick-dialog').close();
+    render();
+    toast(editId ? 'Session corrected; ID preserved.' : 'Completed block logged.');
+  }
+  function setShare(on) {
+    shareSafe = !!on;
+    document.body.classList.toggle('share-safe', shareSafe);
+    $('share-btn').setAttribute('aria-pressed', String(shareSafe));
+    state.settings.shareSafe = shareSafe;
+    save();
+  }
+  function classification(s) {
+    return s.evidenceClass || TYPES[s.type]?.[1] || 'uncertain';
+  }
+  function windowSessions(days) {
+    const floor = addDays(colomboDate(), -(days - 1));
+    return state.sessions.filter(s => s.status === 'complete' && s.date >= floor && s.date <= colomboDate());
+  }
+  function metrics(days = 7) {
+    const rows = windowSessions(days),
+      m = { total: 0, evidence: 0, supporting: 0, passive: 0, uncertain: 0, count: rows.length };
+    rows.forEach(s => {
+      const min = Number(s.durationMs || 0) / 60000;
+      m.total += min;
+      m[classification(s)] += min;
+    });
+    return m;
+  }
+  function render() {
+    renderTimer();
+    renderAnalytics();
+    renderHistory();
+    $('sync-state').textContent = state.activeSession ? 'LOCAL · ACTIVE' : 'LOCAL · READY';
+  }
+  function renderTimer() {
+    const a = state.activeSession,
+      other = isOtherTabOwner();
+    $('setup-panel').classList.toggle('hidden', !!a);
+    $('active-panel').classList.toggle('hidden', !a);
+    $('other-tab-warning').classList.toggle('hidden', !other);
+    if (other) {
+      const l = lock();
+      $('other-tab-warning').innerHTML =
+        `This session is active in another tab. V5 will not double-count it. ${lockFresh(l) ? 'The live lock is healthy.' : 'The lock looks stale.'} <button class="secondary" id="takeover-btn" type="button">Recover here</button>`;
+      setTimeout(() => $('takeover-btn')?.addEventListener('click', takeOwnership), 0);
+    }
+    if (!a) {
+      clearInterval(displayTick);
+      displayTick = null;
+      return;
+    }
+    $('active-subject').textContent = a.subject[0].toUpperCase() + a.subject.slice(1);
+    $('active-type').textContent = TYPES[a.type]?.[0] || a.type;
+    $('active-task').textContent = a.task;
+    $('planned-line').textContent = `Plan ${a.plannedMinutes}m · actual ${fmtMin(elapsed(a))}`;
+    $('state-line').textContent = other ? 'LOCKED IN OTHER TAB' : a.status.toUpperCase();
+    $('pause-btn').textContent = a.status === 'running' ? 'Pause' : 'Resume';
+    $('pause-btn').disabled = other;
+    $('finish-btn').disabled = other;
+    $('discard-btn').disabled = other;
+    const tick = () => {
+      $('clock').textContent = fmt(elapsed(a));
+      $('planned-line').textContent = `Plan ${a.plannedMinutes}m · actual ${fmtMin(elapsed(a))}`;
+    };
+    tick();
+    if (!displayTick) displayTick = setInterval(tick, 1000);
+  }
+  function renderAnalytics() {
+    const days = Number($('analytics-window')?.value || 7),
+      m = metrics(days),
+      today = metrics(1);
+    $('kpis').innerHTML =
+      `<article class="kpi"><span>Tracked today</span><strong>${fmtMin(today.total * 60000)}</strong><small>behavioural context only</small></article><article class="kpi"><span>Evidence-producing today</span><strong>${fmtMin(today.evidence * 60000)}</strong><small>attempt / mark / repair / transfer / retest</small></article><article class="kpi"><span>Evidence conversion · ${days}d</span><strong>${m.total ? Math.round((m.evidence / m.total) * 100) + '%' : '—'}</strong><small>not a mastery score</small></article><article class="kpi"><span>Passive/admin · ${days}d</span><strong>${fmtMin(m.passive * 60000)}</strong><small>visible so productive procrastination cannot hide</small></article>`;
+    const cats = [
+      ['Evidence-producing', 'evidence'],
+      ['Supporting', 'supporting'],
+      ['Passive / admin', 'passive'],
+      ['Uncertain', 'uncertain'],
+    ];
+    $('conversion').innerHTML =
+      `<div class="conversion-bars">${cats.map(([l, k]) => `<div class="bar-row"><label>${l}</label><div class="bar"><i style="width:${m.total ? Math.round((m[k] / m.total) * 100) : 0}%"></i></div><b>${Math.round(m[k])}m</b></div>`).join('')}</div>`;
+    const subs = ['physics', 'chemistry', 'biology'];
+    const all = windowSessions(days);
+    $('subjects').innerHTML = subs
+      .map(s => {
+        const rows = all.filter(x => x.subject === s),
+          min = rows.reduce((n, x) => n + Number(x.durationMs || 0) / 60000, 0),
+          ev = rows.filter(x => classification(x) === 'evidence').length,
+          total = all.reduce((n, x) => n + Number(x.durationMs || 0) / 60000, 0);
+        return `<div class="subject-row"><span style="color:var(--${s === 'physics' ? 'phy' : s === 'chemistry' ? 'chem' : 'bio'})">${s[0].toUpperCase() + s.slice(1)}</span><div class="bar"><i style="width:${total ? Math.round((min / total) * 100) : 0}%;background:var(--${s === 'physics' ? 'phy' : s === 'chemistry' ? 'chem' : 'bio'})"></i></div><b>${ev} ev · ${Math.round(min)}m</b></div>`;
+      })
+      .join('');
+    renderHeatmap();
+  }
+  function renderHeatmap() {
+    const mode = $('heat-mode')?.value || 'evidence',
+      dates = Array.from({ length: 35 }, (_, i) => addDays(colomboDate(), -(34 - i))),
+      map = {};
+    dates.forEach(d => (map[d] = 0));
+    state.sessions
+      .filter(s => s.status === 'complete' && s.date in map)
+      .forEach(s => {
+        if (mode === 'time') map[s.date] += Number(s.durationMs || 0) / 60000;
+        else if (mode === 'evidence' && classification(s) === 'evidence') map[s.date]++;
+        else if (mode === 'repair' && ['repair', 'marking-correction'].includes(s.type)) map[s.date]++;
+        else if (
+          mode === 'retest' &&
+          ['fresh-transfer', 'delayed-retest', 'closed-book-reattempt'].includes(s.type)
+        )
+          map[s.date]++;
+      });
+    const vals = Object.values(map),
+      max = Math.max(1, ...vals);
+    $('heatmap').innerHTML = dates
+      .map(d => {
+        const v = map[d],
+          level = v ? Math.min(4, Math.ceil((v / max) * 4)) : 0;
+        return `<div class="heat" data-level="${level}" title="${d} · ${mode}: ${Math.round(v * 10) / 10}"><b>${d.slice(5)}</b><span>${mode === 'time' ? Math.round(v) + 'm' : v}</span></div>`;
+      })
+      .join('');
+  }
+  function renderHistory() {
+    const term = $('search')?.value.trim().toLowerCase() || '',
+      sub = $('filter-subject')?.value || 'all',
+      cls = $('filter-class')?.value || 'all';
+    let rows = [...state.sessions]
+      .filter(
+        s =>
+          s.status === 'complete' &&
+          (sub === 'all' || s.subject === sub) &&
+          (cls === 'all' || classification(s) === cls) &&
+          (!term || `${s.task} ${s.note} ${s.output} ${TYPES[s.type]?.[0]}`.toLowerCase().includes(term)),
+      )
+      .sort((a, b) => String(b.endedAt || b.createdAt).localeCompare(String(a.endedAt || a.createdAt)));
+    $('history').innerHTML = rows.length
+      ? rows
+          .map(
+            s =>
+              `<tr><td>${s.date}</td><td>${s.subject[0].toUpperCase() + s.subject.slice(1)}</td><td><div class="task-title">${esc(TYPES[s.type]?.[0] || s.type)} · ${esc(s.task)}</div><div class="task-note">${esc(s.note || '')}</div></td><td>${fmtMin(s.durationMs)}</td><td>${esc(outputLabel(s.output))}</td><td><span class="class-pill ${classification(s)}">${classification(s)}</span></td><td><button class="secondary" data-edit="${s.id}" type="button">Edit</button> <button class="danger-lite" data-delete="${s.id}" type="button">Delete</button></td></tr>`,
+          )
+          .join('')
+      : '<tr><td colspan="7">No completed sessions match these filters.</td></tr>';
+  }
+  function outputLabel(v) {
+    return [...$('output').options].find(o => o.value === v)?.textContent || v || '—';
+  }
+  function esc(s = '') {
+    return String(s).replace(
+      /[&<>"']/g,
+      c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
+    );
+  }
+  function deleteSession(id) {
+    const s = state.sessions.find(x => x.id === id);
+    if (!s || !confirm(`Delete this ${s.date} session?`)) return;
+    snapshot('pre-session-delete');
+    state.sessions = state.sessions.filter(x => x.id !== id);
+    save();
+    render();
+    toast('Session deleted. Recovery snapshot retained.');
+  }
+  function exportJSON() {
+    dl(`powerhouse-study-tracker-${colomboDate()}.json`, JSON.stringify(state, null, 2), 'application/json');
+  }
+  function exportCSV() {
+    const head = [
+      'id',
+      'date',
+      'subject',
+      'type',
+      'task',
+      'planned_minutes',
+      'duration_minutes',
+      'output',
+      'evidence_class',
+      'note',
+      'started_at',
+      'ended_at',
+    ];
+    const rows = [
+      head,
+      ...state.sessions.map(s => [
+        s.id,
+        s.date,
+        s.subject,
+        s.type,
+        s.task,
+        s.plannedMinutes,
+        Math.round(Number(s.durationMs || 0) / 60000),
+        s.output,
+        classification(s),
+        s.note || '',
+        s.createdAt || s.startedAt,
+        s.endedAt,
+      ]),
+    ];
+    dl(
+      `powerhouse-study-tracker-${colomboDate()}.csv`,
+      rows.map(r => r.map(csv).join(',')).join('\n'),
+      'text/csv',
+    );
+  }
+  function csv(v) {
+    return `"${String(v ?? '').replaceAll('"', '""')}"`;
+  }
+  function dl(name, text, type) {
+    const b = new Blob([text], { type }),
+      u = URL.createObjectURL(b),
+      a = document.createElement('a');
+    a.href = u;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(u), 500);
+  }
+  function importFile(file) {
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const x = JSON.parse(r.result);
+        if (!x || typeof x !== 'object' || !Array.isArray(x.sessions)) throw 0;
+        snapshot('pre-import');
+        state = {
+          ...blank(),
+          ...x,
+          sessions: x.sessions.filter(s => s && typeof s === 'object'),
+          settings: { ...blank().settings, ...(x.settings || {}) },
+        };
+        save();
+        render();
+        $('data-dialog').close();
+        toast(`Imported ${state.sessions.length} tracker session(s).`);
+      } catch (_) {
+        toast('Tracker JSON rejected: invalid or unsupported shape.');
+      }
+    };
+    r.readAsText(file);
+  }
+  function bind() {
+    $('start-btn').addEventListener('click', startSession);
+    $('pause-btn').addEventListener('click', pauseResume);
+    $('finish-btn').addEventListener('click', askFinish);
+    $('discard-btn').addEventListener('click', discard);
+    $('save-finish').addEventListener('click', e => {
+      e.preventDefault();
+      saveFinished();
+    });
+    $('clear-prefill').addEventListener('click', () => {
+      $('task').value = '';
+      $('topic-key').value = '';
+      history.replaceState({}, '', location.pathname);
+    });
+    $('analytics-window').addEventListener('change', renderAnalytics);
+    $('heat-mode').addEventListener('change', renderHeatmap);
+    ['search', 'filter-subject', 'filter-class'].forEach(id =>
+      $(id).addEventListener(id === 'search' ? 'input' : 'change', renderHistory),
+    );
+    $('quick-log-btn').addEventListener('click', quickLog);
+    $('save-quick').addEventListener('click', e => {
+      e.preventDefault();
+      saveQuick();
+    });
+    $('history').addEventListener('click', e => {
+      const edit = e.target.closest('[data-edit]');
+      if (edit) {
+        editQuick(edit.dataset.edit);
+        return;
+      }
+      const b = e.target.closest('[data-delete]');
+      if (b) deleteSession(b.dataset.delete);
+    });
+    $('share-btn').addEventListener('click', () => setShare(!shareSafe));
+    $('data-btn').addEventListener('click', () => $('data-dialog').showModal());
+    document.querySelector('[data-close-data]').addEventListener('click', () => $('data-dialog').close());
+    $('export-json').addEventListener('click', exportJSON);
+    $('export-csv').addEventListener('click', exportCSV);
+    $('import-json').addEventListener('click', () => $('import-file').click());
+    $('import-file').addEventListener('change', e => {
+      if (e.target.files[0]) importFile(e.target.files[0]);
+      e.target.value = '';
+    });
+    window.addEventListener('storage', e => {
+      if ([STORE, LOCK].includes(e.key)) {
+        state = load();
+        render();
+      }
+    });
+    bc?.addEventListener('message', () => {
+      state = load();
+      render();
+    });
+    window.addEventListener('beforeunload', () => {
+      if (state.activeSession?.ownerTab === tabId) writeLock();
+    });
+  }
+  function init() {
+    $('type').innerHTML = typeOptions();
+    $('q-type').innerHTML = typeOptions();
+    $('q-output').innerHTML = outputOptions();
+    shareSafe = !!state.settings.shareSafe;
+    document.body.classList.toggle('share-safe', shareSafe);
+    $('share-btn').setAttribute('aria-pressed', String(shareSafe));
+    bind();
+    prefill();
+    if (state.activeSession) {
+      const l = lock();
+      if (!lockFresh(l)) {
+        takeOwnership();
+      } else if (l.tabId === tabId) {
+        startHeartbeat();
+      }
+    }
+    render();
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js').catch(() => {});
+    const core = (() => {
+      try {
+        return JSON.parse(localStorage.getItem(CORE) || 'null');
+      } catch (_) {
+        return null;
+      }
+    })();
+    if (core?.v5Settings?.shareSafe && !shareSafe) setShare(true);
+  }
+  init();
 })();

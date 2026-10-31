@@ -1,0 +1,8 @@
+node_modules/
+package-lock.json
+test-results/
+playwright-report/
+_site/
+docs/archive/
+*.md
+physics-intelligence/assets/

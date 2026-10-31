@@ -8,7 +8,9 @@ test('core panels do not overflow horizontally on a phone', async ({ page }) => 
   await page.goto('/');
   for (const panel of ['command', 'physics', 'repairs', 'daily', 'attempts', 'guide']) {
     await page.evaluate(p => window.navigate(p), panel);
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
     expect(overflow, `panel ${panel} overflows by ${overflow}px`).toBeLessThanOrEqual(1);
   }
   expect(errors).toEqual([]);

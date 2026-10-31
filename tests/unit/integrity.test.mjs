@@ -8,7 +8,12 @@ import { loadCore } from './load-core.mjs';
 
 const ROOT = normalize(join(dirname(fileURLToPath(import.meta.url)), '..', '..'));
 const read = rel => readFileSync(join(ROOT, rel), 'utf8');
-const PAGES = ['index.html', 'community-share.html', 'physics-intelligence/index.html', 'study-tracker/index.html'];
+const PAGES = [
+  'index.html',
+  'community-share.html',
+  'physics-intelligence/index.html',
+  'study-tracker/index.html',
+];
 
 const idsIn = html => [...html.matchAll(/\sid="([^"$]+)"/g)].map(m => m[1]);
 
@@ -23,7 +28,8 @@ describe('HTML pages', () => {
     });
 
     test(`${page}: every local href/src resolves to a file`, () => {
-      const refs = [...html.matchAll(/\s(?:href|src)="([^"]+)"/g)].map(m => m[1])
+      const refs = [...html.matchAll(/\s(?:href|src)="([^"]+)"/g)]
+        .map(m => m[1])
         .filter(r => !/^(https?:|mailto:|#|data:|javascript:)/.test(r));
       const missing = refs.filter(ref => {
         const clean = ref.split(/[?#]/)[0];
@@ -35,9 +41,12 @@ describe('HTML pages', () => {
     });
 
     test(`${page}: ships a Content-Security-Policy without unsafe script sources`, () => {
-      const csp = html.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/);
+      const csp = html.match(/http-equiv="Content-Security-Policy"\s+content="([^"]+)"/);
       assert.ok(csp, 'CSP meta tag missing');
-      const scriptSrc = csp[1].split(';').map(s => s.trim()).find(s => s.startsWith('script-src'));
+      const scriptSrc = csp[1]
+        .split(';')
+        .map(s => s.trim())
+        .find(s => s.startsWith('script-src'));
       assert.equal(scriptSrc, "script-src 'self'");
     });
 
@@ -54,7 +63,11 @@ describe('main application wiring', () => {
   const scripts = ['js/app.js', 'js/v5-additions.js'].map(read).join('\n');
 
   test('every element the scripts look up by id exists in the page or is created by a script', () => {
-    const available = new Set([...idsIn(html), ...[...scripts.matchAll(/id=["'`]([a-z0-9-]+)["'`]/gi)].map(m => m[1]), ...[...scripts.matchAll(/id="([a-z0-9-]+)\$\{/gi)].map(m => m[1])]);
+    const available = new Set([
+      ...idsIn(html),
+      ...[...scripts.matchAll(/id=["'`]([a-z0-9-]+)["'`]/gi)].map(m => m[1]),
+      ...[...scripts.matchAll(/id="([a-z0-9-]+)\$\{/gi)].map(m => m[1]),
+    ]);
     const referenced = new Set([
       ...[...scripts.matchAll(/\$\('([a-z0-9-]+)'\)/gi)].map(m => m[1]),
       ...[...scripts.matchAll(/getElementById\('([a-z0-9-]+)'\)/gi)].map(m => m[1]),

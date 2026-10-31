@@ -6,11 +6,23 @@ const core = loadCore();
 let seq = 0;
 const ids = () => `t-${++seq}`;
 
-const attempt = (overrides = {}) => core.sanitizeAttempt({
-  id: ids(), date: '2026-10-01', subject: 'physics', topicKey: 'physics|1|5', type: 'topic-question',
-  question: 'Q', earned: 4, total: 10, minutes: 20, confidence: 'medium', error: 'C', guesses: 0,
-  createdAt: '2026-10-01T09:00:00.000Z', ...overrides,
-});
+const attempt = (overrides = {}) =>
+  core.sanitizeAttempt({
+    id: ids(),
+    date: '2026-10-01',
+    subject: 'physics',
+    topicKey: 'physics|1|5',
+    type: 'topic-question',
+    question: 'Q',
+    earned: 4,
+    total: 10,
+    minutes: 20,
+    confidence: 'medium',
+    error: 'C',
+    guesses: 0,
+    createdAt: '2026-10-01T09:00:00.000Z',
+    ...overrides,
+  });
 
 describe('dates', () => {
   test('addDays crosses month and year boundaries without drift', () => {
@@ -113,7 +125,11 @@ describe('retest lifecycle', () => {
 
   test('deleting the evidence that closed a check reopens it', () => {
     const source = attempt({ id: 'src' });
-    const state = { attempts: [source], retests: core.createRetests(source, [3, 7], ids), repairEvents: [{ sourceAttemptId: 'src' }] };
+    const state = {
+      attempts: [source],
+      retests: core.createRetests(source, [3, 7], ids),
+      repairEvents: [{ sourceAttemptId: 'src' }],
+    };
     const pass = attempt({ id: 'pass', type: 'fresh-transfer', date: '2026-10-05', earned: 10, error: '' });
     core.applyRetestOutcome(state.retests, pass);
     state.attempts.push(pass);
@@ -126,7 +142,11 @@ describe('retest lifecycle', () => {
 
   test('deleting a source attempt removes its checks and repair events', () => {
     const source = attempt({ id: 'src' });
-    const state = { attempts: [source], retests: core.createRetests(source, [3, 7], ids), repairEvents: [{ sourceAttemptId: 'src' }] };
+    const state = {
+      attempts: [source],
+      retests: core.createRetests(source, [3, 7], ids),
+      repairEvents: [{ sourceAttemptId: 'src' }],
+    };
     const result = core.deleteAttempt(state, 'src');
     assert.equal(result.removedRetests, 2);
     assert.equal(state.retests.length, 0);
@@ -139,7 +159,10 @@ describe('retest lifecycle', () => {
     const edited = { ...a, earned: 6, error: 'R' };
     state.attempts[0] = edited;
     core.reconcileEditedAttempt(state, edited, [3, 7], ids);
-    assert.deepEqual(state.retests.map(r => r.stage), [1, 2]);
+    assert.deepEqual(
+      state.retests.map(r => r.stage),
+      [1, 2],
+    );
   });
 
   test('editing a source to full credit removes only untouched checks', () => {
@@ -156,7 +179,10 @@ describe('retest lifecycle', () => {
     const state = { attempts: [a], retests: core.createRetests(a, [3, 7], ids) };
     const edited = { ...a, date: '2026-10-10', topicKey: 'physics|2|0' };
     core.reconcileEditedAttempt(state, edited, [3, 7], ids);
-    assert.deepEqual(plain(state.retests.map(r => [r.due, r.topicKey])), [['2026-10-13', 'physics|2|0'], ['2026-10-17', 'physics|2|0']]);
+    assert.deepEqual(plain(state.retests.map(r => [r.due, r.topicKey])), [
+      ['2026-10-13', 'physics|2|0'],
+      ['2026-10-17', 'physics|2|0'],
+    ]);
   });
 
   test('correcting a verification attempt re-evaluates the check it closed', () => {
@@ -177,7 +203,21 @@ describe('sanitisation', () => {
   const hostile = '<img src=x onerror=alert(1)>';
 
   test('hostile identifiers and enums are replaced, never passed through', () => {
-    const a = core.sanitizeAttempt({ id: `x" onclick="evil`, date: '2026-10-01', subject: 'physics', topicKey: 'physics|0|0', earned: 1, total: 2, error: hostile, confidence: hostile, type: hostile, retestId: hostile }, () => 'safe-id');
+    const a = core.sanitizeAttempt(
+      {
+        id: `x" onclick="evil`,
+        date: '2026-10-01',
+        subject: 'physics',
+        topicKey: 'physics|0|0',
+        earned: 1,
+        total: 2,
+        error: hostile,
+        confidence: hostile,
+        type: hostile,
+        retestId: hostile,
+      },
+      () => 'safe-id',
+    );
     assert.equal(a.id, 'safe-id');
     assert.equal(a.error, '');
     assert.equal(a.confidence, 'medium');
@@ -186,27 +226,51 @@ describe('sanitisation', () => {
   });
 
   test('records that cannot be placed are dropped', () => {
-    assert.equal(core.sanitizeAttempt({ subject: hostile, topicKey: hostile, date: '2026-10-01', total: 5 }), null);
-    assert.equal(core.sanitizeAttempt({ subject: 'physics', topicKey: 'biology|0|0', date: '2026-10-01', total: 5 }), null);
+    assert.equal(
+      core.sanitizeAttempt({ subject: hostile, topicKey: hostile, date: '2026-10-01', total: 5 }),
+      null,
+    );
+    assert.equal(
+      core.sanitizeAttempt({ subject: 'physics', topicKey: 'biology|0|0', date: '2026-10-01', total: 5 }),
+      null,
+    );
     assert.equal(core.sanitizeAttempt({ subject: 'physics', date: 'yesterday', total: 5 }), null);
     assert.equal(core.sanitizeAttempt({ subject: 'physics', date: '2026-10-01', total: 0 }), null);
     assert.equal(core.sanitizeRetest({ topicKey: 'physics|0|0', due: hostile, stage: 1 }), null);
   });
 
   test('marks are clamped to a coherent range', () => {
-    const a = core.sanitizeAttempt({ subject: 'chemistry', date: '2026-10-01', earned: 99, total: 10, trustedEarned: 50, guesses: -3, minutes: 'abc' });
+    const a = core.sanitizeAttempt({
+      subject: 'chemistry',
+      date: '2026-10-01',
+      earned: 99,
+      total: 10,
+      trustedEarned: 50,
+      guesses: -3,
+      minutes: 'abc',
+    });
     assert.deepEqual([a.earned, a.trustedEarned, a.guesses, a.minutes], [10, 10, 0, 0]);
   });
 
   test('unknown primitive fields from newer builds survive; objects and functions do not', () => {
-    const a = core.sanitizeAttempt({ subject: 'biology', date: '2026-10-01', total: 1, paperCode: 'P01', nested: { a: 1 }, 'bad key': 1 });
+    const a = core.sanitizeAttempt({
+      subject: 'biology',
+      date: '2026-10-01',
+      total: 1,
+      paperCode: 'P01',
+      nested: { a: 1 },
+      'bad key': 1,
+    });
     assert.equal(a.paperCode, 'P01');
     assert.equal('nested' in a, false);
     assert.equal('bad key' in a, false);
   });
 
   test('escapeHTML neutralises markup', () => {
-    assert.equal(core.escapeHTML(`<a href="x">'&'</a>`), '&lt;a href=&quot;x&quot;&gt;&#39;&amp;&#39;&lt;/a&gt;');
+    assert.equal(
+      core.escapeHTML(`<a href="x">'&'</a>`),
+      '&lt;a href=&quot;x&quot;&gt;&#39;&amp;&#39;&lt;/a&gt;',
+    );
   });
 });
 
@@ -220,7 +284,7 @@ describe('state normalisation and import', () => {
   });
 
   test('legacy V2 ratings seed a brand-new record', () => {
-    const { state } = core.normalizeState(null, { legacyRatings: { 'physics|0|0': 2, 'nope': 3 } });
+    const { state } = core.normalizeState(null, { legacyRatings: { 'physics|0|0': 2, nope: 3 } });
     assert.deepEqual(plain(state.ratings), { 'physics|0|0': 2 });
   });
 
@@ -232,19 +296,34 @@ describe('state normalisation and import', () => {
   });
 
   test('invalid records are counted in the report', () => {
-    const { state, report } = core.normalizeState({ attempts: [{ subject: 'physics', date: '2026-10-01', total: 1 }, { nope: true }], retests: ['x'] });
+    const { state, report } = core.normalizeState({
+      attempts: [{ subject: 'physics', date: '2026-10-01', total: 1 }, { nope: true }],
+      retests: ['x'],
+    });
     assert.equal(state.attempts.length, 1);
     assert.deepEqual(plain(report.dropped), { attempts: 1, retests: 1 });
   });
 
   test('duplicate ids are made unique', () => {
-    const { state } = core.normalizeState({ attempts: [{ id: 'dup', subject: 'physics', date: '2026-10-01', total: 1 }, { id: 'dup', subject: 'physics', date: '2026-10-02', total: 1 }] });
+    const { state } = core.normalizeState({
+      attempts: [
+        { id: 'dup', subject: 'physics', date: '2026-10-01', total: 1 },
+        { id: 'dup', subject: 'physics', date: '2026-10-02', total: 1 },
+      ],
+    });
     assert.notEqual(state.attempts[0].id, state.attempts[1].id);
   });
 
   test('inspectImport recognises unified backups, core backups, legacy ratings and junk', () => {
     const core0 = { attempts: [], ratings: {} };
-    assert.equal(core.inspectImport({ product: 'A/L Performance Powerhouse', core: core0, study_tracker: { sessions: [] } }).kind, 'backup');
+    assert.equal(
+      core.inspectImport({
+        product: 'A/L Performance Powerhouse',
+        core: core0,
+        study_tracker: { sessions: [] },
+      }).kind,
+      'backup',
+    );
     assert.equal(core.inspectImport(core0).kind, 'backup');
     assert.equal(core.inspectImport({ 'biology|0|1': 3 }).kind, 'legacy-ratings');
     assert.equal(core.inspectImport({ product: 'A/L Performance Powerhouse' }).kind, 'invalid');
@@ -253,7 +332,10 @@ describe('state normalisation and import', () => {
   });
 
   test('inspectImport summarises what will be restored before anything is written', () => {
-    const plan = core.inspectImport({ attempts: [{ subject: 'physics', date: '2026-10-01', total: 1 }, { bad: 1 }], ratings: {} });
+    const plan = core.inspectImport({
+      attempts: [{ subject: 'physics', date: '2026-10-01', total: 1 }, { bad: 1 }],
+      ratings: {},
+    });
     assert.equal(plan.dropped, 1);
     assert.match(plan.summary, /1 attempt\(s\)/);
     assert.match(plan.summary, /1 invalid record/);
@@ -296,7 +378,10 @@ describe('edge cases', () => {
     state.attempts.push(fail, pass);
     const stage1 = state.retests.find(r => r.stage === 1);
     core.recomputeRetest(stage1, new Map(state.attempts.map(a => [a.id, a])));
-    assert.deepEqual([stage1.completedAt, stage1.status, stage1.failures, stage1.lastAttemptId], ['2026-10-08', 'passed', 1, 'p']);
+    assert.deepEqual(
+      [stage1.completedAt, stage1.status, stage1.failures, stage1.lastAttemptId],
+      ['2026-10-08', 'passed', 1, 'p'],
+    );
   });
 
   test('course-correction events keep only safe, dated records', () => {
@@ -304,14 +389,20 @@ describe('edge cases', () => {
       courseCorrection: {
         disciplineMode: false,
         targetDate: '2027-08-01',
-        rabbitHoleEvents: [{ id: 'e1', type: 'resource', date: '2026-10-01', at: '2026-10-01T10:00:00Z' }, { type: '<b>', date: 'nope' }, 'junk'],
+        rabbitHoleEvents: [
+          { id: 'e1', type: 'resource', date: '2026-10-01', at: '2026-10-01T10:00:00Z' },
+          { type: '<b>', date: 'nope' },
+          'junk',
+        ],
         dailyAudits: { '2026-10-01': { sleepProtected: true, 'bad key': true }, notadate: {} },
       },
     });
     const cc = state.courseCorrection;
     assert.equal(cc.disciplineMode, false);
     assert.equal(cc.targetDate, '2027-08-01');
-    assert.deepEqual(plain(cc.rabbitHoleEvents), [{ id: 'e1', date: '2026-10-01', at: '2026-10-01T10:00:00Z', type: 'resource' }]);
+    assert.deepEqual(plain(cc.rabbitHoleEvents), [
+      { id: 'e1', date: '2026-10-01', at: '2026-10-01T10:00:00Z', type: 'resource' },
+    ]);
     assert.deepEqual(plain(cc.dailyAudits), { '2026-10-01': { sleepProtected: true } });
   });
 

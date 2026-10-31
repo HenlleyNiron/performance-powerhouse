@@ -9,9 +9,11 @@
     "lint": "eslint .",
     "test:unit": "node --check sw.js && node --test \"tests/unit/*.test.mjs\"",
     "test:e2e": "playwright test",
-    "check": "npm run lint && npm run test:coverage && npm run test:e2e",
+    "check": "npm run lint && npm run format:check && npm run test:coverage && npm run test:e2e",
     "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=\"js/core.js\" --test-coverage-lines=95 --test-coverage-branches=85 --test-coverage-functions=95 \"tests/unit/*.test.mjs\"",
-    "validate:data": "node scripts/validate-physics-data.mjs"
+    "validate:data": "node scripts/validate-physics-data.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "engines": {
     "node": ">=22"
@@ -21,7 +23,9 @@
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.64.1",
     "eslint": "10.13.0",
-    "globals": "17.13.0"
+    "globals": "17.13.0",
+    "prettier": "3.9.10",
+    "typescript": "7.0.2"
   },
   "description": "Local-first, evidence-driven G.C.E. A/L study repair and retest system",
   "license": "MIT",

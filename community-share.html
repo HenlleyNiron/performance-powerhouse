@@ -1,46 +1,258 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
-<meta name="referrer" content="no-referrer">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#07111f">
-<title>A/L Performance Powerhouse · Community Share</title>
-<meta name="description" content="Privacy-safe community entry point for A/L Performance Powerhouse V5.">
-<style>
-:root{--bg:#07111f;--card:#0d1a2b;--card2:#101f33;--line:#22344d;--text:#eef5ff;--muted:#93a5bd;--gold:#ffd166;--blue:#72c7ff;--green:#78e6b0;--pink:#f89cc0}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 15% 0%,#132641 0,transparent 34%),radial-gradient(circle at 90% 10%,#182538 0,transparent 28%),var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.wrap{width:min(1020px,calc(100% - 32px));margin:0 auto;padding:64px 0 48px}.badge{display:inline-flex;gap:8px;align-items:center;border:1px solid rgba(255,209,102,.35);background:rgba(255,209,102,.07);color:var(--gold);padding:7px 11px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}h1{font-size:clamp(36px,7vw,72px);line-height:.98;margin:22px 0 18px;max-width:900px;letter-spacing:-.04em}.lead{font-size:clamp(17px,2.4vw,22px);line-height:1.6;color:#c6d4e6;max-width:780px;margin:0}.actions{display:flex;flex-wrap:wrap;gap:10px;margin:30px 0 44px}.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:12px;padding:13px 17px;font-weight:850;border:1px solid var(--line);color:var(--text);background:var(--card)}.btn.primary{background:var(--gold);border-color:var(--gold);color:#132036}.btn:hover{transform:translateY(-1px)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{border:1px solid var(--line);background:linear-gradient(180deg,var(--card2),var(--card));border-radius:16px;padding:20px}.card b{display:block;font-size:15px;margin-bottom:8px}.card p{margin:0;color:var(--muted);line-height:1.55;font-size:13px}.loop{margin-top:16px;border:1px solid var(--line);border-radius:16px;padding:18px;background:rgba(8,17,31,.74)}.loop-title{font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;font-weight:900;margin-bottom:12px}.steps{display:flex;flex-wrap:wrap;gap:8px}.step{padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:12px;font-weight:800}.privacy{margin-top:24px;padding:14px 16px;border-left:3px solid var(--green);background:rgba(120,230,176,.06);color:#cfe6db;font-size:13px;line-height:1.6}.foot{margin-top:34px;color:#7387a0;font-size:11px;line-height:1.65}@media(max-width:760px){.wrap{padding-top:40px}.grid{grid-template-columns:1fr}.actions{flex-direction:column}.btn{width:100%}}
-</style>
-<link rel="icon" href="./favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="./icon-192.png">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Performance Powerhouse">
-<meta property="og:description" content="A local-first study evidence system for G.C.E. A/L students: attempt, mark, diagnose, repair, reattempt, transfer and retest.">
-<meta property="og:image" content="https://henlleyniron.github.io/performance-powerhouse/social-preview.png">
-<meta name="twitter:card" content="summary_large_image">
-</head>
-<body>
-<main class="wrap">
-  <span class="badge">Community Share · V5 core</span>
-  <h1>Turn papers into marks — not into forgotten mistakes.</h1>
-  <p class="lead">A/L Performance Powerhouse is a local-first Physics, Chemistry and Biology system built around one loop: attempt, mark, diagnose, repair, fresh transfer and delayed retest.</p>
-  <div class="actions">
-    <a class="btn primary" href="./?share=1">Open privacy-safe Powerhouse</a>
-    <a class="btn" href="./">Open full local dashboard</a>
-    <a class="btn" href="./study-tracker/?share=1">Open Study Tracker</a>
-    <a class="btn" href="./physics-intelligence/?share=1">Open Physics Intelligence</a>
-  </div>
-  <section class="grid">
-    <article class="card"><b>Paper Engine</b><p>Log honest timed evidence: score, time, confidence, guesses, error family and a short correction rule.</p></article>
-    <article class="card"><b>Repair Engine</b><p>Prioritises recurring mark loss, confidence traps and unfinished retests instead of letting mood choose the next task.</p></article>
-    <article class="card"><b>Physics Intelligence</b><p>Integrated validated archive intelligence covering 1,410 MCQs from 2000–2025, with current-era family analysis.</p></article>
-  </section>
-  <section class="loop">
-    <div class="loop-title">Governing loop</div>
-    <div class="steps"><span class="step">1 · ATTEMPT</span><span class="step">2 · MARK</span><span class="step">3 · DIAGNOSE</span><span class="step">4 · REPAIR</span><span class="step">5 · CLOSED-BOOK REATTEMPT</span><span class="step">6 · FRESH TRANSFER</span><span class="step">7 · DELAYED RETEST</span></div>
-  </section>
-  <div class="privacy"><b>Privacy-safe by design.</b> The dashboard stores performance data in the browser. The share-safe links above automatically obscure private performance on the device where the data exists; another student's browser has its own separate local data.</div>
-  <div class="foot">Community Share is an entry point to the same V5 exam-performance core. It does not create a second data schema, so non-destructive V4→V5 migration with legacy V3 compatibility and browser-local evidence remain intact.</div>
-</main>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07111f" />
+    <title>A/L Performance Powerhouse · Community Share</title>
+    <meta
+      name="description"
+      content="Privacy-safe community entry point for A/L Performance Powerhouse V5."
+    />
+    <style>
+      :root {
+        --bg: #07111f;
+        --card: #0d1a2b;
+        --card2: #101f33;
+        --line: #22344d;
+        --text: #eef5ff;
+        --muted: #93a5bd;
+        --gold: #ffd166;
+        --blue: #72c7ff;
+        --green: #78e6b0;
+        --pink: #f89cc0;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 15% 0%, #132641 0, transparent 34%),
+          radial-gradient(circle at 90% 10%, #182538 0, transparent 28%), var(--bg);
+        color: var(--text);
+        font-family:
+          Inter,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+      }
+      .wrap {
+        width: min(1020px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 64px 0 48px;
+      }
+      .badge {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        border: 1px solid rgba(255, 209, 102, 0.35);
+        background: rgba(255, 209, 102, 0.07);
+        color: var(--gold);
+        padding: 7px 11px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      h1 {
+        font-size: clamp(36px, 7vw, 72px);
+        line-height: 0.98;
+        margin: 22px 0 18px;
+        max-width: 900px;
+        letter-spacing: -0.04em;
+      }
+      .lead {
+        font-size: clamp(17px, 2.4vw, 22px);
+        line-height: 1.6;
+        color: #c6d4e6;
+        max-width: 780px;
+        margin: 0;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 30px 0 44px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 12px;
+        padding: 13px 17px;
+        font-weight: 850;
+        border: 1px solid var(--line);
+        color: var(--text);
+        background: var(--card);
+      }
+      .btn.primary {
+        background: var(--gold);
+        border-color: var(--gold);
+        color: #132036;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+      .card {
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, var(--card2), var(--card));
+        border-radius: 16px;
+        padding: 20px;
+      }
+      .card b {
+        display: block;
+        font-size: 15px;
+        margin-bottom: 8px;
+      }
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+        font-size: 13px;
+      }
+      .loop {
+        margin-top: 16px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px;
+        background: rgba(8, 17, 31, 0.74);
+      }
+      .loop-title {
+        font-size: 12px;
+        color: var(--gold);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 900;
+        margin-bottom: 12px;
+      }
+      .steps {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .step {
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .privacy {
+        margin-top: 24px;
+        padding: 14px 16px;
+        border-left: 3px solid var(--green);
+        background: rgba(120, 230, 176, 0.06);
+        color: #cfe6db;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      .foot {
+        margin-top: 34px;
+        color: #7387a0;
+        font-size: 11px;
+        line-height: 1.65;
+      }
+      @media (max-width: 760px) {
+        .wrap {
+          padding-top: 40px;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .actions {
+          flex-direction: column;
+        }
+        .btn {
+          width: 100%;
+        }
+      }
+    </style>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icon-192.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Performance Powerhouse" />
+    <meta
+      property="og:description"
+      content="A local-first study evidence system for G.C.E. A/L students: attempt, mark, diagnose, repair, reattempt, transfer and retest."
+    />
+    <meta
+      property="og:image"
+      content="https://henlleyniron.github.io/performance-powerhouse/social-preview.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <main class="wrap">
+      <span class="badge">Community Share · V5 core</span>
+      <h1>Turn papers into marks — not into forgotten mistakes.</h1>
+      <p class="lead">
+        A/L Performance Powerhouse is a local-first Physics, Chemistry and Biology system built around one
+        loop: attempt, mark, diagnose, repair, fresh transfer and delayed retest.
+      </p>
+      <div class="actions">
+        <a class="btn primary" href="./?share=1">Open privacy-safe Powerhouse</a>
+        <a class="btn" href="./">Open full local dashboard</a>
+        <a class="btn" href="./study-tracker/?share=1">Open Study Tracker</a>
+        <a class="btn" href="./physics-intelligence/?share=1">Open Physics Intelligence</a>
+      </div>
+      <section class="grid">
+        <article class="card">
+          <b>Paper Engine</b>
+          <p>
+            Log honest timed evidence: score, time, confidence, guesses, error family and a short correction
+            rule.
+          </p>
+        </article>
+        <article class="card">
+          <b>Repair Engine</b>
+          <p>
+            Prioritises recurring mark loss, confidence traps and unfinished retests instead of letting mood
+            choose the next task.
+          </p>
+        </article>
+        <article class="card">
+          <b>Physics Intelligence</b>
+          <p>
+            Integrated validated archive intelligence covering 1,410 MCQs from 2000–2025, with current-era
+            family analysis.
+          </p>
+        </article>
+      </section>
+      <section class="loop">
+        <div class="loop-title">Governing loop</div>
+        <div class="steps">
+          <span class="step">1 · ATTEMPT</span><span class="step">2 · MARK</span
+          ><span class="step">3 · DIAGNOSE</span><span class="step">4 · REPAIR</span
+          ><span class="step">5 · CLOSED-BOOK REATTEMPT</span><span class="step">6 · FRESH TRANSFER</span
+          ><span class="step">7 · DELAYED RETEST</span>
+        </div>
+      </section>
+      <div class="privacy">
+        <b>Privacy-safe by design.</b> The dashboard stores performance data in the browser. The share-safe
+        links above automatically obscure private performance on the device where the data exists; another
+        student's browser has its own separate local data.
+      </div>
+      <div class="foot">
+        Community Share is an entry point to the same V5 exam-performance core. It does not create a second
+        data schema, so non-destructive V4→V5 migration with legacy V3 compatibility and browser-local
+        evidence remain intact.
+      </div>
+    </main>
+  </body>
 </html>

@@ -1,6 +1,6 @@
 {
   "name": "al-performance-powerhouse",
-  "version": "5.1.1",
+  "version": "5.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -23,7 +23,7 @@
     "@axe-core/playwright": "4.14.0",
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.64.1",
-    "eslint": "10.13.0",
+    "eslint": "10.14.0",
     "globals": "17.13.0",
     "prettier": "3.9.10",
     "typescript": "7.0.2"
@@ -35,5 +35,8 @@
     "type": "git",
     "url": "https://github.com/HenlleyNiron/performance-powerhouse.git"
   },
-  "homepage": "https://henlleyniron.github.io/performance-powerhouse/"
+  "homepage": "https://henlleyniron.github.io/performance-powerhouse/",
+  "overrides": {
+    "minimatch": "^11.0.1"
+  }
 }

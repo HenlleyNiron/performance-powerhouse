@@ -31,7 +31,7 @@ jobs:
           HAS_KEY: ${{ secrets.OPENAI_API_KEY != '' }}
         run: echo "enabled=$HAS_KEY" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         if: steps.gate.outputs.enabled == 'true'
         with:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
@@ -67,7 +67,7 @@ jobs:
       - name: Run Codex
         id: run_codex
         if: steps.gate.outputs.enabled == 'true'
-        uses: openai/codex-action@v1
+        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1.13
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           permission-profile: ':workspace'
@@ -82,7 +82,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Post Codex review
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           CODEX_FINAL_MESSAGE: ${{ needs.codex.outputs.final_message }}
         with:

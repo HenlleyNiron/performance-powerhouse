@@ -1,0 +1,3 @@
+# Bulk formatting commits; hide them from git blame.
+# git config blame.ignoreRevsFile .git-blame-ignore-revs
+a0379fa1b742241281f194e7c52f02b1b71152c2

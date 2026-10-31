@@ -117,14 +117,14 @@ Every push and pull request runs:
 
 | Check | What it proves |
 | --- | --- |
-| **Unit tests** (Node 22 and 24) | Retest lifecycle, repair ranking, sanitisation, migration defaults and import inspection, with enforced coverage of the core rules (≈99.9% of lines, ≈90% of branches) |
+| **Unit tests** (Node 22 and 24) | Retest and evidence-chain lifecycle, repair ranking, calibration, sanitisation, migration defaults and import inspection, with enforced coverage of the core rules (≈99.9% of lines, ≈90% of branches) |
 | **Type checking** | The evidence core is checked by TypeScript in strict mode through JSDoc types — still plain JavaScript, no build step |
 | **Performance** | A browser test fails if a dashboard refresh with 3,000 logged attempts takes longer than 1.5 s (it takes ≈0.2 s) |
 | **Style** | ESLint and Prettier on every file |
 | **Integrity tests** | No duplicate ids or missing elements, links resolve, CSP on every page, offline assets exist, versions agree |
 | **Dataset validation** | Every Physics Intelligence total is reproducible from its per-year rows, no question sits in two families, and no question or answer text is published |
 | **Browser tests** (Chromium, desktop + Pixel 7) | Onboarding, attempt → retest flow, V4 migration, backup round-trip, hostile-backup import, demo mode, Study Tracker hand-off, full offline use, mobile layout |
-| **Accessibility** | Automated axe-core WCAG 2.1 AA audit of every panel, dialog and companion page |
+| **Accessibility** | Automated axe-core WCAG 2.1 AA audit of every panel, dialog and companion page, plus keyboard-only tests (focus trap, focus return, visible focus, logging without a mouse) |
 | **Security** | CodeQL analysis, OpenSSF Scorecard, every Action pinned to a commit SHA, Dependabot updates, and a **Codex** first-pass review on pull requests guided by [`AGENTS.md`](AGENTS.md) |
 
 Releases are automatic: bumping the version on `main` tags it and publishes a

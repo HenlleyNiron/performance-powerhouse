@@ -17,7 +17,7 @@ the browser's `localStorage` and leaves the device only when the student exports
 
 | Path | Role |
 | --- | --- |
-| `js/core.js` | Pure evidence logic: retest lifecycle, validation/sanitisation, import inspection, demo data. Exposes `PowerhouseCore`. **Put new logic here and unit-test it.** |
+| `js/core.js` | Pure evidence logic: retest lifecycle, evidence chains, repair ranking, calibration, validation/sanitisation, import inspection, demo data. Exposes `PowerhouseCore`. **Put new logic here and unit-test it.** |
 | `js/app.js` | Main controller: rendering, dialogs, storage, migration. Classic script. |
 | `js/v5-additions.js` | V5 layer: evidence chains, papers, intelligence, weekly report, exports. Wraps `refreshAll` from `app.js`. |
 | `css/` | Styles. `app.css` core, `v5.css` V5 layer. |

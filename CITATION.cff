@@ -8,7 +8,7 @@ type: software
 authors:
   - given-names: Henlley Niron
     family-names: Pushparajah
-version: 5.2.0
+version: 5.3.0
 date-released: 2026-10-31
 license: MIT
 repository-code: https://github.com/HenlleyNiron/performance-powerhouse

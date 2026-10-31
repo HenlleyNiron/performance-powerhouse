@@ -3,6 +3,25 @@
 All notable changes to Performance Powerhouse. Versions follow the `package.json` version;
 storage-schema changes are called out explicitly.
 
+## 5.3.0 — 2026-10-31
+
+Storage schema unchanged (12). No user-visible behaviour change.
+
+### Changed
+- The evidence-chain lifecycle (Diagnosed → Repair → Reattempt → Transfer → Delayed retest →
+  Closed / Reopened), recovery metrics and confidence calibration moved from the V5 UI layer into
+  `PowerhouseCore.evidenceModel` and `PowerhouseCore.calibrationMetrics`, where they are typed and
+  unit-tested. Every panel was rendered by the 5.2.0 and 5.3.0 code on three datasets (the demo
+  record, 3,000 attempts, and a dataset covering every chain state) and the output is identical.
+
+### Added
+- Unit tests for every chain stage, ordering, relapse, recovery on the same mark scale, and
+  calibration. They also pin one existing behaviour for a maintainer decision: a clean later stage
+  after the repair can skip earlier stages (for example, a clean delayed retest alone closes a
+  chain).
+- Keyboard tests: tabs, expandable syllabus units, the log dialog's focus trap and focus return,
+  logging a full attempt without a mouse, and a visible focus indicator on key controls.
+
 ## 5.2.0 — 2026-10-31
 
 Storage schema unchanged (12).

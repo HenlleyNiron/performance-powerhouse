@@ -197,6 +197,100 @@ describe('retest lifecycle', () => {
     const stage1 = state.retests.find(r => r.stage === 1);
     assert.deepEqual([stage1.completedAt, stage1.status, stage1.failures], [null, 'failed-open', 1]);
   });
+
+  // A logged transfer pass that closed stage 1, ready for a correction.
+  const closedTransfer = (passOverrides = {}) => {
+    const source = attempt();
+    const state = { attempts: [source], retests: core.createRetests(source, [3, 7], ids) };
+    const pass = attempt({
+      type: 'fresh-transfer',
+      date: '2026-10-05',
+      earned: 10,
+      error: '',
+      ...passOverrides,
+    });
+    core.applyRetestOutcome(state.retests, pass);
+    state.attempts.push(pass);
+    const correct = changes => {
+      const corrected = { ...pass, ...changes };
+      state.attempts[1] = corrected;
+      core.reconcileEditedAttempt(state, corrected, [3, 7], ids);
+      return corrected;
+    };
+    return { state, pass, correct, stage: n => state.retests.find(r => r.stage === n) };
+  };
+
+  test('moving a verification pass to another topic reopens the check it no longer verifies', () => {
+    const { pass, correct, stage } = closedTransfer();
+    assert.equal(stage(1).completedAt, '2026-10-05');
+    correct({ topicKey: 'physics|2|0' });
+    assert.deepEqual(plain([stage(1).completedAt, stage(1).attempts, stage(1).failures]), [null, [], 0]);
+    assert.equal(stage(1).status, undefined);
+    assert.notEqual(stage(1).lastAttemptId, pass.id);
+  });
+
+  test('re-dating a verification pass to before the due date reopens the check', () => {
+    const { correct, stage } = closedTransfer();
+    correct({ date: '2026-10-02' }); // stage 1 was due 2026-10-04
+    assert.equal(stage(1).completedAt, null);
+    assert.equal(stage(1).attempts.length, 0);
+  });
+
+  test('retyping a verification pass moves its evidence to the stage it now matches', () => {
+    const { correct, stage } = closedTransfer({ date: '2026-10-09' });
+    assert.equal(stage(1).completedAt, '2026-10-09');
+    correct({ type: 'delayed-retest' });
+    assert.equal(stage(1).completedAt, null);
+    assert.equal(stage(2).completedAt, '2026-10-09');
+  });
+
+  test('retyping a verification pass to a source type reopens its check and schedules its own', () => {
+    const { pass, state, correct, stage } = closedTransfer();
+    correct({ type: 'topic-question', earned: 6, error: 'M' });
+    assert.equal(stage(1).completedAt, null);
+    assert.equal(state.retests.filter(r => r.sourceAttemptId === pass.id).length, 2);
+  });
+
+  test('a verification attempt corrected onto its due date closes that check', () => {
+    const source = attempt();
+    const state = { attempts: [source], retests: core.createRetests(source, [3, 7], ids) };
+    const early = attempt({ type: 'fresh-transfer', date: '2026-10-02', earned: 10, error: '' });
+    assert.equal(core.applyRetestOutcome(state.retests, early), null);
+    state.attempts.push(early);
+    const fixed = { ...early, date: '2026-10-04' };
+    state.attempts[1] = fixed;
+    core.reconcileEditedAttempt(state, fixed, [3, 7], ids);
+    const stage1 = state.retests.find(r => r.stage === 1);
+    assert.deepEqual(plain(stage1.attempts), [{ attemptId: early.id, date: '2026-10-04', passed: true }]);
+  });
+
+  test('a corrected attempt with a stale launch link falls back to the unambiguous check', () => {
+    const { state, correct } = closedTransfer();
+    const other = attempt({ topicKey: 'physics|2|0' });
+    state.attempts.push(other);
+    state.retests.push(...core.createRetests(other, [3, 7], ids));
+    const launched = state.retests.find(r => r.stage === 1 && r.topicKey === 'physics|1|5');
+    state.attempts[1].retestId = launched.id;
+    correct({ topicKey: 'physics|2|0', retestId: launched.id });
+    const moved = state.retests.find(r => r.stage === 1 && r.topicKey === 'physics|2|0');
+    assert.equal(launched.completedAt, null);
+    assert.equal(moved.completedAt, '2026-10-05');
+  });
+
+  test('an attempt without a date never verifies a check', () => {
+    const source = attempt();
+    const retests = core.createRetests(source, [3, 7], ids);
+    const undated = { ...attempt({ type: 'fresh-transfer', earned: 10, error: '' }), date: undefined };
+    assert.equal(core.applyRetestOutcome(retests, undated), null);
+  });
+
+  test('a corrected attempt still verifying its check stays linked to exactly one check', () => {
+    const { pass, state, correct } = closedTransfer();
+    correct({ note: 'clarified working', minutes: 25 });
+    const linked = state.retests.filter(r => r.attempts.some(e => e.attemptId === pass.id));
+    assert.equal(linked.length, 1);
+    assert.equal(linked[0].completedAt, '2026-10-05');
+  });
 });
 
 describe('sanitisation', () => {
@@ -339,6 +433,149 @@ describe('state normalisation and import', () => {
     assert.equal(plan.dropped, 1);
     assert.match(plan.summary, /1 attempt\(s\)/);
     assert.match(plan.summary, /1 invalid record/);
+  });
+
+  test('inspectImport validates companion records and names them in the summary', () => {
+    const plan = core.inspectImport({
+      product: 'A/L Performance Powerhouse',
+      core: { attempts: [], ratings: {} },
+      study_tracker: { sessions: [{ subject: 'physics', date: '2026-10-01' }, { subject: '<b>' }] },
+      physics_intelligence: {
+        attempts: [{ familyId: 'FAMV3-R01', outcome: 'wrong', timeSeconds: 80 }, { outcome: '<img>' }],
+      },
+    });
+    assert.equal(plan.studyTracker.sessions.length, 1);
+    assert.deepEqual(plain(plan.physicsIntelligence.attempts.map(a => a.familyId)), ['FAMV3-R01']);
+    assert.equal(plan.dropped, 2);
+    assert.match(plan.summary, /1 Study Tracker session\(s\), 1 Physics Intelligence attempt\(s\)/);
+    assert.match(plan.summary, /2 invalid record/);
+  });
+});
+
+describe('companion-module records', () => {
+  const session = (overrides = {}) => ({
+    id: 'sess-1',
+    date: '2026-10-01',
+    subject: 'chemistry',
+    type: 'mcq-set',
+    task: 'Past paper MCQs 1-20',
+    topicKey: 'chemistry|2|1',
+    plannedMinutes: 30,
+    status: 'complete',
+    startedAt: 1790000000000,
+    accumulatedMs: 0,
+    durationMs: 1800000,
+    output: 'marked-attempt',
+    note: 'Marked strictly',
+    evidenceClass: 'evidence',
+    createdAt: '2026-10-01T08:00:00.000Z',
+    endedAt: '2026-10-01T08:30:00.000Z',
+    ownerTab: null,
+    ...overrides,
+  });
+
+  test('a session written by the tracker survives validation unchanged', () => {
+    const s = session({ linkedAttemptId: 'att-9', linkedEvidenceAt: '2026-10-01T09:00:00.000Z' });
+    const clean = core.sanitizeTrackerSession(s);
+    assert.deepEqual(plain(clean), plain({ ...s, updatedAt: null }));
+  });
+
+  test('sessions with no subject or no usable date are dropped; a date can come from createdAt', () => {
+    assert.equal(core.sanitizeTrackerSession(session({ subject: 'maths' })), null);
+    assert.equal(core.sanitizeTrackerSession(session({ subject: 7 })), null);
+    assert.equal(core.sanitizeTrackerSession(session({ date: 'x', createdAt: 'nope' })), null);
+    assert.equal(core.sanitizeTrackerSession('session'), null);
+    assert.equal(core.sanitizeTrackerSession(session({ date: undefined })).date, '2026-10-01');
+  });
+
+  test('markup and junk in a session are bounded or replaced, never passed through raw', () => {
+    const clean = core.sanitizeTrackerSession(
+      session({
+        id: '"><b id="pwned">',
+        evidenceClass: '__proto__',
+        topicKey: '<i>',
+        durationMs: 'lots',
+        startedAt: '2026-10-01T08:00:00.000Z',
+        ownerTab: 42,
+        task: 'x'.repeat(900),
+        nested: { evil: true },
+        extraNumber: 3,
+      }),
+      ids,
+    );
+    assert.match(clean.id, /^t-\d+$/);
+    assert.equal('evidenceClass' in clean, false);
+    assert.equal(clean.topicKey, '');
+    assert.equal(clean.durationMs, 0);
+    assert.equal(clean.startedAt, '2026-10-01T08:00:00.000Z');
+    assert.equal(clean.ownerTab, null);
+    assert.equal(clean.task.length, 500);
+    assert.equal('nested' in clean, false);
+    assert.equal(clean.extraNumber, 3);
+    assert.equal(core.sanitizeTrackerSession(session({ startedAt: {} })).startedAt, null);
+    const marathon = core.sanitizeTrackerSession(session({ durationMs: 9 * 86400000, plannedMinutes: 2000 }));
+    assert.deepEqual([marathon.durationMs, marathon.plannedMinutes], [9 * 86400000, 2000]);
+  });
+
+  test('sanitizeTrackerState counts what it drops, including a broken active session', () => {
+    const { state, report } = core.sanitizeTrackerState(
+      {
+        sessions: [session(), session({ id: 'sess-1' }), { subject: 'none' }],
+        activeSession: { subject: 'physics' },
+        settings: { shareSafe: true, density: 'compact', bad: {} },
+        updatedAt: '2026-10-02T00:00:00.000Z',
+        futureFlag: true,
+      },
+      ids,
+    );
+    assert.equal(state.sessions.length, 2);
+    assert.notEqual(state.sessions[0].id, state.sessions[1].id);
+    assert.equal(state.activeSession, null);
+    assert.equal(report.dropped, 2);
+    assert.deepEqual(plain(state.settings), { density: 'compact', shareSafe: true });
+    assert.equal(state.updatedAt, '2026-10-02T00:00:00.000Z');
+    assert.equal(state.futureFlag, true);
+  });
+
+  test('sanitizeTrackerState keeps a valid active session and tolerates any input', () => {
+    const active = session({ status: 'running', durationMs: undefined });
+    const { state, report } = core.sanitizeTrackerState({ sessions: [], activeSession: active });
+    assert.equal(state.activeSession.id, 'sess-1');
+    assert.equal(report.dropped, 0);
+    for (const junk of [null, 'x', [], { sessions: 'no', settings: 'no' }]) {
+      const result = core.sanitizeTrackerState(junk);
+      assert.deepEqual(plain([result.state.sessions, result.state.activeSession]), [[], null]);
+      assert.equal(result.state.settings.shareSafe, false);
+    }
+  });
+
+  test('sanitizePhysicsAttempts keeps valid attempts and drops unknown outcomes or bad times', () => {
+    const { attempts, dropped } = core.sanitizePhysicsAttempts([
+      {
+        familyId: 'FAM126',
+        outcome: 'slow',
+        timeSeconds: '95',
+        confidence: 9,
+        recordedAt: '2026-10-01T08:00:00Z',
+      },
+      { familyId: 'FAM096-S1', outcome: 'correct', timeSeconds: 40, confidence: 'x' },
+      { familyId: 'FAM126', outcome: '<b>wrong</b>', timeSeconds: 40 },
+      { familyId: 'FAM126', outcome: 'wrong', timeSeconds: 'soon' },
+      { familyId: '<script>', outcome: 'wrong', timeSeconds: 40 },
+      'junk',
+    ]);
+    assert.deepEqual(plain(attempts), [
+      {
+        familyId: 'FAM126',
+        outcome: 'slow',
+        timeSeconds: 95,
+        confidence: 5,
+        recordedAt: '2026-10-01T08:00:00Z',
+      },
+      { familyId: 'FAM096-S1', outcome: 'correct', timeSeconds: 40, confidence: 3, recordedAt: null },
+    ]);
+    assert.equal(dropped, 4);
+    assert.deepEqual(plain(core.sanitizePhysicsAttempts(undefined)), { attempts: [], dropped: 0 });
   });
 });
 

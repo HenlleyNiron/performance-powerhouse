@@ -60,7 +60,8 @@ Run `npm run check` before proposing a change.
    Migrations copy forward and leave the source key untouched; destructive actions take a
    recovery snapshot first.
 2. **Validate at the boundary.** Everything read from storage or an imported file goes through
-   `PowerhouseCore.normalizeState` / `inspectImport`. Anything rendered with `innerHTML` must be
+   `PowerhouseCore.normalizeState` / `inspectImport` (companion pages: `sanitizeTrackerState`,
+   `sanitizePhysicsAttempts`). Anything rendered with `innerHTML` must be
    sanitised there or wrapped in `escapeHTML`.
 3. **CSP stays strict.** Every page ships `script-src 'self'`. No inline `<script>` blocks, no
    `on*=` attributes, no third-party scripts, fonts, analytics or CDNs.

@@ -3,6 +3,41 @@
 All notable changes to Performance Powerhouse. Versions follow the `package.json` version;
 storage-schema changes are called out explicitly.
 
+## 5.3.1 — 2026-11-05
+
+Storage schema unchanged (12). No storage key renamed or removed. Bug fixes only.
+
+### Fixed — evidence integrity
+- **Correcting a verification attempt now re-derives its scheduled check properly.** Changing a
+  fresh transfer or delayed retest's topic, type or date used to leave the check it had closed
+  still closed — even by an attempt dated before the check was due, or now on another topic. The
+  attempt is now unlinked from any check it no longer qualifies for (that check reopens) and, like a
+  newly logged attempt, applied to the one check it now does qualify for. A launch link to a check
+  the corrected attempt can no longer verify falls back to the unambiguous match.
+
+### Fixed — data safety
+- **Restoring a full backup no longer silently replaces Study Tracker and Physics Intelligence
+  data.** Their current records are kept in each module's recovery list
+  (`…_study_tracker_v1_recovery`, new `…_physics_intelligence_v1_recovery`) before the restore,
+  and the confirmation now says those records will be replaced and how many each backup holds.
+- Physics Intelligence's own import now asks for confirmation, keeps a recovery copy first, and
+  reports an unreadable or wrong file instead of failing silently.
+
+### Security and robustness
+- **Study Tracker and Physics Intelligence now validate stored and imported records** through new
+  tested core helpers (`PowerhouseCore.sanitizeTrackerState`, `sanitizePhysicsAttempts`), as the
+  main app already did. Previously a crafted backup could inject markup into the tracker's history
+  table (script execution was already blocked by the CSP), one malformed session crashed the whole
+  tracker page, and an unknown Physics outcome produced `NaN` scores. The full-backup import
+  validates these blocks before writing them. If validation must skip records, the original stored
+  record is kept in the module's recovery list first, once.
+- Both companion pages now load `js/core.js` (already in the offline cache).
+
+### Tests
+- 15 new unit tests (edit re-derivation, companion sanitisers, import summary) and 3 browser
+  regression tests (tracker injection and recovery, companion snapshot on restore, Physics
+  validation and import feedback). Each new test fails on 5.3.0.
+
 ## 5.3.0 — 2026-10-31
 
 Storage schema unchanged (12). No user-visible behaviour change.

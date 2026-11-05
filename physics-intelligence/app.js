@@ -12,13 +12,46 @@ const el = id => document.getElementById(id);
 const pct = (value, digits = 1) => `${(value * 100).toFixed(digits)}%`;
 const escapeCsv = value => `"${String(value).replaceAll('"', '""')}"`;
 
-function loadLocalState() {
+const RECOVERY_KEY = `${STORAGE_KEY}_recovery`;
+
+// Stored and imported attempts pass through PowerhouseCore.sanitizePhysicsAttempts
+// before anything renders. If records must be skipped, the original is kept in the
+// recovery list first (once), so validation never silently destroys data.
+function preserveRaw(raw, label) {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    state.attempts = Array.isArray(parsed.attempts) ? parsed.attempts : [];
+    const list = JSON.parse(localStorage.getItem(RECOVERY_KEY) || "[]");
+    if (!Array.isArray(list)) return false;
+    let saved;
+    try {
+      saved = JSON.parse(raw);
+    } catch {
+      saved = raw;
+    }
+    if (list[0] && JSON.stringify(list[0].state) === JSON.stringify(saved)) return true;
+    list.unshift({ id: PowerhouseCore.makeId(), at: new Date().toISOString(), label, state: saved });
+    localStorage.setItem(RECOVERY_KEY, JSON.stringify(list.slice(0, 10)));
+    return true;
   } catch {
+    return false;
+  }
+}
+
+function loadLocalState() {
+  let raw = null;
+  try {
+    raw = localStorage.getItem(STORAGE_KEY);
+    const parsed = JSON.parse(raw || "{}");
+    const { attempts, dropped } = PowerhouseCore.sanitizePhysicsAttempts(parsed?.attempts);
+    state.attempts = attempts;
+    if (dropped && preserveRaw(raw, `pre-validation:${dropped}-invalid-skipped`)) saveLocalState();
+  } catch {
+    if (raw) preserveRaw(raw, "unreadable-record");
     state.attempts = [];
   }
+}
+
+function showImportStatus(message) {
+  el("importStatus").textContent = message;
 }
 
 function saveLocalState() {
@@ -382,12 +415,32 @@ function bindEvents() {
   });
   el("importBackup").addEventListener("change", async event => {
     const file = event.target.files?.[0];
+    event.target.value = "";
     if (!file) return;
-    const parsed = JSON.parse(await file.text());
-    if (!Array.isArray(parsed.attempts)) throw new Error("Backup does not contain an attempts array.");
-    state.attempts = parsed.attempts;
+    let parsed;
+    try {
+      parsed = JSON.parse(await file.text());
+    } catch {
+      showImportStatus("That file is not valid JSON, so nothing was imported.");
+      return;
+    }
+    if (!Array.isArray(parsed?.attempts)) {
+      showImportStatus("That file is not a Physics Intelligence backup, so nothing was imported.");
+      return;
+    }
+    const { attempts, dropped } = PowerhouseCore.sanitizePhysicsAttempts(parsed.attempts);
+    if (!confirm(`Replace your Physics Intelligence attempts with the ${attempts.length} in this file?`)) {
+      showImportStatus("Import cancelled. Nothing changed.");
+      return;
+    }
+    const current = localStorage.getItem(STORAGE_KEY);
+    if (current) preserveRaw(current, "pre-import");
+    state.attempts = attempts;
     saveLocalState();
     renderPerformance();
+    showImportStatus(
+      `Imported ${attempts.length} attempt(s).` + (dropped ? ` ${dropped} invalid record(s) skipped.` : ""),
+    );
   });
 }
 

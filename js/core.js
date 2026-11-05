@@ -76,7 +76,7 @@
    * @property {Record<string, number>} dropped  Invalid records skipped, by collection.
    */
 
-  const BUILD = '5.3.0';
+  const BUILD = '5.3.1';
   const SCHEMA_VERSION = 12;
   const DEFAULT_TIMEZONE = 'Asia/Colombo';
 

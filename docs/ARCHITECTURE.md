@@ -66,9 +66,13 @@ falsely closed.
 
 Everything that crosses into the app from outside its own code is treated as untrusted:
 
-1. **Stored state** (possibly written by an older build) → `normalizeState` on every load.
-2. **Imported files** → `inspectImport` validates and summarises; the student confirms; a recovery
-   snapshot is taken; only then is the sanitised state written.
+1. **Stored state** (possibly written by an older build) → `normalizeState` on every load. The
+   companion pages load `js/core.js` too: the Study Tracker passes its record through
+   `sanitizeTrackerState` and Physics Intelligence through `sanitizePhysicsAttempts`. If either
+   must skip records, the original is copied to that module's recovery list first.
+2. **Imported files** → `inspectImport` validates and summarises (including the Study Tracker and
+   Physics Intelligence blocks of a full backup); the student confirms; a recovery snapshot of
+   every record about to be replaced is taken; only then is the sanitised state written.
 3. **Rendering** → identifiers, enums, dates and numbers are constrained by the sanitiser; free
    text is passed through `escapeHTML` before reaching `innerHTML`.
 4. **Content-Security-Policy** on every page: `script-src 'self'`, no inline scripts or handlers,
@@ -83,7 +87,9 @@ Everything that crosses into the app from outside its own code is treated as unt
 | `al_performance_powerhouse_v4`, `_v3` | legacy | read once to migrate; never modified |
 | `al_performance_command_centre_v3`–`v6`, `al_v2_samra` | legacy | read-only migration sources |
 | `al_performance_powerhouse_study_tracker_v1` | Study Tracker | linked to attempts by `sessionId` |
+| `al_performance_powerhouse_study_tracker_v1_recovery` | Study Tracker | up to 10 snapshots on session saves and edits, and before deletes, imports, full-backup restores and validation skips |
 | `al_performance_powerhouse_physics_intelligence_v1` | Physics Intelligence | personal overlay on the aggregate dataset |
+| `al_performance_powerhouse_physics_intelligence_v1_recovery` | Physics Intelligence | up to 10 snapshots before imports, full-backup restores and validation skips (since 5.3.1) |
 | `al_performance_donated_tracker_archive_v1` | main app | unmapped legacy tracker imports kept for review |
 
 Demo mode (`?demo=1`) builds a fictional record in memory and writes none of these keys.

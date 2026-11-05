@@ -2750,6 +2750,31 @@ function exportData() {
 }
 
 const MAX_IMPORT_BYTES = 15 * 1024 * 1024;
+const STUDY_TRACKER_KEY = 'al_performance_powerhouse_study_tracker_v1';
+const PHYSICS_INTELLIGENCE_KEY = 'al_performance_powerhouse_physics_intelligence_v1';
+
+/**
+ * Before a restore replaces a companion module's record, keeps the current one in
+ * that module's recovery list (`<key>_recovery`, newest first, last 10), so a
+ * restore can never silently destroy Study Tracker or Physics Intelligence data.
+ */
+function snapshotCompanion(key, label) {
+  try {
+    const current = localStorage.getItem(key);
+    if (!current) return;
+    let saved;
+    try {
+      saved = JSON.parse(current);
+    } catch (_) {
+      saved = current; // keep unreadable data verbatim rather than lose it
+    }
+    const recoveryKey = `${key}_recovery`;
+    const list = JSON.parse(localStorage.getItem(recoveryKey) || '[]');
+    if (!Array.isArray(list)) return; // never overwrite a recovery key we do not understand
+    list.unshift({ id: uid(), at: new Date().toISOString(), label, state: saved });
+    localStorage.setItem(recoveryKey, JSON.stringify(list.slice(0, 10)));
+  } catch (_) {}
+}
 
 function closeDataDialogs() {
   if ($('data-dialog').open) $('data-dialog').close();
@@ -2783,24 +2808,27 @@ function importData(file) {
         return;
       }
       if (plan.kind === 'backup') {
+        const replaced = [
+          'Your current local record',
+          plan.studyTracker ? 'Study Tracker sessions' : '',
+          plan.physicsIntelligence ? 'Physics Intelligence attempts' : '',
+        ].filter(Boolean);
         const ok = confirm(
-          `Restore this Powerhouse backup?\n\n${plan.summary}.\n\nYour current local record will be replaced. A recovery snapshot of it is kept first.`,
+          `Restore this Powerhouse backup?\n\n${plan.summary}.\n\n${replaced.join(', ').replace(/, ([^,]*)$/, ' and $1')} will be replaced. A recovery snapshot of each is kept first.`,
         );
         if (!ok) {
           toast('Import cancelled. Nothing changed.');
           return;
         }
         snapshotState('pre-import');
-        if (plan.studyTracker && !DEMO_MODE)
-          localStorage.setItem(
-            'al_performance_powerhouse_study_tracker_v1',
-            JSON.stringify(plan.studyTracker),
-          );
-        if (plan.physicsIntelligence && !DEMO_MODE)
-          localStorage.setItem(
-            'al_performance_powerhouse_physics_intelligence_v1',
-            JSON.stringify(plan.physicsIntelligence),
-          );
+        if (plan.studyTracker && !DEMO_MODE) {
+          snapshotCompanion(STUDY_TRACKER_KEY, 'pre-powerhouse-import');
+          localStorage.setItem(STUDY_TRACKER_KEY, JSON.stringify(plan.studyTracker));
+        }
+        if (plan.physicsIntelligence && !DEMO_MODE) {
+          snapshotCompanion(PHYSICS_INTELLIGENCE_KEY, 'pre-powerhouse-import');
+          localStorage.setItem(PHYSICS_INTELLIGENCE_KEY, JSON.stringify(plan.physicsIntelligence));
+        }
         state = plan.state;
         saveState();
         refreshAll();

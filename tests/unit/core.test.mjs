@@ -434,6 +434,149 @@ describe('state normalisation and import', () => {
     assert.match(plan.summary, /1 attempt\(s\)/);
     assert.match(plan.summary, /1 invalid record/);
   });
+
+  test('inspectImport validates companion records and names them in the summary', () => {
+    const plan = core.inspectImport({
+      product: 'A/L Performance Powerhouse',
+      core: { attempts: [], ratings: {} },
+      study_tracker: { sessions: [{ subject: 'physics', date: '2026-10-01' }, { subject: '<b>' }] },
+      physics_intelligence: {
+        attempts: [{ familyId: 'FAMV3-R01', outcome: 'wrong', timeSeconds: 80 }, { outcome: '<img>' }],
+      },
+    });
+    assert.equal(plan.studyTracker.sessions.length, 1);
+    assert.deepEqual(plain(plan.physicsIntelligence.attempts.map(a => a.familyId)), ['FAMV3-R01']);
+    assert.equal(plan.dropped, 2);
+    assert.match(plan.summary, /1 Study Tracker session\(s\), 1 Physics Intelligence attempt\(s\)/);
+    assert.match(plan.summary, /2 invalid record/);
+  });
+});
+
+describe('companion-module records', () => {
+  const session = (overrides = {}) => ({
+    id: 'sess-1',
+    date: '2026-10-01',
+    subject: 'chemistry',
+    type: 'mcq-set',
+    task: 'Past paper MCQs 1-20',
+    topicKey: 'chemistry|2|1',
+    plannedMinutes: 30,
+    status: 'complete',
+    startedAt: 1790000000000,
+    accumulatedMs: 0,
+    durationMs: 1800000,
+    output: 'marked-attempt',
+    note: 'Marked strictly',
+    evidenceClass: 'evidence',
+    createdAt: '2026-10-01T08:00:00.000Z',
+    endedAt: '2026-10-01T08:30:00.000Z',
+    ownerTab: null,
+    ...overrides,
+  });
+
+  test('a session written by the tracker survives validation unchanged', () => {
+    const s = session({ linkedAttemptId: 'att-9', linkedEvidenceAt: '2026-10-01T09:00:00.000Z' });
+    const clean = core.sanitizeTrackerSession(s);
+    assert.deepEqual(plain(clean), plain({ ...s, updatedAt: null }));
+  });
+
+  test('sessions with no subject or no usable date are dropped; a date can come from createdAt', () => {
+    assert.equal(core.sanitizeTrackerSession(session({ subject: 'maths' })), null);
+    assert.equal(core.sanitizeTrackerSession(session({ subject: 7 })), null);
+    assert.equal(core.sanitizeTrackerSession(session({ date: 'x', createdAt: 'nope' })), null);
+    assert.equal(core.sanitizeTrackerSession('session'), null);
+    assert.equal(core.sanitizeTrackerSession(session({ date: undefined })).date, '2026-10-01');
+  });
+
+  test('markup and junk in a session are bounded or replaced, never passed through raw', () => {
+    const clean = core.sanitizeTrackerSession(
+      session({
+        id: '"><b id="pwned">',
+        evidenceClass: '__proto__',
+        topicKey: '<i>',
+        durationMs: 'lots',
+        startedAt: '2026-10-01T08:00:00.000Z',
+        ownerTab: 42,
+        task: 'x'.repeat(900),
+        nested: { evil: true },
+        extraNumber: 3,
+      }),
+      ids,
+    );
+    assert.match(clean.id, /^t-\d+$/);
+    assert.equal('evidenceClass' in clean, false);
+    assert.equal(clean.topicKey, '');
+    assert.equal(clean.durationMs, 0);
+    assert.equal(clean.startedAt, '2026-10-01T08:00:00.000Z');
+    assert.equal(clean.ownerTab, null);
+    assert.equal(clean.task.length, 500);
+    assert.equal('nested' in clean, false);
+    assert.equal(clean.extraNumber, 3);
+    assert.equal(core.sanitizeTrackerSession(session({ startedAt: {} })).startedAt, null);
+    const marathon = core.sanitizeTrackerSession(session({ durationMs: 9 * 86400000, plannedMinutes: 2000 }));
+    assert.deepEqual([marathon.durationMs, marathon.plannedMinutes], [9 * 86400000, 2000]);
+  });
+
+  test('sanitizeTrackerState counts what it drops, including a broken active session', () => {
+    const { state, report } = core.sanitizeTrackerState(
+      {
+        sessions: [session(), session({ id: 'sess-1' }), { subject: 'none' }],
+        activeSession: { subject: 'physics' },
+        settings: { shareSafe: true, density: 'compact', bad: {} },
+        updatedAt: '2026-10-02T00:00:00.000Z',
+        futureFlag: true,
+      },
+      ids,
+    );
+    assert.equal(state.sessions.length, 2);
+    assert.notEqual(state.sessions[0].id, state.sessions[1].id);
+    assert.equal(state.activeSession, null);
+    assert.equal(report.dropped, 2);
+    assert.deepEqual(plain(state.settings), { density: 'compact', shareSafe: true });
+    assert.equal(state.updatedAt, '2026-10-02T00:00:00.000Z');
+    assert.equal(state.futureFlag, true);
+  });
+
+  test('sanitizeTrackerState keeps a valid active session and tolerates any input', () => {
+    const active = session({ status: 'running', durationMs: undefined });
+    const { state, report } = core.sanitizeTrackerState({ sessions: [], activeSession: active });
+    assert.equal(state.activeSession.id, 'sess-1');
+    assert.equal(report.dropped, 0);
+    for (const junk of [null, 'x', [], { sessions: 'no', settings: 'no' }]) {
+      const result = core.sanitizeTrackerState(junk);
+      assert.deepEqual(plain([result.state.sessions, result.state.activeSession]), [[], null]);
+      assert.equal(result.state.settings.shareSafe, false);
+    }
+  });
+
+  test('sanitizePhysicsAttempts keeps valid attempts and drops unknown outcomes or bad times', () => {
+    const { attempts, dropped } = core.sanitizePhysicsAttempts([
+      {
+        familyId: 'FAM126',
+        outcome: 'slow',
+        timeSeconds: '95',
+        confidence: 9,
+        recordedAt: '2026-10-01T08:00:00Z',
+      },
+      { familyId: 'FAM096-S1', outcome: 'correct', timeSeconds: 40, confidence: 'x' },
+      { familyId: 'FAM126', outcome: '<b>wrong</b>', timeSeconds: 40 },
+      { familyId: 'FAM126', outcome: 'wrong', timeSeconds: 'soon' },
+      { familyId: '<script>', outcome: 'wrong', timeSeconds: 40 },
+      'junk',
+    ]);
+    assert.deepEqual(plain(attempts), [
+      {
+        familyId: 'FAM126',
+        outcome: 'slow',
+        timeSeconds: 95,
+        confidence: 5,
+        recordedAt: '2026-10-01T08:00:00Z',
+      },
+      { familyId: 'FAM096-S1', outcome: 'correct', timeSeconds: 40, confidence: 3, recordedAt: null },
+    ]);
+    assert.equal(dropped, 4);
+    assert.deepEqual(plain(core.sanitizePhysicsAttempts(undefined)), { attempts: [], dropped: 0 });
+  });
 });
 
 describe('demo dataset', () => {

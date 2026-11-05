@@ -92,18 +92,43 @@
       updatedAt: null,
     };
   }
+  // Everything read from storage passes through PowerhouseCore.sanitizeTrackerState
+  // before it renders. If that had to drop anything, the original is kept in the
+  // recovery list first, so validation can never silently destroy a record.
   function load() {
+    let raw = null;
     try {
-      const s = JSON.parse(localStorage.getItem(STORE) || 'null');
-      if (!s || typeof s !== 'object') return blank();
-      return {
-        ...blank(),
-        ...s,
-        sessions: Array.isArray(s.sessions) ? s.sessions : [],
-        settings: { ...blank().settings, ...(s.settings || {}) },
-      };
+      raw = localStorage.getItem(STORE);
+      const s = JSON.parse(raw || 'null');
+      if (!s || typeof s !== 'object') {
+        if (raw && raw !== 'null') preserveRaw(raw, 'unreadable-record');
+        return blank();
+      }
+      const { state: clean, report } = PowerhouseCore.sanitizeTrackerState(s);
+      if (report.dropped && preserveRaw(raw, `pre-validation:${report.dropped}-invalid-skipped`))
+        localStorage.setItem(STORE, JSON.stringify(clean));
+      return clean;
     } catch (_) {
+      if (raw) preserveRaw(raw, 'unreadable-record');
       return blank();
+    }
+  }
+  function preserveRaw(raw, label) {
+    try {
+      const r = JSON.parse(localStorage.getItem(RECOVERY) || '[]');
+      if (!Array.isArray(r)) return false;
+      let saved;
+      try {
+        saved = JSON.parse(raw);
+      } catch (_) {
+        saved = raw;
+      }
+      if (r[0] && JSON.stringify(r[0].state) === JSON.stringify(saved)) return true;
+      r.unshift({ id: uid(), at: new Date().toISOString(), label, state: saved });
+      localStorage.setItem(RECOVERY, JSON.stringify(r.slice(0, 10)));
+      return true;
+    } catch (_) {
+      return false;
     }
   }
   function save() {
@@ -561,7 +586,7 @@
       ? rows
           .map(
             s =>
-              `<tr><td>${s.date}</td><td>${s.subject[0].toUpperCase() + s.subject.slice(1)}</td><td><div class="task-title">${esc(TYPES[s.type]?.[0] || s.type)} · ${esc(s.task)}</div><div class="task-note">${esc(s.note || '')}</div></td><td>${fmtMin(s.durationMs)}</td><td>${esc(outputLabel(s.output))}</td><td><span class="class-pill ${classification(s)}">${classification(s)}</span></td><td><button class="secondary" data-edit="${s.id}" type="button">Edit</button> <button class="danger-lite" data-delete="${s.id}" type="button">Delete</button></td></tr>`,
+              `<tr><td>${esc(s.date)}</td><td>${esc(s.subject[0].toUpperCase() + s.subject.slice(1))}</td><td><div class="task-title">${esc(TYPES[s.type]?.[0] || s.type)} · ${esc(s.task)}</div><div class="task-note">${esc(s.note || '')}</div></td><td>${fmtMin(s.durationMs)}</td><td>${esc(outputLabel(s.output))}</td><td><span class="class-pill ${esc(classification(s))}">${esc(classification(s))}</span></td><td><button class="secondary" data-edit="${esc(s.id)}" type="button">Edit</button> <button class="danger-lite" data-delete="${esc(s.id)}" type="button">Delete</button></td></tr>`,
           )
           .join('')
       : '<tr><td colspan="7">No completed sessions match these filters.</td></tr>';
@@ -645,17 +670,16 @@
       try {
         const x = JSON.parse(r.result);
         if (!x || typeof x !== 'object' || !Array.isArray(x.sessions)) throw 0;
+        const { state: clean, report } = PowerhouseCore.sanitizeTrackerState(x);
         snapshot('pre-import');
-        state = {
-          ...blank(),
-          ...x,
-          sessions: x.sessions.filter(s => s && typeof s === 'object'),
-          settings: { ...blank().settings, ...(x.settings || {}) },
-        };
+        state = clean;
         save();
         render();
         $('data-dialog').close();
-        toast(`Imported ${state.sessions.length} tracker session(s).`);
+        toast(
+          `Imported ${state.sessions.length} tracker session(s).` +
+            (report.dropped ? ` ${report.dropped} invalid record(s) skipped.` : ''),
+        );
       } catch (_) {
         toast('Tracker JSON rejected: invalid or unsupported shape.');
       }

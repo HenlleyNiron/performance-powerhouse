@@ -227,3 +227,159 @@ test('a malformed backup is rejected and leaves existing data untouched', async 
   expect(errors.filter(e => e.startsWith('pageerror'))).toEqual([]);
   expect(await page.evaluate(key => localStorage.getItem(key) !== null, APP_KEY)).toBe(true);
 });
+
+const TRACKER_KEY = 'al_performance_powerhouse_study_tracker_v1';
+const PHYSICS_KEY = 'al_performance_powerhouse_physics_intelligence_v1';
+const trackerSession = (overrides = {}) => ({
+  id: 'sess-ok',
+  date: colomboToday(),
+  subject: 'physics',
+  type: 'mcq-set',
+  task: 'Kinematics MCQs',
+  status: 'complete',
+  output: 'marked-attempt',
+  evidenceClass: 'evidence',
+  durationMs: 1800000,
+  createdAt: new Date().toISOString(),
+  endedAt: new Date().toISOString(),
+  ...overrides,
+});
+
+test('stored Study Tracker data cannot inject markup or break the page, and nothing is lost', async ({
+  page,
+}) => {
+  const errors = trackErrors(page);
+  const stored = {
+    sessions: [
+      trackerSession(),
+      trackerSession({
+        id: `"><b id="pwned-id">x</b><i x="`,
+        date: '<b id="pwned-date">d</b>',
+        createdAt: `${colomboToday()}T06:00:00.000Z`,
+      }),
+      trackerSession({ id: 'bad-subject', subject: 7 }),
+    ],
+    activeSession: null,
+  };
+  await page.addInitScript(
+    ([key, value]) => {
+      if (!sessionStorage.getItem('__seeded')) {
+        localStorage.setItem(key, value);
+        sessionStorage.setItem('__seeded', '1');
+      }
+    },
+    [TRACKER_KEY, JSON.stringify(stored)],
+  );
+  await page.goto('/study-tracker/');
+  await expect(page.locator('#history')).toContainText('Kinematics MCQs');
+  expect(await page.locator('#pwned-id, #pwned-date, b#pwned-id').count()).toBe(0);
+  expect(errors.filter(e => e.startsWith('pageerror'))).toEqual([]);
+  // The hostile session is repaired (date from createdAt, fresh id); the one with no
+  // valid subject is skipped, but the original record is kept for recovery first.
+  const recovery = await page.evaluate(k => JSON.parse(localStorage.getItem(`${k}_recovery`)), TRACKER_KEY);
+  expect(recovery[0].label).toMatch(/pre-validation:1-invalid/);
+  expect(recovery[0].state.sessions).toHaveLength(3);
+  const kept = await page.evaluate(k => JSON.parse(localStorage.getItem(k)).sessions, TRACKER_KEY);
+  expect(kept).toHaveLength(2);
+  expect(kept[0].id).toBe('sess-ok');
+  expect(kept[1].id).toMatch(/^[A-Za-z0-9._:-]+$/);
+  expect(kept[1].date).toBe(colomboToday());
+  // Reloading does not pile up duplicate recovery snapshots.
+  await page.reload();
+  const again = await page.evaluate(k => JSON.parse(localStorage.getItem(`${k}_recovery`)), TRACKER_KEY);
+  expect(again).toHaveLength(1);
+});
+
+test('restoring a unified backup snapshots existing companion data before replacing it', async ({ page }) => {
+  const messages = [];
+  page.on('dialog', dialog => {
+    messages.push(dialog.message());
+    dialog.accept();
+  });
+  await seedState(page);
+  const previousTracker = { sessions: [trackerSession({ id: 'mine', task: 'My own session' })] };
+  const previousPhysics = {
+    version: 1,
+    attempts: [{ familyId: 'FAM126', outcome: 'wrong', timeSeconds: 80 }],
+  };
+  await page.addInitScript(
+    ([t, tv, p, pv]) => {
+      if (!sessionStorage.getItem('__companions')) {
+        localStorage.setItem(t, tv);
+        localStorage.setItem(p, pv);
+        sessionStorage.setItem('__companions', '1');
+      }
+    },
+    [TRACKER_KEY, JSON.stringify(previousTracker), PHYSICS_KEY, JSON.stringify(previousPhysics)],
+  );
+  await page.goto('/');
+  const backup = {
+    product: 'A/L Performance Powerhouse',
+    core: { profileSetupComplete: true, ratings: {}, attempts: [], retests: [] },
+    study_tracker: {
+      sessions: [trackerSession({ id: 'restored' }), trackerSession({ id: `<b>`, subject: '<b>' })],
+    },
+    physics_intelligence: {
+      attempts: [
+        { familyId: 'FAM126', outcome: 'correct', timeSeconds: 60 },
+        { familyId: 'FAM126', outcome: '<img src=x>', timeSeconds: 60 },
+      ],
+    },
+  };
+  await page.locator('#data-btn').click();
+  await page.locator('#import-file').setInputFiles({
+    name: 'backup.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(backup)),
+  });
+  await expect(page.locator('#toast')).toContainText(/2 invalid record/);
+  expect(messages[0]).toMatch(/1 Study Tracker session\(s\), 1 Physics Intelligence attempt\(s\)/);
+  expect(messages[0]).toMatch(/Study Tracker sessions and Physics Intelligence attempts will be replaced/);
+  const stored = await page.evaluate(
+    ([t, p]) => ({
+      tracker: JSON.parse(localStorage.getItem(t)),
+      trackerRecovery: JSON.parse(localStorage.getItem(`${t}_recovery`)),
+      physics: JSON.parse(localStorage.getItem(p)),
+      physicsRecovery: JSON.parse(localStorage.getItem(`${p}_recovery`)),
+    }),
+    [TRACKER_KEY, PHYSICS_KEY],
+  );
+  expect(stored.tracker.sessions.map(s => s.id)).toEqual(['restored']);
+  expect(stored.physics.attempts.map(a => a.outcome)).toEqual(['correct']);
+  expect(stored.trackerRecovery[0].state).toEqual(previousTracker);
+  expect(stored.physicsRecovery[0].state).toEqual(previousPhysics);
+});
+
+test('Physics Intelligence validates stored attempts and reports a bad import file', async ({ page }) => {
+  const errors = trackErrors(page);
+  const stored = {
+    version: 1,
+    attempts: [
+      { familyId: 'FAM126', outcome: 'wrong', timeSeconds: 80, confidence: 4 },
+      { familyId: 'FAM126', outcome: '<b id="pwned">x</b>', timeSeconds: 80, confidence: 4 },
+      { familyId: 'FAM126', outcome: 'slow', timeSeconds: 'later', confidence: 4 },
+    ],
+  };
+  await page.addInitScript(
+    ([key, value]) => {
+      if (!sessionStorage.getItem('__seeded')) {
+        localStorage.setItem(key, value);
+        sessionStorage.setItem('__seeded', '1');
+      }
+    },
+    [PHYSICS_KEY, JSON.stringify(stored)],
+  );
+  await page.goto('/physics-intelligence/');
+  const table = page.locator('#opportunityTable');
+  await expect(table).toContainText('1 wrong');
+  await expect(table).not.toContainText('NaN');
+  expect(await page.locator('#pwned').count()).toBe(0);
+  await page.locator('#importBackup').setInputFiles({
+    name: 'bad.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from('{not json'),
+  });
+  await expect(page.locator('#importStatus')).toContainText(/not valid JSON/);
+  await expect(table).toContainText('1 wrong');
+  expect(errors.filter(e => e.startsWith('pageerror'))).toEqual([]);
+});

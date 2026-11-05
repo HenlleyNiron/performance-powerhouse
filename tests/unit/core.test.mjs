@@ -197,6 +197,100 @@ describe('retest lifecycle', () => {
     const stage1 = state.retests.find(r => r.stage === 1);
     assert.deepEqual([stage1.completedAt, stage1.status, stage1.failures], [null, 'failed-open', 1]);
   });
+
+  // A logged transfer pass that closed stage 1, ready for a correction.
+  const closedTransfer = (passOverrides = {}) => {
+    const source = attempt();
+    const state = { attempts: [source], retests: core.createRetests(source, [3, 7], ids) };
+    const pass = attempt({
+      type: 'fresh-transfer',
+      date: '2026-10-05',
+      earned: 10,
+      error: '',
+      ...passOverrides,
+    });
+    core.applyRetestOutcome(state.retests, pass);
+    state.attempts.push(pass);
+    const correct = changes => {
+      const corrected = { ...pass, ...changes };
+      state.attempts[1] = corrected;
+      core.reconcileEditedAttempt(state, corrected, [3, 7], ids);
+      return corrected;
+    };
+    return { state, pass, correct, stage: n => state.retests.find(r => r.stage === n) };
+  };
+
+  test('moving a verification pass to another topic reopens the check it no longer verifies', () => {
+    const { pass, correct, stage } = closedTransfer();
+    assert.equal(stage(1).completedAt, '2026-10-05');
+    correct({ topicKey: 'physics|2|0' });
+    assert.deepEqual(plain([stage(1).completedAt, stage(1).attempts, stage(1).failures]), [null, [], 0]);
+    assert.equal(stage(1).status, undefined);
+    assert.notEqual(stage(1).lastAttemptId, pass.id);
+  });
+
+  test('re-dating a verification pass to before the due date reopens the check', () => {
+    const { correct, stage } = closedTransfer();
+    correct({ date: '2026-10-02' }); // stage 1 was due 2026-10-04
+    assert.equal(stage(1).completedAt, null);
+    assert.equal(stage(1).attempts.length, 0);
+  });
+
+  test('retyping a verification pass moves its evidence to the stage it now matches', () => {
+    const { correct, stage } = closedTransfer({ date: '2026-10-09' });
+    assert.equal(stage(1).completedAt, '2026-10-09');
+    correct({ type: 'delayed-retest' });
+    assert.equal(stage(1).completedAt, null);
+    assert.equal(stage(2).completedAt, '2026-10-09');
+  });
+
+  test('retyping a verification pass to a source type reopens its check and schedules its own', () => {
+    const { pass, state, correct, stage } = closedTransfer();
+    correct({ type: 'topic-question', earned: 6, error: 'M' });
+    assert.equal(stage(1).completedAt, null);
+    assert.equal(state.retests.filter(r => r.sourceAttemptId === pass.id).length, 2);
+  });
+
+  test('a verification attempt corrected onto its due date closes that check', () => {
+    const source = attempt();
+    const state = { attempts: [source], retests: core.createRetests(source, [3, 7], ids) };
+    const early = attempt({ type: 'fresh-transfer', date: '2026-10-02', earned: 10, error: '' });
+    assert.equal(core.applyRetestOutcome(state.retests, early), null);
+    state.attempts.push(early);
+    const fixed = { ...early, date: '2026-10-04' };
+    state.attempts[1] = fixed;
+    core.reconcileEditedAttempt(state, fixed, [3, 7], ids);
+    const stage1 = state.retests.find(r => r.stage === 1);
+    assert.deepEqual(plain(stage1.attempts), [{ attemptId: early.id, date: '2026-10-04', passed: true }]);
+  });
+
+  test('a corrected attempt with a stale launch link falls back to the unambiguous check', () => {
+    const { state, correct } = closedTransfer();
+    const other = attempt({ topicKey: 'physics|2|0' });
+    state.attempts.push(other);
+    state.retests.push(...core.createRetests(other, [3, 7], ids));
+    const launched = state.retests.find(r => r.stage === 1 && r.topicKey === 'physics|1|5');
+    state.attempts[1].retestId = launched.id;
+    correct({ topicKey: 'physics|2|0', retestId: launched.id });
+    const moved = state.retests.find(r => r.stage === 1 && r.topicKey === 'physics|2|0');
+    assert.equal(launched.completedAt, null);
+    assert.equal(moved.completedAt, '2026-10-05');
+  });
+
+  test('an attempt without a date never verifies a check', () => {
+    const source = attempt();
+    const retests = core.createRetests(source, [3, 7], ids);
+    const undated = { ...attempt({ type: 'fresh-transfer', earned: 10, error: '' }), date: undefined };
+    assert.equal(core.applyRetestOutcome(retests, undated), null);
+  });
+
+  test('a corrected attempt still verifying its check stays linked to exactly one check', () => {
+    const { pass, state, correct } = closedTransfer();
+    correct({ note: 'clarified working', minutes: 25 });
+    const linked = state.retests.filter(r => r.attempts.some(e => e.attemptId === pass.id));
+    assert.equal(linked.length, 1);
+    assert.equal(linked[0].completedAt, '2026-10-05');
+  });
 });
 
 describe('sanitisation', () => {

@@ -298,6 +298,23 @@
   }
 
   /**
+   * Whether an attempt can count as evidence for a scheduled check: the matching
+   * verification type for the stage, the same topic, on or after the due date, and
+   * not the source attempt itself.
+   * @param {Retest} retest
+   * @param {Partial<Attempt>} attempt
+   */
+  function canVerify(retest, attempt) {
+    return (
+      attempt.type === (retest.stage === 1 ? 'fresh-transfer' : 'delayed-retest') &&
+      attempt.topicKey === retest.topicKey &&
+      typeof attempt.date === 'string' &&
+      attempt.date >= retest.due &&
+      retest.sourceAttemptId !== attempt.id
+    );
+  }
+
+  /**
    * Records a verification attempt against at most ONE eligible scheduled check.
    * When the student launched the attempt from a specific retest (`attempt.retestId`)
    * only that check is touched; otherwise a check is linked only if it is unambiguous.
@@ -310,16 +327,8 @@
    */
   function applyRetestOutcome(retests, attempt) {
     if (!attempt || !['fresh-transfer', 'delayed-retest'].includes(attempt.type)) return null;
-    const stage = attempt.type === 'fresh-transfer' ? 1 : 2;
     const eligible = retests
-      .filter(
-        r =>
-          !r.completedAt &&
-          r.topicKey === attempt.topicKey &&
-          r.stage === stage &&
-          r.due <= attempt.date &&
-          r.sourceAttemptId !== attempt.id,
-      )
+      .filter(r => !r.completedAt && canVerify(r, attempt))
       .sort((a, b) => a.due.localeCompare(b.due));
     /** @type {Retest | null} */
     let retest = null;
@@ -402,7 +411,11 @@
 
   /**
    * Keeps the retest schedule consistent after an attempt is corrected:
-   *  - checks this attempt verified are re-evaluated against the corrected marks;
+   *  - checks this attempt verified are re-evaluated against the corrected marks,
+   *    and the attempt is unlinked from any check it no longer qualifies for
+   *    (corrected type, topic, or a date before the check was due);
+   *  - a corrected verification attempt that is no longer linked to any check is
+   *    applied to the one it now qualifies for, exactly as a new attempt would be;
    *  - a source attempt that now shows lost marks gets its checks scheduled;
    *  - untouched checks follow a corrected date/topic, or disappear if the
    *    correction shows full credit.
@@ -415,13 +428,23 @@
    */
   function reconcileEditedAttempt(state, attempt, intervals = DEFAULT_RETEST_INTERVALS, idFn = makeId) {
     const byId = new Map(state.attempts.map(a => [a.id, a]));
+    const linksTo = r => (r.attempts || []).some(e => e && e.attemptId === attempt.id);
     state.retests.forEach(r => {
-      if ((r.attempts || []).some(e => e && e.attemptId === attempt.id)) recomputeRetest(r, byId);
+      if (!linksTo(r)) return;
+      if (!canVerify(r, attempt)) r.attempts = r.attempts.filter(e => !e || e.attemptId !== attempt.id);
+      recomputeRetest(r, byId);
     });
     if (VERIFICATION_TYPES.includes(attempt.type)) {
       state.retests = state.retests.filter(
         r => r.sourceAttemptId !== attempt.id || (r.attempts || []).length || r.completedAt,
       );
+      if (!state.retests.some(linksTo)) {
+        // A launch link to a check the corrected attempt cannot verify is stale;
+        // fall back to the unambiguous match a new attempt would get.
+        const target = attempt.retestId && state.retests.find(r => r.id === attempt.retestId);
+        const stale = Boolean(attempt.retestId) && !(target && canVerify(target, attempt));
+        applyRetestOutcome(state.retests, stale ? { ...attempt, retestId: null } : attempt);
+      }
       return;
     }
     const own = state.retests.filter(r => r.sourceAttemptId === attempt.id);

@@ -1,0 +1,53 @@
+WEEKLY ACCOMPLISHMENTS ENGINE
+Count output, not system maintenance.
+Exam-output work is separated from supporting and passive/admin activity. Uncertain tracker classifications are flagged rather than guessed.
+EXAM EVIDENCE SESSIONS
+0
+tracked minutes classified as evidence-producing
+SUPPORTING
+0
+targeted theory/lecture/practical support
+PASSIVE/ADMIN
+0
+resource browsing, organization, planning
+CONVERSION
+—
+evidence-producing tracked time ÷ all tracked time
+COPYABLE REPORT
+Last 7 days
+# Performance Powerhouse · Weekly Evidence Report
+**Window:** 2027-02-09 → 2027-02-15 · Asia/Colombo
+## Exam-output work
+- Marked attempts: 5
+- Timed/full paper attempts: 1
+- Full papers: 1
+- Paper sections: 0
+- Diagnosed lost-mark attempts: 2
+- Repairs completed: 0
+- Closed-book reattempts: 0
+- Fresh transfers: 1
+- Delayed retests: 1
+- Observed marks recovered on comparable mark scales: 0
+## Supporting work
+- Targeted/supporting tracker time: 0 min
+## Passive / admin work
+- Passive/admin tracker time: 0 min
+- Total tracked time: 0 min
+- Direct evidence-producing tracker time: 0 min
+## Score-gain evidence
+- No comparable post-repair score gain logged in this window.
+## Active debt at week end
+- Open repair chains: 6
+- Overdue retests: 8
+- Confidence traps recorded in window: 1
+## Classification uncertainty
+- Tracker sessions with uncertain classification: 0 — none.
+> Time describes behaviour. Marked evidence, repair closure, transfer and delayed survival are the primary outputs.
+Copy Markdown
+Download .md
+INTEROPERABILITY
+AI Coach Brief + Anki bridge
+AI receives a locally assembled brief only when you explicitly copy it. Nothing is silently uploaded. Anki export includes concise retrieval-suitable correction rules only.
+Copy 14-day AI Coach Brief
+Export Anki-ready CSV
+Method/calculation errors are deliberately excluded from automatic Anki export; practice is usually a better repair than a flashcard.

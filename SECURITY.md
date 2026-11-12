@@ -21,8 +21,9 @@ Only the latest release on `main` (and the live demo built from it) receives fix
 
 - **Local-first.** Study records live in the browser's `localStorage`. The app makes no network
   requests for student data and has no backend, accounts, analytics or third-party scripts.
-- **Untrusted input.** Stored state and imported backup files are validated and sanitised by
-  `js/core.js` before use; imports are summarised and confirmed before anything is written.
+- **Untrusted input.** Stored state and imported backup files — including the Study Tracker and
+  Physics Intelligence records — are validated and sanitised by `js/core.js` before use; imports
+  are summarised and confirmed, and every record about to be replaced is snapshotted first.
 - **Content-Security-Policy.** Every page ships `script-src 'self'` with no inline scripts or
   event-handler attributes, so injected markup cannot execute script.
 - **Offline cache.** The service worker caches only an explicit allowlist of same-origin

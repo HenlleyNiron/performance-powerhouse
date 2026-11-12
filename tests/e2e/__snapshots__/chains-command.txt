@@ -1,0 +1,163 @@
+TODAY'S MARK-PRODUCING COMMAND
+Close overdue transfer: Equations of motion (SUVAT)
+3 day(s) overdue · 0 prior failed check(s).
+Physics
+30 min
+Fresh transfer
+closed-book where applicable
+Start 30-min block
+Start 120-min paper block
+Course-correct me
+Start in Study Tracker
+WHY THIS?
+3 day(s) overdue · 0 prior failed check(s).
+WHAT EXACTLY?
+30-minute closed-book fresh question → strict marking → update the same evidence chain.
+COMPLETION
+A marked fresh-transfer attempt is saved; the check closes only on a clean independent pass.
+THE GOVERNING LOOP
+Attempt → mark → diagnose → repair → reattempt → fresh transfer → delayed retest
+01
+Test honestly
+90/120-minute deep work by default. AI stays out of TEST.
+02
+Diagnose the leak
+Raw score, trusted score, confidence, guesses and one primary cause.
+03
+Close the loop
+Small repair, closed-book reattempt, a fresh transfer question, then delayed retest. Activity without closure does not count as mastery.
+VERIFIED ACCURACY
+76%
+raw marks earned ÷ marks available
+TRUSTED ACCURACY
+20%
+only attempts where unsupported/lucky marks were audited
+RETESTS DUE
+2
+unfinished delayed retrieval checks
+EVIDENCE DAYS · 7D
+3/7
+days with at least one marked attempt
+2027 TARGET
+Unset
+Set only when a useful/official date exists
+PAPER OUTPUT · 7D
+1
+paper sections and full papers
+Physics
+60%
+3/129 tested
+0% syllabus plan
+Chemistry
+75%
+3/159 tested
+0% syllabus plan
+Biology
+81%
+2/245 tested
+0% syllabus plan
+MARKS TARGETED
+28
+initial lost marks with an explicit repair completed
+OBSERVED RECOVERED
+22
+same-mark-scale improvement after repair; descriptive, not causal
+REPAIR CLOSURE
+20%
+1/5 repaired chains closed
+EVIDENCE CONVERSION TODAY
+—
+0 of 0 tracked min produced/directly supported exam evidence
+2027 CAMPAIGN · NO FAKE COUNTDOWNS
+Build the attempt that you want to sit.
+V5 is aligned to your chosen A/L cycle. No unofficial countdown is loaded; execution evidence comes first.
+Set planning target
+01 · BASE
+Routine before volume
+Protect sleep, then execute repeatable 90/120-minute blocks.
+02 · LEARN
+Official source boundary
+Use theory to repair exposed gaps—not to build an endless content queue.
+03 · PROVE
+Paper Engine every week
+Closed-book attempts, strict marking, confidence and root-cause evidence.
+04 · CLOSE
+Retest until stable
+Immediate correction is not mastery. Fresh delayed retrieval decides closure.
+The target date is deliberately user-controlled. Do not anchor the system to an unofficial 2027 timetable; update it when you have a date you actually want to plan against.
+PRIORITY QUEUE
+Delayed retests
+2/6 scheduled retrieval checks completed. Fresh questions only.
+Equations of motion (SUVAT)
+Physics · fresh-transfer check
+3d overdue
+Physical quantities & SI units
+Physics · fresh-transfer check
+2d overdue
+Equations of motion (SUVAT)
+Physics · delayed stability check
+due 2027-02-16
+Physical quantities & SI units
+Physics · delayed stability check
+due 2027-02-17
+DIAGNOSIS
+Marks lost by error family
+Attack the recurring cause—not the loudest chapter.
+K · Knowledge gap
+6
+C · Conceptual model
+3
+R · Retrieval failure
+4
+M · Method / calculation
+5
+P · Presentation
+7
+T · Timing / selection
+10
+A · Attention / misreading
+5
+G · Lucky / unsupported guess
+0
+WEAK-SIGNAL SCAN
+Highest-return topics
+Low rating plus actual lost marks rises to the top.
+Inorganic ions & their functions (Na⁺, K⁺, Ca²⁺, Mg²⁺, Fe²⁺, Cl⁻, PO₄³⁻, NO₃⁻)
+Biology · 10 marks lost
+Attack
+Equations of motion (SUVAT)
+Physics · 3 marks lost · 1 retest due
+Attack
+Physical quantities & SI units
+Physics · 4 marks lost · 1 retest due
+Attack
+Characteristics of living organisms
+Biology · 7 marks lost
+Attack
+Fundamental particles & atomic structure
+Chemistry · 6 marks lost
+Attack
+LATEST PROOF
+Recent attempts
+Plans do not enter this feed—only completed evidence.
+View all
+Fixture back-fail
+Biology · Full paper · Inorganic ions & their functions (Na⁺, K⁺, Ca²⁺, Mg²⁺, Fe²⁺, Cl⁻, PO₄³⁻, NO₃⁻) · 6/10 (60%) · T Timing / selection
+Fixture open-src
+Physics · Topic question · Physical quantities & SI units · 6/10 (60%) · full credit
+Fixture diag-src
+Physics · MCQ set · Equations of motion (SUVAT) · 7/10 (70%) · C Conceptual model
+Fixture plan-src
+Physics · Structured essay · Simple harmonic motion — definition & equations · 5/10 (50%) · M Method / calculation
+CALIBRATION
+Confidence traps
+High confidence plus lost marks exposes dangerous blind spots.
+Relative atomic & molecular mass
+Chemistry · 2 guessed/unsupported items · A Attention / misreading
+Retest
+Inorganic ions & their functions (Na⁺, K⁺, Ca²⁺, Mg²⁺, Fe²⁺, Cl⁻, PO₄³⁻, NO₃⁻)
+Biology · expected correct · 4 marks lost · T Timing / selection
+Retest
+Equations of motion (SUVAT)
+Physics · expected correct · 3 marks lost · C Conceptual model
+Retest

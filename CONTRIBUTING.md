@@ -33,6 +33,11 @@ npm run check                     # lint, unit/integrity tests, browser tests
 Read [`AGENTS.md`](AGENTS.md) before changing code: it lists the layout and the invariants that
 protect students' data (storage keys, sanitisation, CSP, retest rules).
 
+**Text snapshots.** `tests/e2e/snapshots.spec.mjs` freezes the clock and compares the visible text
+of every panel with the files in `tests/e2e/__snapshots__/`. If it fails and you did not mean to
+change what students see, you have found a regression. If the change is intended, run
+`npm run test:snapshots:update`, read the snapshot diff line by line, and commit it with your change.
+
 Before opening a pull request:
 
 1. `npm run check` passes.

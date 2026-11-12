@@ -1,0 +1,37 @@
+60-SECOND ORIENTATION
+Powerhouse is not a timetable. It is an evidence-and-repair system.
+The central question is simple: What is costing me marks, and have I actually fixed it? Everything else is secondary.
+01
+TEST
+Attempt closed-book and under a real time limit. Keep the first attempt clean: no notes, Google or AI.
+02
+MARK
+Mark strictly. Record raw score, confidence and guesses. A lucky correct answer is not secure mastery.
+03
+DIAGNOSE
+Name the primary cause: knowledge, retrieval, concept, method, presentation, timing, attention or unsupported guess.
+04
+REPAIR
+Repair the smallest thing that actually failed. Do not restart an entire chapter for one narrow error.
+05
+TRANSFER
+Reattempt closed-book, then use a fresh question. Memorising the previous marking scheme is not transfer.
+06
+RETEST
+Return after a delay. Only repeated clean retrieval closes the loop.
+USE AI IN THE RIGHT PHASE
+AI belongs after TEST.
+Use AI to explain a diagnosed gap, compare your reasoning, generate a fresh transfer question or compress a correction rule. Do not use it to contaminate the first attempt.
+LOCAL-FIRST PRIVACY
+Your marks stay in this browser.
+V5 does not require an account or central marks database. Export a JSON backup regularly. Share-safe mode hides personal performance details before screenshots.
+DO NOT OPTIMISE THE TRACKER
+The tracker is not the work.
+If you are spending more time redesigning dashboards than answering and correcting questions, stop. One honest marked attempt is more useful than another system rebuild.
+RECOMMENDED PROGRESSION
+Build exam skill gradually.
+Topic questions → mixed questions → paper sections → full timed papers. Let performance evidence decide the next repair.
+VALIDATED PHYSICS LAYER
+Open Physics Intelligence.
+Explore the validated 2000–2025 MCQ distribution and 2019–2025 question families without treating historical frequency as prediction.
+Open Physics Intelligence →

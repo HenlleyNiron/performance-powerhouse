@@ -1,0 +1,35 @@
+EVIDENCE LEDGER
+Completed question attempts
+Raw score, trusted score, time, confidence, guesses and causes of lost marks.
+Log attempt
+DATE SUBJECT TYPE QUESTION / TOPIC SCORE CONFIDENCE ERROR
+2027-02-15 Biology Topic question Enzyme kinetics graph
+Enzymes: active site, lock-and-key & induced fit 3/6 · 50% high C Conceptual model Edit Delete
+2027-02-14 Chemistry MCQ set Concentration & dilution
+Concentration — mol/dm³ & g/dm³ 10/10 · 100% · trusted 10/10 high — Edit Delete
+2027-02-12 Physics Delayed retest Delayed retest · vertical circle
+Circular motion & centripetal force 10/10 · 100% high — Edit Delete
+2027-02-11 Biology Fresh transfer Fresh transfer · ECG interpretation
+Cardiac conduction: SA node, AV node, bundle of His, Purkinje fibres 10/10 · 100% medium — Edit Delete
+2027-02-09 Physics Full paper Physics Paper I · timed
+Physical quantities & SI units 38/50 · 76% · trusted 35/50 medium T Timing / selection Edit Delete
+2027-02-08 Chemistry Fresh transfer Fresh transfer · Kc ↔ Kp
+Equilibrium constant Kc — expression & calculation 9/12 · 75% high M Method / calculation Edit Delete
+2027-02-06 Biology Closed-book reattempt Closed-book reattempt · conduction
+Cardiac conduction: SA node, AV node, bundle of His, Purkinje fibres 10/10 · 100% medium — Edit Delete
+2027-02-05 Physics Fresh transfer Fresh transfer · conical pendulum
+Circular motion & centripetal force 10/10 · 100% medium — Edit Delete
+2027-02-04 Chemistry MCQ set Electrophilic substitution
+Esters — formation & hydrolysis 8/10 · 80% · trusted 8/10 low P Presentation Edit Delete
+2027-02-03 Biology Structured essay Dihybrid cross explanation
+Mendel's laws: Law of Segregation (monohybrid) 10/10 · 100% high — Edit Delete
+2027-02-01 Physics Closed-book reattempt Closed-book reattempt · banked track
+Circular motion & centripetal force 10/10 · 100% medium — Edit Delete
+2027-01-30 Physics MCQ set Kirchhoff laws set
+Kirchhoff's current & voltage laws 9/10 · 90% · trusted 9/10 medium A Attention / misreading Edit Delete
+2027-01-29 Biology MCQ set Cardiac conduction MCQs
+Cardiac conduction: SA node, AV node, bundle of His, Purkinje fibres 7/10 · 70% · trusted 6/10 medium R Retrieval failure Edit Delete
+2027-01-28 Chemistry Structured essay Kp from partial pressures
+Equilibrium constant Kc — expression & calculation 6/12 · 50% medium M Method / calculation Edit Delete
+2027-01-26 Physics Topic question Circular motion · banked track
+Circular motion & centripetal force 4/10 · 40% high C Conceptual model Edit Delete

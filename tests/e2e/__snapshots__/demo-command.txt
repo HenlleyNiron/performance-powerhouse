@@ -1,0 +1,172 @@
+TODAY'S MARK-PRODUCING COMMAND
+Close overdue transfer: Equilibrium constant Kc — expression & calculation
+15 day(s) overdue · 1 prior failed check(s).
+Chemistry
+30 min
+Fresh transfer
+closed-book where applicable
+Start 30-min block
+Start 120-min paper block
+Course-correct me
+Start in Study Tracker
+WHY THIS?
+15 day(s) overdue · 1 prior failed check(s).
+WHAT EXACTLY?
+30-minute closed-book fresh question → strict marking → update the same evidence chain.
+COMPLETION
+A marked fresh-transfer attempt is saved; the check closes only on a clean independent pass.
+THE GOVERNING LOOP
+Attempt → mark → diagnose → repair → reattempt → fresh transfer → delayed retest
+01
+Test honestly
+90/120-minute deep work by default. AI stays out of TEST.
+02
+Diagnose the leak
+Raw score, trusted score, confidence, guesses and one primary cause.
+03
+Close the loop
+Small repair, closed-book reattempt, a fresh transfer question, then delayed retest. Activity without closure does not count as mastery.
+VERIFIED ACCURACY
+81%
+raw marks earned ÷ marks available
+TRUSTED ACCURACY
+76%
+only attempts where unsupported/lucky marks were audited
+RETESTS DUE
+8
+unfinished delayed retrieval checks
+EVIDENCE DAYS · 7D
+5/7
+days with at least one marked attempt
+2027 TARGET
+Unset
+Set only when a useful/official date exists
+PAPER OUTPUT · 7D
+1
+paper sections and full papers
+Physics
+81%
+3/129 tested
+27% syllabus plan
+Chemistry
+75%
+3/159 tested
+14% syllabus plan
+Biology
+87%
+3/245 tested
+31% syllabus plan
+MARKS TARGETED
+15
+initial lost marks with an explicit repair completed
+OBSERVED RECOVERED
+12
+same-mark-scale improvement after repair; descriptive, not causal
+REPAIR CLOSURE
+33%
+1/3 repaired chains closed
+EVIDENCE CONVERSION TODAY
+—
+0 of 0 tracked min produced/directly supported exam evidence
+2027 CAMPAIGN · NO FAKE COUNTDOWNS
+Build the attempt that you want to sit.
+V5 is aligned to your chosen A/L cycle. No unofficial countdown is loaded; execution evidence comes first.
+Set planning target
+01 · BASE
+Routine before volume
+Protect sleep, then execute repeatable 90/120-minute blocks.
+02 · LEARN
+Official source boundary
+Use theory to repair exposed gaps—not to build an endless content queue.
+03 · PROVE
+Paper Engine every week
+Closed-book attempts, strict marking, confidence and root-cause evidence.
+04 · CLOSE
+Retest until stable
+Immediate correction is not mastery. Fresh delayed retrieval decides closure.
+The target date is deliberately user-controlled. Do not anchor the system to an unofficial 2027 timetable; update it when you have a date you actually want to plan against.
+PRIORITY QUEUE
+Delayed retests
+3/14 scheduled retrieval checks completed. Fresh questions only.
+Equilibrium constant Kc — expression & calculation
+Chemistry · fresh-transfer check
+15d overdue
+Kirchhoff's current & voltage laws
+Physics · fresh-transfer check
+13d overdue
+Equilibrium constant Kc — expression & calculation
+Chemistry · delayed stability check
+11d overdue
+Cardiac conduction: SA node, AV node, bundle of His, Purkinje fibres
+Biology · delayed stability check
+10d overdue
+Kirchhoff's current & voltage laws
+Physics · delayed stability check
+9d overdue
+Esters — formation & hydrolysis
+Chemistry · fresh-transfer check
+8d overdue
+DIAGNOSIS
+Marks lost by error family
+Attack the recurring cause—not the loudest chapter.
+K · Knowledge gap
+0
+C · Conceptual model
+9
+R · Retrieval failure
+3
+M · Method / calculation
+9
+P · Presentation
+2
+T · Timing / selection
+12
+A · Attention / misreading
+1
+G · Lucky / unsupported guess
+0
+WEAK-SIGNAL SCAN
+Highest-return topics
+Low rating plus actual lost marks rises to the top.
+Equilibrium constant Kc — expression & calculation
+Chemistry · 9 marks lost · 2 retest due
+Attack
+Physical quantities & SI units
+Physics · 12 marks lost · 1 retest due
+Attack
+Circular motion & centripetal force
+Physics · 6 marks lost
+Attack
+Esters — formation & hydrolysis
+Chemistry · 2 marks lost · 2 retest due
+Attack
+Cardiac conduction: SA node, AV node, bundle of His, Purkinje fibres
+Biology · 3 marks lost · 1 retest due
+Attack
+LATEST PROOF
+Recent attempts
+Plans do not enter this feed—only completed evidence.
+View all
+Enzyme kinetics graph
+Biology · Topic question · Enzymes: active site, lock-and-key & induced fit · 3/6 (50%) · C Conceptual model
+Concentration & dilution
+Chemistry · MCQ set · Concentration — mol/dm³ & g/dm³ · 10/10 (100%) · trusted 10/10 · full credit
+Delayed retest · vertical circle
+Physics · Delayed retest · Circular motion & centripetal force · 10/10 (100%) · full credit
+Fresh transfer · ECG interpretation
+Biology · Fresh transfer · Cardiac conduction: SA node, AV node, bundle of His, Purkinje fibres · 10/10 (100%) · full credit
+CALIBRATION
+Confidence traps
+High confidence plus lost marks exposes dangerous blind spots.
+Physical quantities & SI units
+Physics · 2 guessed/unsupported items · T Timing / selection
+Retest
+Circular motion & centripetal force
+Physics · expected correct · 6 marks lost · C Conceptual model
+Retest
+Cardiac conduction: SA node, AV node, bundle of His, Purkinje fibres
+Biology · 1 guessed/unsupported item · R Retrieval failure
+Retest
+Equilibrium constant Kc — expression & calculation
+Chemistry · expected correct · 3 marks lost · M Method / calculation
+Retest

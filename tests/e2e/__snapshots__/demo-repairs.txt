@@ -1,0 +1,211 @@
+ERROR INTELLIGENCE · MARKS FIRST
+Repair what is repeatedly costing marks.
+V5 ranks weaknesses using your own evidence: marks lost, recurrence, confidence traps and unfinished retests. This is not a prediction engine; it is a repair-priority engine.
+Log repair evidence
+LOST MARKS · 30D
+36
+recorded marks lost in recent attempts
+DOMINANT FAMILY
+T · Timing / selection
+largest current source of lost marks
+RETEST CLOSURE
+21%
+scheduled checks completed
+ACTIVE PRIORITIES
+7
+topics with meaningful repair evidence
+NEXT REPAIRS
+Highest-return weaknesses
+Composite priority = marks lost + recurrence + calibration risk + retest debt.
+Equilibrium constant Kc — expression & calculation
+Chemistry · 9 marks lost · 2 error hits · 1 confidence trap · retest debt
+P54
+Repair
+Physical quantities & SI units
+Physics · 12 marks lost · retest debt
+P53
+Repair
+Esters — formation & hydrolysis
+Chemistry · 2 marks lost · retest debt
+P24
+Repair
+Enzymes: active site, lock-and-key & induced fit
+Biology · 3 marks lost · 1 confidence trap · retest debt
+P23
+Repair
+Circular motion & centripetal force
+Physics · 6 marks lost · 1 confidence trap
+P22
+Repair
+Kirchhoff's current & voltage laws
+Physics · 1 marks lost · retest debt
+P19
+Repair
+CLOSURE QUEUE
+Fresh transfer & delayed retest
+A correction is not closed just because the old answer now looks obvious.
+Equilibrium constant Kc — expression & calculation
+Chemistry · Fresh transfer
+15d overdue
+Kirchhoff's current & voltage laws
+Physics · Fresh transfer
+13d overdue
+Equilibrium constant Kc — expression & calculation
+Chemistry · Delayed stability
+11d overdue
+Cardiac conduction: SA node, AV node, bundle of His, Purkinje fibres
+Biology · Delayed stability
+10d overdue
+Kirchhoff's current & voltage laws
+Physics · Delayed stability
+9d overdue
+Esters — formation & hydrolysis
+Chemistry · Fresh transfer
+8d overdue
+SUBJECT LENS
+Diagnose the right failure
+The same wrong mark can require a different repair in each subject.
+Physics · find the first wrong decision
+Model/concept → equation choice → graph → sign/direction → algebra → units. Do not repair only the final arithmetic if the reasoning broke earlier.
+Chemistry · memory vs reasoning
+Forgotten condition/equation/observation = retrieval repair. Equilibrium/mechanism/calculation reasoning = conceptual or method repair.
+Biology · retrieval vs marking production
+Check factual recall, statement discrimination, exact terminology, sequence, diagrams and whether the required marking points were explicitly produced.
+CLOSURE STANDARD
+When may I call an error fixed?
+1 · Repair
+Fix the smallest actual cause.
+2 · Reattempt
+Close the source and reproduce the reasoning.
+3 · Fresh transfer
+Pass a different question testing the same idea.
+4 · Delayed retest
+Prove the correction survives after time has passed.
+V5 EVIDENCE GRAPH
+Repair chains · source → survival
+Statuses are derived from actual attempts whenever possible. A later recurrence reopens a previously closed weakness.
+Cardiac conduction: SA node, AV node, bundle of His, Purkinje fibres
+Biology · Cardiac conduction MCQs · 7/10 · R Retrieval failure
+Delayed retest due
+ORIGINAL
+7/10
+DIAGNOSIS
+R Retrieval failure
+REPAIR
+SA node → AV node → bundle of His → Purkinje fibres.
+REATTEMPT
+10/10 clean pass
+TRANSFER
+10/10 clean pass
+DELAYED
+Due after transfer
+STATE
+Delayed retest due
+Delayed retest
+Equilibrium constant Kc — expression & calculation
+Chemistry · Kp from partial pressures · 6/12 · M Method / calculation
+Reattempt due
+ORIGINAL
+6/12
+DIAGNOSIS
+M Method / calculation
+REPAIR
+Convert mole fractions before substituting.
+REATTEMPT
+Due
+TRANSFER
+Due after reattempt
+DELAYED
+Due after transfer
+STATE
+Reattempt due
+Closed-book reattempt
+Enzymes: active site, lock-and-key & induced fit
+Biology · Enzyme kinetics graph · 3/6 · C Conceptual model
+Repair planned
+ORIGINAL
+3/6
+DIAGNOSIS
+C Conceptual model
+REPAIR
+Planned · not completed
+REATTEMPT
+Due
+TRANSFER
+Due after reattempt
+DELAYED
+Due after transfer
+STATE
+Repair planned
+Log smallest repair
+Physical quantities & SI units
+Physics · Physics Paper I · timed · 38/50 · T Timing / selection
+Repair planned
+ORIGINAL
+38/50
+DIAGNOSIS
+T Timing / selection
+REPAIR
+Planned · not completed
+REATTEMPT
+Due
+TRANSFER
+Due after reattempt
+DELAYED
+Due after transfer
+STATE
+Repair planned
+Log smallest repair
+Esters — formation & hydrolysis
+Chemistry · Electrophilic substitution · 8/10 · P Presentation
+Repair planned
+ORIGINAL
+8/10
+DIAGNOSIS
+P Presentation
+REPAIR
+Planned · not completed
+REATTEMPT
+Due
+TRANSFER
+Due after reattempt
+DELAYED
+Due after transfer
+STATE
+Repair planned
+Log smallest repair
+Kirchhoff's current & voltage laws
+Physics · Kirchhoff laws set · 9/10 · A Attention / misreading
+Repair planned
+ORIGINAL
+9/10
+DIAGNOSIS
+A Attention / misreading
+REPAIR
+Planned · not completed
+REATTEMPT
+Due
+TRANSFER
+Due after reattempt
+DELAYED
+Due after transfer
+STATE
+Repair planned
+Log smallest repair
+Circular motion & centripetal force
+Physics · Circular motion · banked track · 4/10 · C Conceptual model
+Closed
+ORIGINAL
+4/10
+DIAGNOSIS
+C Conceptual model
+REPAIR
+Draw the free-body diagram before choosing an equation.
+REATTEMPT
+10/10 clean pass
+TRANSFER
+10/10 clean pass
+DELAYED
+10/10 survived
+STATE
+Closed

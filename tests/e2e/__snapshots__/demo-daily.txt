@@ -1,0 +1,58 @@
+DAILY EXECUTION LAYER
+Output recorded. Close the highest-value error loop before chasing volume.
+The useful daily-output layer is integrated into Powerhouse V3. Paper/error evidence stays authoritative; this layer tracks daily volume and target consistency. If work is already logged in Evidence, do not manually count it twice.
+TODAY · TARGET SCORE
+Optional
+TODAY · OUTPUTS
+21
+7-DAY ACTIVE DAYS
+7/7
+CURRENT STREAK
+7d
+TODAY'S SCOREBOARD
+Monday 15 Feb
+Manual extras + evidence-derived activity.
+Physics
+Structured Qs 1
+✓
+Chemistry
+No target/output yet
+—
+Biology
+MCQs 20
+✓
+LOG EXTRA OUTPUT
+Daily progress entry
+Use this for drills or work you did not already log in the Evidence ledger.
+DATE
+OPTIONAL NOTE
+Physics
+MCQS
+STRUCTURED QS
+ESSAYS
+FULL PAPERS
+RETESTS
+Chemistry
+MCQS
+STRUCTURED QS
+ESSAYS
+FULL PAPERS
+RETESTS
+Biology
+MCQS
+STRUCTURED QS
+ESSAYS
+FULL PAPERS
+RETESTS
+Save daily output
+Daily targets · editable, local-only
+EXECUTION HISTORY
+Daily output ledger
+Manual entries remain editable by deletion/re-entry; the underlying JSON backup preserves the full record.
+DATE PHYSICS CHEMISTRY BIOLOGY NOTE
+2027-02-15 Structured Qs: 1 — MCQs: 20 Sample evening block Delete
+2027-02-14 — MCQs: 18 Structured Qs: 1 Sample evening block Delete
+2027-02-13 MCQs: 16 Structured Qs: 1 — Sample evening block Delete
+2027-02-12 Structured Qs: 1 — MCQs: 14 Sample evening block Delete
+2027-02-10 — MCQs: 12 Structured Qs: 1 Sample evening block Delete
+2027-02-09 MCQs: 10 Structured Qs: 1 — Sample evening block Delete

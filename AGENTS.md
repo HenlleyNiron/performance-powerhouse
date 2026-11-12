@@ -44,6 +44,7 @@ npm test               # unit + integrity tests (fast, no browser)
 npm run test:coverage  # same, with enforced coverage thresholds for js/core.js
 npm run validate:data  # Physics Intelligence dataset consistency
 npm run test:e2e       # browser, accessibility and offline tests; first run: npx playwright install chromium
+npm run test:snapshots:update  # after an INTENDED change to visible text: review the diff, then update
 npm run check          # lint + format + typecheck + coverage + browser tests
 ```
 
@@ -56,11 +57,15 @@ Run `npm run check` before proposing a change.
 
 1. **Never lose student data.** Do not rename, delete or repurpose storage keys:
    `al_performance_powerhouse_v5`, `..._v4`, `..._v3`, `al_performance_command_centre_v3..v6`,
-   `al_v2_samra`, `..._v5_recovery`, `..._study_tracker_v1`, `..._physics_intelligence_v1`.
+   `al_v2_samra`, `..._v5_recovery`, `..._v5_unreadable`, `..._study_tracker_v1`, `..._physics_intelligence_v1`.
    Migrations copy forward and leave the source key untouched; destructive actions take a
    recovery snapshot first.
-2. **Validate at the boundary.** Everything read from storage or an imported file goes through
-   `PowerhouseCore.normalizeState` / `inspectImport`. Anything rendered with `innerHTML` must be
+2. **Validate at the boundary.** Convert untrusted values only with `toText`, `toNumber`/`asNumber`
+   and `isKeyOf` — never `String()`, `Number()` or a property lookup on a raw value (they throw on
+   some JSON objects; `tests/unit/core.property.test.mjs` guards this).
+   Everything read from storage or an imported file goes through
+   `PowerhouseCore.normalizeState` / `inspectImport` (companion pages: `sanitizeTrackerState`,
+   `sanitizePhysicsAttempts`). Anything rendered with `innerHTML` must be
    sanitised there or wrapped in `escapeHTML`.
 3. **CSP stays strict.** Every page ships `script-src 'self'`. No inline `<script>` blocks, no
    `on*=` attributes, no third-party scripts, fonts, analytics or CDNs.

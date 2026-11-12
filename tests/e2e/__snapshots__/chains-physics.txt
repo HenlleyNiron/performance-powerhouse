@@ -1,0 +1,59 @@
+PHYSICS EVIDENCE
+60% verified accuracy
+3/129
+TOPICS TESTED
+3
+ATTEMPTS
+2
+SELF-RATED
+All topics
+Weak / medium
+Has evidence
+Untested
+Retest due
+Expand all
+01
+01 · Measurements
+60% · 1/8
+▶
+02
+02 · Mechanics
+70% · 1/18
+▶
+03
+03 · Waves & Oscillations
+50% · 1/18
+▶
+04
+04 · Heat
+0/13 tested
+▶
+05
+05 · Electric Field
+0/9 tested
+▶
+06
+06 · Magnetic Field
+0/9 tested
+▶
+07
+07 · Gravitational Field
+0/6 tested
+▶
+08
+08 · Electricity
+0/11 tested
+▶
+09
+09 · Electronics
+0/12 tested
+▶
+10
+10 · Properties of Matter
+0/12 tested
+▶
+11
+11 · Matter & Radiation
+0/13 tested
+▶
+Scope note: this topic index is inherited from the supplied file. Cross-check it against the current official Sri Lankan syllabus before treating it as exhaustive.

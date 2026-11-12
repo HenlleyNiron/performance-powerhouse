@@ -101,6 +101,17 @@ a {
   align-items: center;
 }
 
+.import-status {
+  margin: 0;
+  padding: 8px max(18px, calc((100vw - 1180px) / 2));
+  color: var(--text);
+  font-size: 0.85rem;
+  background: var(--surface-2);
+}
+.import-status:empty {
+  display: none;
+}
+
 .subject-nav {
   padding: 8px max(18px, calc((100vw - 1180px) / 2));
   display: flex;

@@ -1,0 +1,20 @@
+NATIVE STUDY TRACKER
+Time describes behaviour. Output proves progress.
+The tracker is a first-class local module under /study-tracker/; it is not an iframe and does not depend on the original reference tracker.
+Open Study Tracker
+SESSIONS · 7D
+0
+completed local sessions
+TRACKED · 7D
+0m
+behavioural context, not mastery
+EVIDENCE-PRODUCING
+0m
+attempt/mark/repair/transfer/retest categories
+ACTIVE SESSION
+NO
+timestamp-based recovery state
+Execution bridge
+Command → start the recommended block → tracker measures execution → finish → log the resulting evidence → Error Engine chooses the next smallest repair.
+Start current Command action
+Open share-safe tracker

@@ -1,0 +1,240 @@
+ERROR INTELLIGENCE · MARKS FIRST
+Repair what is repeatedly costing marks.
+V5 ranks weaknesses using your own evidence: marks lost, recurrence, confidence traps and unfinished retests. This is not a prediction engine; it is a repair-priority engine.
+Log repair evidence
+LOST MARKS · 30D
+31
+recorded marks lost in recent attempts
+DOMINANT FAMILY
+T · Timing / selection
+largest current source of lost marks
+RETEST CLOSURE
+33%
+scheduled checks completed
+ACTIVE PRIORITIES
+8
+topics with meaningful repair evidence
+NEXT REPAIRS
+Highest-return weaknesses
+Composite priority = marks lost + recurrence + calibration risk + retest debt.
+Inorganic ions & their functions (Na⁺, K⁺, Ca²⁺, Mg²⁺, Fe²⁺, Cl⁻, PO₄³⁻, NO₃⁻)
+Biology · 10 marks lost · 2 error hits · 1 confidence trap
+P41
+Repair
+Equations of motion (SUVAT)
+Physics · 3 marks lost · 1 confidence trap · retest debt
+P27
+Repair
+Physical quantities & SI units
+Physics · 4 marks lost · retest debt
+P26
+Repair
+Characteristics of living organisms
+Biology · 7 marks lost
+P21
+Repair
+Fundamental particles & atomic structure
+Chemistry · 6 marks lost
+P20
+Repair
+Relative atomic & molecular mass
+Chemistry · 5 marks lost
+P18
+Repair
+CLOSURE QUEUE
+Fresh transfer & delayed retest
+A correction is not closed just because the old answer now looks obvious.
+Equations of motion (SUVAT)
+Physics · Fresh transfer
+3d overdue
+Physical quantities & SI units
+Physics · Fresh transfer
+2d overdue
+Equations of motion (SUVAT)
+Physics · Delayed stability
+due 2027-02-16
+Physical quantities & SI units
+Physics · Delayed stability
+due 2027-02-17
+SUBJECT LENS
+Diagnose the right failure
+The same wrong mark can require a different repair in each subject.
+Physics · find the first wrong decision
+Model/concept → equation choice → graph → sign/direction → algebra → units. Do not repair only the final arithmetic if the reasoning broke earlier.
+Chemistry · memory vs reasoning
+Forgotten condition/equation/observation = retrieval repair. Equilibrium/mechanism/calculation reasoning = conceptual or method repair.
+Biology · retrieval vs marking production
+Check factual recall, statement discrimination, exact terminology, sequence, diagrams and whether the required marking points were explicitly produced.
+CLOSURE STANDARD
+When may I call an error fixed?
+1 · Repair
+Fix the smallest actual cause.
+2 · Reattempt
+Close the source and reproduce the reasoning.
+3 · Fresh transfer
+Pass a different question testing the same idea.
+4 · Delayed retest
+Prove the correction survives after time has passed.
+V5 EVIDENCE GRAPH
+Repair chains · source → survival
+Statuses are derived from actual attempts whenever possible. A later recurrence reopens a previously closed weakness.
+Inorganic ions & their functions (Na⁺, K⁺, Ca²⁺, Mg²⁺, Fe²⁺, Cl⁻, PO₄³⁻, NO₃⁻)
+Biology · Fixture back-src · 4/10 · T Timing / selection
+Reopened
+ORIGINAL
+4/10
+DIAGNOSIS
+T Timing / selection
+REPAIR
+Fixture repair rule
+REATTEMPT
+10/10 clean pass
+TRANSFER
+10/10 clean pass
+DELAYED
+10/10 survived
+STATE
+Reopened by later failure
+Relative atomic & molecular mass
+Chemistry · Fixture late-src · 5/10 · A Attention / misreading
+Delayed retest due
+ORIGINAL
+5/10
+DIAGNOSIS
+A Attention / misreading
+REPAIR
+Fixture repair rule
+REATTEMPT
+10/10 clean pass
+TRANSFER
+10/10 clean pass
+DELAYED
+Due after transfer
+STATE
+Delayed retest due
+Delayed retest
+Covalent bonding — single, double, triple bonds
+Chemistry · Fixture xfer-src · 6/10 · R Retrieval failure
+Fresh transfer due
+ORIGINAL
+6/10
+DIAGNOSIS
+R Retrieval failure
+REPAIR
+Fixture repair rule
+REATTEMPT
+10/10 clean pass
+TRANSFER
+Due after reattempt
+DELAYED
+Due after transfer
+STATE
+Fresh transfer due
+Fresh transfer
+Fundamental particles & atomic structure
+Chemistry · Fixture redo-src · 4/10 · K Knowledge gap
+Reattempt due
+ORIGINAL
+4/10
+DIAGNOSIS
+K Knowledge gap
+REPAIR
+Fixture repair rule
+REATTEMPT
+Due
+TRANSFER
+Due after reattempt
+DELAYED
+Due after transfer
+STATE
+Reattempt due
+Closed-book reattempt
+Simple harmonic motion — definition & equations
+Physics · Fixture plan-src · 5/10 · M Method / calculation
+Repair planned
+ORIGINAL
+5/10
+DIAGNOSIS
+M Method / calculation
+REPAIR
+Planned · not completed
+REATTEMPT
+Due
+TRANSFER
+Due after reattempt
+DELAYED
+Due after transfer
+STATE
+Repair planned
+Log smallest repair
+Inorganic ions & their functions (Na⁺, K⁺, Ca²⁺, Mg²⁺, Fe²⁺, Cl⁻, PO₄³⁻, NO₃⁻)
+Biology · Fixture back-fail · 6/10 · T Timing / selection
+Diagnosed
+ORIGINAL
+6/10
+DIAGNOSIS
+T Timing / selection
+REPAIR
+Not logged
+REATTEMPT
+Due
+TRANSFER
+Due after reattempt
+DELAYED
+Due after transfer
+STATE
+Diagnosed
+Log smallest repair
+Equations of motion (SUVAT)
+Physics · Fixture diag-src · 7/10 · C Conceptual model
+Diagnosed
+ORIGINAL
+7/10
+DIAGNOSIS
+C Conceptual model
+REPAIR
+Not logged
+REATTEMPT
+Due
+TRANSFER
+Due after reattempt
+DELAYED
+Due after transfer
+STATE
+Diagnosed
+Log smallest repair
+Physical quantities & SI units
+Physics · Fixture open-src · 6/10 · unsupported/other loss
+Open
+ORIGINAL
+6/10
+DIAGNOSIS
+Needs diagnosis
+REPAIR
+Not logged
+REATTEMPT
+Due
+TRANSFER
+Due after reattempt
+DELAYED
+Due after transfer
+STATE
+Open
+Log smallest repair
+Characteristics of living organisms
+Biology · Fixture done-src · 3/10 · P Presentation
+Closed
+ORIGINAL
+3/10
+DIAGNOSIS
+P Presentation
+REPAIR
+Fixture repair rule
+REATTEMPT
+10/10 clean pass
+TRANSFER
+10/10 clean pass
+DELAYED
+10/10 survived
+STATE
+Closed

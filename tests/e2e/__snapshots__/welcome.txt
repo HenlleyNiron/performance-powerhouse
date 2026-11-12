@@ -1,0 +1,15 @@
+V5 EXAM PERFORMANCE OS · LOCAL-FIRST
+Build your private A/L performance system
+This dashboard is for G.C.E. A/L Biological Science students studying Physics, Chemistry and Biology. Your performance data stays only in this browser unless you export it yourself.
+YOUR NAME
+EXAM YEAR
+TARGET (OPTIONAL)
+DISPLAY LINE
+1 · TEST
+2 · DIAGNOSE
+3 · REPAIR
+4 · TRANSFER
+5 · RETEST
+Explore sample data
+Restore a backup
+Enter my Powerhouse

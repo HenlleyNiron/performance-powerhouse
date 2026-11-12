@@ -1,0 +1,53 @@
+RETEST ENGINE 2.0
+Retrieval debt must become visible.
+Intervals are configurable. Failed checks stay open; a check closes only when the logged retest is a clean independent pass.
+Export important retests .ics
+OVERDUE
+8
+highest priority retrieval debt
+DUE TODAY
+0
+fresh independent checks
+FAILED / REOPENED
+1
+checks attempted but not cleanly passed
+RETEST SURVIVAL
+75%
+passed among retests with recorded V5 attempts
+Fresh-transfer interval (days)
+Delayed-retest interval (days)
+Save retest policy
+Existing due dates stay unchanged; new error chains use the updated policy.
+OVERDUE · 8
+Equilibrium constant Kc — expression & calculation
+Chemistry · Fresh transfer · 2027-01-31 · 1 failedAttempt
+Equilibrium constant Kc — expression & calculation
+Chemistry · Delayed stability · 2027-02-04 Attempt
+Cardiac conduction: SA node, AV node, bundle of His, Purkinje fibres
+Biology · Delayed stability · 2027-02-05 Attempt
+Kirchhoff's current & voltage laws
+Physics · Fresh transfer · 2027-02-02 Attempt
+Kirchhoff's current & voltage laws
+Physics · Delayed stability · 2027-02-06 Attempt
+Esters — formation & hydrolysis
+Chemistry · Fresh transfer · 2027-02-07 Attempt
+Esters — formation & hydrolysis
+Chemistry · Delayed stability · 2027-02-11 Attempt
+Physical quantities & SI units
+Physics · Fresh transfer · 2027-02-12 Attempt
+DUE TODAY · 0
+None.
+UPCOMING · 3
+Physical quantities & SI units
+Physics · Delayed stability · 2027-02-16 Attempt
+Enzymes: active site, lock-and-key & induced fit
+Biology · Fresh transfer · 2027-02-18 Attempt
+Enzymes: active site, lock-and-key & induced fit
+Biology · Delayed stability · 2027-02-22 Attempt
+COMPLETED · 3
+Circular motion & centripetal force
+Physics · Delayed stability · 2027-02-02
+Cardiac conduction: SA node, AV node, bundle of His, Purkinje fibres
+Biology · Fresh transfer · 2027-02-01
+Circular motion & centripetal force
+Physics · Fresh transfer · 2027-01-29

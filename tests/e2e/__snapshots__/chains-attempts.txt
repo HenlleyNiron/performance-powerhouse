@@ -1,0 +1,41 @@
+EVIDENCE LEDGER
+Completed question attempts
+Raw score, trusted score, time, confidence, guesses and causes of lost marks.
+Log attempt
+DATE SUBJECT TYPE QUESTION / TOPIC SCORE CONFIDENCE ERROR
+2027-02-12 Biology Full paper Fixture back-fail
+Inorganic ions & their functions (Na⁺, K⁺, Ca²⁺, Mg²⁺, Fe²⁺, Cl⁻, PO₄³⁻, NO₃⁻) 6/10 · 60% high T Timing / selection Edit Delete
+2027-02-10 Physics Topic question Fixture open-src
+Physical quantities & SI units 6/10 · 60% medium — Edit Delete
+2027-02-09 Physics MCQ set Fixture diag-src
+Equations of motion (SUVAT) 7/10 · 70% high C Conceptual model Edit Delete
+2027-02-08 Physics Structured essay Fixture plan-src
+Simple harmonic motion — definition & equations 5/10 · 50% medium M Method / calculation Edit Delete
+2027-02-05 Chemistry Topic question Fixture redo-src
+Fundamental particles & atomic structure 4/10 · 40% medium K Knowledge gap Edit Delete
+2027-02-03 Chemistry Closed-book reattempt Fixture xfer-re
+Covalent bonding — single, double, triple bonds 10/10 · 100% medium — Edit Delete
+2027-02-01 Chemistry Topic question Fixture xfer-src
+Covalent bonding — single, double, triple bonds 6/10 · 60% medium R Retrieval failure Edit Delete
+2027-01-25 Chemistry Fresh transfer Fixture late-xf
+Relative atomic & molecular mass 10/10 · 100% medium — Edit Delete
+2027-01-22 Chemistry Closed-book reattempt Fixture late-re
+Relative atomic & molecular mass 10/10 · 100% medium — Edit Delete
+2027-01-20 Chemistry MCQ set Fixture late-src
+Relative atomic & molecular mass 5/10 · 50% medium A Attention / misreading Edit Delete
+2027-01-16 Biology Delayed retest Fixture done-dl
+Characteristics of living organisms 10/10 · 100% medium — Edit Delete
+2027-01-10 Biology Fresh transfer Fixture done-xf
+Characteristics of living organisms 10/10 · 100% medium — Edit Delete
+2027-01-07 Biology Closed-book reattempt Fixture done-re
+Characteristics of living organisms 10/10 · 100% medium — Edit Delete
+2027-01-05 Biology Topic question Fixture done-src
+Characteristics of living organisms 3/10 · 30% · trusted 2/10 medium P Presentation Edit Delete
+2026-12-22 Biology Delayed retest Fixture back-dl
+Inorganic ions & their functions (Na⁺, K⁺, Ca²⁺, Mg²⁺, Fe²⁺, Cl⁻, PO₄³⁻, NO₃⁻) 10/10 · 100% medium — Edit Delete
+2026-12-15 Biology Fresh transfer Fixture back-xf
+Inorganic ions & their functions (Na⁺, K⁺, Ca²⁺, Mg²⁺, Fe²⁺, Cl⁻, PO₄³⁻, NO₃⁻) 10/10 · 100% medium — Edit Delete
+2026-12-12 Biology Closed-book reattempt Fixture back-re
+Inorganic ions & their functions (Na⁺, K⁺, Ca²⁺, Mg²⁺, Fe²⁺, Cl⁻, PO₄³⁻, NO₃⁻) 10/10 · 100% medium — Edit Delete
+2026-12-10 Biology Topic question Fixture back-src
+Inorganic ions & their functions (Na⁺, K⁺, Ca²⁺, Mg²⁺, Fe²⁺, Cl⁻, PO₄³⁻, NO₃⁻) 4/10 · 40% medium T Timing / selection Edit Delete

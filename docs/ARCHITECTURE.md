@@ -83,6 +83,7 @@ Everything that crosses into the app from outside its own code is treated as unt
 | Key | Owner | Notes |
 | --- | --- | --- |
 | `al_performance_powerhouse_v5` | main app | current schema 12 |
+| `al_performance_powerhouse_v5_unreadable` | main app | untouched copy of a stored record that could not be read, kept before a blank record is opened (since 5.3.1) |
 | `al_performance_powerhouse_v5_recovery` | main app | up to 12 snapshots taken before migration, import, export and reset |
 | `al_performance_powerhouse_v4`, `_v3` | legacy | read once to migrate; never modified |
 | `al_performance_command_centre_v3`–`v6`, `al_v2_samra` | legacy | read-only migration sources |

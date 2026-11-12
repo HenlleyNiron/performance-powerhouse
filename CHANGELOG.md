@@ -33,7 +33,24 @@ Storage schema unchanged (12). No storage key renamed or removed. Bug fixes only
   record is kept in the module's recovery list first, once.
 - Both companion pages now load `js/core.js` (already in the offline cache).
 
+- **An unreadable stored record is no longer silently overwritten.** If the saved record could not
+  be parsed or validated (for example, cut off mid-write), the app opened a blank record and the
+  next save destroyed the damaged original. An untouched copy is now kept under
+  `al_performance_powerhouse_v5_unreadable` first, and a message that stays on screen says so.
+- **Backups containing values that cannot be converted to text or numbers now import.** A JSON
+  value such as `"note": {"toString": null}` crashed validation, so the import did nothing and
+  showed no message. Validation now converts only real strings and numbers (`toText`, `asNumber`,
+  `isKeyOf`), and any unexpected import failure is reported. Found by property-based testing.
+
 ### Tests
+- **Property-based tests** (fast-check, 500 random cases each, fixed seed): validation never throws
+  on any input and is idempotent; every surviving record is well-formed with no hostile ids or
+  enums; one attempt closes at most one check; closed checks always have clean, on-time evidence;
+  deleting or correcting any attempt never leaves a check closed without evidence.
+- **Panel text snapshots**: the visible text of every panel, with the clock frozen, for the demo
+  record and for a fixture containing every evidence-chain state, plus the companion pages. A
+  refactor that changes any wording or number fails until the change is reviewed
+  (`npm run test:snapshots:update`).
 - 15 new unit tests (edit re-derivation, companion sanitisers, import summary) and 3 browser
   regression tests (tracker injection and recovery, companion snapshot on restore, Physics
   validation and import feedback). Each new test fails on 5.3.0.

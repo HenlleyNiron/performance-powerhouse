@@ -147,17 +147,43 @@
     );
   }
 
+  /**
+   * Whether `value` is a string naming one of `map`'s own keys. Non-strings are
+   * rejected without being converted (conversion throws on some JSON objects).
+   * @param {object} map
+   * @param {unknown} value
+   */
+  const isKeyOf = (map, value) =>
+    typeof value === 'string' && Object.prototype.hasOwnProperty.call(map, value);
+
+  /**
+   * Number from untrusted input: numbers and numeric strings only. Objects and
+   * arrays give NaN rather than being coerced (Number() throws on some JSON
+   * objects, e.g. {"valueOf": 1}, and turns [5] into 5).
+   * @param {unknown} value
+   */
+  function asNumber(value) {
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string' && value.trim() !== '') return Number(value);
+    return NaN;
+  }
+
   function toNumber(value, { min = -Infinity, max = Infinity, fallback = 0, integer = false } = {}) {
-    if (value === null || value === '' || typeof value === 'boolean') return fallback;
-    let n = Number(value);
+    let n = asNumber(value);
     if (!Number.isFinite(n)) return fallback;
     if (integer) n = Math.round(n);
     return Math.min(max, Math.max(min, n));
   }
 
+  /**
+   * Text for display or storage. Only primitives become text: objects and arrays
+   * give '' (some JSON objects make String() throw, e.g. {"toString": null}).
+   */
   function toText(value, max = 500) {
-    if (value === null || value === undefined) return '';
-    return String(value).slice(0, max);
+    if (typeof value === 'string') return value.slice(0, max);
+    if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint')
+      return String(value).slice(0, max);
+    return '';
   }
 
   function escapeHTML(value = '') {
@@ -259,7 +285,7 @@
 
   function normalizeIntervals(value) {
     if (!Array.isArray(value) || value.length < 2) return [...DEFAULT_RETEST_INTERVALS];
-    const nums = value.slice(0, 2).map(n => Number(n));
+    const nums = value.slice(0, 2).map(asNumber);
     return nums.every(n => Number.isFinite(n) && n >= 0 && n <= 365) ? nums : [...DEFAULT_RETEST_INTERVALS];
   }
 
@@ -529,7 +555,7 @@
       date,
       subject,
       topicKey,
-      type: Object.prototype.hasOwnProperty.call(ATTEMPT_TYPE_NAMES, raw.type) ? raw.type : 'topic-question',
+      type: isKeyOf(ATTEMPT_TYPE_NAMES, raw.type) ? raw.type : 'topic-question',
       question: toText(raw.question, 200),
       earned,
       trustedEarned,
@@ -538,7 +564,7 @@
       items: toNumber(raw.items, { min: 1, max: 1000, fallback: 1, integer: true }),
       guesses: toNumber(raw.guesses, { min: 0, max: 1000, fallback: 0, integer: true }),
       confidence: CONFIDENCE_LEVELS.includes(raw.confidence) ? raw.confidence : 'medium',
-      error: Object.prototype.hasOwnProperty.call(ERROR_NAMES, raw.error) ? raw.error : '',
+      error: isKeyOf(ERROR_NAMES, raw.error) ? raw.error : '',
       note: toText(raw.note, 500),
       createdAt: isTimestamp(raw.createdAt) ? raw.createdAt : `${date}T00:00:00.000Z`,
       updatedAt: isTimestamp(raw.updatedAt) ? raw.updatedAt : null,
@@ -555,7 +581,7 @@
   function sanitizeRetest(raw, idFn = makeId) {
     if (!isPlainObject(raw)) return null;
     if (typeof raw.topicKey !== 'string' || !TOPIC_KEY.test(raw.topicKey) || !isISODate(raw.due)) return null;
-    const stage = Number(raw.stage) === 2 ? 2 : Number(raw.stage) === 1 ? 1 : null;
+    const stage = asNumber(raw.stage) === 2 ? 2 : asNumber(raw.stage) === 1 ? 1 : null;
     if (!stage) return null;
     const attempts = Array.isArray(raw.attempts)
       ? raw.attempts
@@ -615,7 +641,7 @@
     const out = {};
     if (!isPlainObject(raw)) return out;
     Object.keys(raw).forEach(key => {
-      const v = Number(raw[key]);
+      const v = asNumber(raw[key]);
       if (TOPIC_KEY.test(key) && [1, 2, 3].includes(v)) out[key] = v;
     });
     return out;
@@ -625,7 +651,7 @@
     const out = {};
     if (!isPlainObject(raw)) return out;
     Object.keys(raw).forEach(key => {
-      const v = Number(raw[key]);
+      const v = asNumber(raw[key]);
       if (/^[a-z0-9-]{1,60}$/.test(key) && PROGRESS_STEPS.includes(v)) out[key] = v;
     });
     return out;
@@ -666,7 +692,7 @@
     if (JSON.stringify(value) === JSON.stringify(OLD_V6_DAILY_TARGETS)) return out;
     SUBJECTS.forEach(subject =>
       DAILY_FIELDS.forEach(field => {
-        const n = Number(value[subject] && value[subject][field.id]);
+        const n = asNumber(value[subject] && value[subject][field.id]);
         if (Number.isFinite(n) && n >= 0) out[subject][field.id] = Math.min(n, 9999);
       }),
     );
@@ -883,7 +909,7 @@
       const entries = Object.entries(core);
       if (
         entries.length &&
-        entries.every(([key, value]) => TOPIC_KEY.test(key) && [1, 2, 3].includes(Number(value)))
+        entries.every(([key, value]) => TOPIC_KEY.test(key) && [1, 2, 3].includes(asNumber(value)))
       ) {
         return { kind: 'legacy-ratings', ratings: sanitizeRatings(core), count: entries.length };
       }
@@ -1261,7 +1287,7 @@
     /** @type {Map<string, Attempt[]>} */
     const byTopic = new Map();
     attempts.forEach(a => {
-      if (!Object.prototype.hasOwnProperty.call(ATTEMPT_TYPE_NAMES, a.type)) return;
+      if (!isKeyOf(ATTEMPT_TYPE_NAMES, a.type)) return;
       const list = byTopic.get(a.topicKey);
       if (list) list.push(a);
       else byTopic.set(a.topicKey, [a]);

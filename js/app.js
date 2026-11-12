@@ -851,6 +851,8 @@ const OLDEST_APP_KEY = 'al_performance_command_centre_v4';
 const VERY_OLD_APP_KEY = 'al_performance_command_centre_v3';
 const LEGACY_KEY = 'al_v2_samra';
 const RECOVERY_KEY = 'al_performance_powerhouse_v5_recovery';
+/** Untouched copy of a stored record that could not be read (see preserveUnreadableRecord). */
+const UNREADABLE_KEY = 'al_performance_powerhouse_v5_unreadable';
 const V4_RECOVERY_KEY = 'al_performance_powerhouse_v4_recovery';
 const PREVIOUS_POWERHOUSE_RECOVERY_KEY = 'al_performance_powerhouse_v3_recovery';
 const PREVIOUS_RECOVERY_KEY = 'al_performance_command_centre_v6_recovery';
@@ -1273,8 +1275,46 @@ function loadState() {
     }
     return migrated;
   } catch (_) {
+    preserveUnreadableRecord();
     return defaultState();
   }
+}
+
+let unreadableRecordKept = false;
+
+/**
+ * If the stored record cannot be parsed or validated, the app opens a blank one —
+ * and the next save would overwrite the damaged original for good. Keep an
+ * untouched copy under its own key first, so it can still be recovered by hand.
+ */
+function preserveUnreadableRecord() {
+  try {
+    const raw = localStorage.getItem(APP_KEY);
+    if (!raw) return;
+    let kept = null;
+    try {
+      kept = JSON.parse(localStorage.getItem(UNREADABLE_KEY) || 'null');
+    } catch (_) {}
+    if (!kept || kept.raw !== raw)
+      localStorage.setItem(UNREADABLE_KEY, JSON.stringify({ at: new Date().toISOString(), raw }));
+    unreadableRecordKept = true;
+  } catch (_) {}
+}
+
+function showUnreadableBanner() {
+  if (!unreadableRecordKept) return;
+  const bar = document.createElement('div');
+  bar.className = 'recovery-banner';
+  bar.setAttribute('role', 'alert');
+  const text = document.createElement('span');
+  text.textContent =
+    'Your saved study record could not be read, so a blank record was opened. The original was not deleted: an untouched copy is kept on this device. If you have a backup file, restore it from Backup.';
+  const dismiss = document.createElement('button');
+  dismiss.type = 'button';
+  dismiss.textContent = 'Dismiss';
+  dismiss.addEventListener('click', () => bar.remove());
+  bar.append(text, dismiss);
+  document.body.prepend(bar);
 }
 
 const todayISO = () => PowerhouseCore.zonedToday('Asia/Colombo');
@@ -2801,8 +2841,8 @@ function importData(file) {
       toast('That file is not valid JSON, so nothing was imported.');
       return;
     }
-    const plan = PowerhouseCore.inspectImport(parsed);
     try {
+      const plan = PowerhouseCore.inspectImport(parsed);
       if (plan.kind === 'invalid') {
         toast(plan.message);
         return;
@@ -3084,6 +3124,7 @@ function showDemoBanner() {
 }
 
 showDemoBanner();
+showUnreadableBanner();
 SUBJECTS.forEach(buildSubjectPanel);
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost'))
   navigator.serviceWorker.register('./sw.js').catch(() => {});

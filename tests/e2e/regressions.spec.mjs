@@ -383,3 +383,47 @@ test('Physics Intelligence validates stored attempts and reports a bad import fi
   await expect(table).toContainText('1 wrong');
   expect(errors.filter(e => e.startsWith('pageerror'))).toEqual([]);
 });
+
+test('a backup with values that cannot be turned into text still imports', async ({ page }) => {
+  acceptDialogs(page);
+  await seedState(page);
+  const errors = trackErrors(page);
+  await page.goto('/');
+  const backup = `{"ratings":{},"attempts":[{"id":"odd","subject":"physics","topicKey":"physics|0|0","date":"${colomboToday()}","earned":5,"total":5,"note":{"toString":null},"question":{"toString":1}}]}`;
+  await page.locator('#data-btn').click();
+  await page
+    .locator('#import-file')
+    .setInputFiles({ name: 'odd.json', mimeType: 'application/json', buffer: Buffer.from(backup) });
+  await expect.poll(async () => (await readState(page)).attempts.map(a => a.id)).toEqual(['odd']);
+  expect(errors.filter(e => e.startsWith('pageerror'))).toEqual([]);
+});
+
+test('an unreadable stored record is preserved, never silently overwritten', async ({ page }) => {
+  acceptDialogs(page);
+  const damaged = '{"profileSetupComplete":true,"attempts":[{"id":"a1","subject":"physics","date":"2026-10-0';
+  await page.addInitScript(
+    ([key, value]) => {
+      if (!sessionStorage.getItem('__seeded')) {
+        localStorage.setItem(key, value);
+        sessionStorage.setItem('__seeded', '1');
+      }
+    },
+    [APP_KEY, damaged],
+  );
+  await page.goto('/');
+  // The student is told, in a message that stays on screen.
+  await expect(page.locator('.recovery-banner')).toContainText('could not be read');
+  const kept = () =>
+    page.evaluate(() =>
+      JSON.parse(localStorage.getItem('al_performance_powerhouse_v5_unreadable') || 'null'),
+    );
+  expect((await kept()).raw).toBe(damaged);
+
+  // Carrying on (which saves a fresh record) must not destroy the preserved copy.
+  await page.fill('#welcome-name', 'Asha');
+  await page.locator('#welcome-dialog button[type="submit"]').click();
+  expect((await readState(page)).profile.name).toBe('Asha');
+  await page.reload();
+  expect((await kept()).raw).toBe(damaged);
+  await expect(page.locator('.recovery-banner')).toHaveCount(0);
+});

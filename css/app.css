@@ -2487,3 +2487,32 @@ a.primary-btn {
   outline: 2px solid var(--phy);
   outline-offset: 2px;
 }
+
+/* 5.3.1 — shown when the stored record could not be read and a blank one was opened. */
+.recovery-banner {
+  position: sticky;
+  top: 0;
+  z-index: 70;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  background: #4a1212;
+  color: #ffe1e1;
+  border-bottom: 1px solid #b54848;
+  font-size: 13px;
+  line-height: 1.45;
+  text-align: center;
+}
+.recovery-banner button {
+  background: transparent;
+  color: #fff;
+  border: 1px solid #ffb3b3;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}

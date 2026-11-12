@@ -917,3 +917,31 @@ describe('evidence chains', () => {
     assert.equal(c.gap, 23);
   });
 });
+
+describe('values that cannot be converted to text', () => {
+  // JSON can hold objects whose own "toString" is not a function; String() throws on them.
+  const trap = JSON.parse('{"toString":null,"valueOf":1}');
+
+  test('toText returns an empty string instead of throwing', () => {
+    assert.equal(core.toText(trap), '');
+    assert.equal(core.toText(['a', 'b']), '');
+    assert.equal(core.toText(42), '42');
+    assert.equal(core.toText(false), 'false');
+  });
+
+  test('a backup containing such values is still imported, with those fields blank', () => {
+    const plan = core.inspectImport({
+      profile: { name: trap, line: trap },
+      ratings: {},
+      attempts: [
+        { id: 'a1', subject: 'physics', date: '2026-10-01', total: 5, earned: 5, note: trap, question: trap },
+      ],
+      repairEvents: [{ id: 'r1', sourceAttemptId: 'a1', rule: trap }],
+      dailyEntries: [{ id: 'd1', date: '2026-10-01', note: trap }],
+    });
+    assert.equal(plan.kind, 'backup');
+    assert.equal(plan.state.attempts.length, 1);
+    assert.equal(plan.state.attempts[0].note, '');
+    assert.equal(plan.state.repairEvents[0].rule, '');
+  });
+});

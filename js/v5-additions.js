@@ -1040,6 +1040,16 @@
       window.toggleShareSafe?.();
   }
 
+  /**
+   * app.js resolves `#panel` links before this layer has created the V5 panels, so
+   * links such as `/#retests` used to fall back to Command. Resolve them again here,
+   * and on later hash changes, for any panel that now exists.
+   */
+  function openPanelFromHash() {
+    const panel = location.hash.slice(1);
+    if (/^[a-z-]+$/.test(panel) && q(`#panel-${panel}`) && activePanel !== panel) navigate(panel);
+  }
+
   function init() {
     ensureState();
     addNavAndPanels();
@@ -1082,6 +1092,8 @@
       };
     }
     renderAllV5();
+    openPanelFromHash();
+    window.addEventListener('hashchange', openPanelFromHash);
     handleTrackerEvidenceDeepLink();
     const current = q('#recovery-status');
     if (current)

@@ -1,5 +1,13 @@
 import { test, expect } from '@playwright/test';
-import { APP_KEY, acceptDialogs, colomboToday, readState, seedState, trackErrors } from './helpers.mjs';
+import {
+  APP_KEY,
+  acceptDialogs,
+  colomboToday,
+  logAttempt,
+  readState,
+  seedState,
+  trackErrors,
+} from './helpers.mjs';
 
 const payload = '<img src=x onerror="window.__pwned=(window.__pwned||0)+1">';
 
@@ -426,4 +434,26 @@ test('an unreadable stored record is preserved, never silently overwritten', asy
   await page.reload();
   expect((await kept()).raw).toBe(damaged);
   await expect(page.locator('.recovery-banner')).toHaveCount(0);
+});
+
+test('links straight to a V5 panel open that panel', async ({ page }) => {
+  await seedState(page);
+  for (const panel of ['retests', 'papers', 'intelligence', 'weekly', 'study-tracker']) {
+    await page.goto(`/#${panel}`);
+    await expect(page.locator(`#panel-${panel}`)).toHaveClass(/\bactive\b/);
+  }
+  await page.evaluate(() => {
+    location.hash = 'weekly';
+  });
+  await expect(page.locator('#panel-weekly')).toHaveClass(/\bactive\b/);
+});
+
+test('a transfer logged before its check is due says that no check closed', async ({ page }) => {
+  await seedState(page);
+  await page.goto('/');
+  await logAttempt(page, { earned: 3, total: 10, error: 'C' });
+  await logAttempt(page, { type: 'fresh-transfer', question: 'Too soon', earned: 10, total: 10 });
+  await expect(page.locator('#toast')).toContainText(`not due until ${colomboToday(3)}`);
+  const state = await readState(page);
+  expect(state.retests.every(r => r.completedAt === null)).toBe(true);
 });

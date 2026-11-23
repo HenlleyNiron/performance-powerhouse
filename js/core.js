@@ -76,7 +76,7 @@
    * @property {Record<string, number>} dropped  Invalid records skipped, by collection.
    */
 
-  const BUILD = '5.3.1';
+  const BUILD = '5.4.0';
   const SCHEMA_VERSION = 12;
   const DEFAULT_TIMEZONE = 'Asia/Colombo';
 
@@ -346,6 +346,39 @@
    * only that check is touched; otherwise a check is linked only if it is unambiguous.
    * Returns the updated retest, or null when nothing was eligible.
    */
+  /**
+   * Why a fresh transfer or delayed retest closed (or failed) no scheduled check, so the
+   * student is never told "saved" while believing a check closed. Call it when
+   * `applyRetestOutcome` returned null; it does not modify anything.
+   *  - `too-early`: a matching check exists but is not due yet (`due` = earliest due date)
+   *  - `ambiguous`: several checks match and none was chosen (`count` of them)
+   *  - `no-open-check`: nothing open for this topic and stage
+   *  - `null`: the attempt is not a verification attempt
+   * @param {Retest[]} retests
+   * @param {Partial<Attempt>} attempt
+   * @returns {{ reason: 'too-early' | 'ambiguous' | 'no-open-check' | null, count: number, due: string | null }}
+   */
+  function explainUnclosedVerification(retests, attempt) {
+    if (!attempt || !['fresh-transfer', 'delayed-retest'].includes(String(attempt.type)))
+      return { reason: null, count: 0, due: null };
+    const stage = attempt.type === 'fresh-transfer' ? 1 : 2;
+    const open = (Array.isArray(retests) ? retests : []).filter(
+      r =>
+        r &&
+        !r.completedAt &&
+        r.stage === stage &&
+        r.topicKey === attempt.topicKey &&
+        r.sourceAttemptId !== attempt.id,
+    );
+    const eligible = open.filter(r => canVerify(r, attempt));
+    if (eligible.length) return { reason: 'ambiguous', count: eligible.length, due: null };
+    const early = open
+      .filter(r => typeof attempt.date === 'string' && attempt.date < r.due)
+      .sort((a, b) => a.due.localeCompare(b.due));
+    if (early.length) return { reason: 'too-early', count: early.length, due: early[0].due };
+    return { reason: 'no-open-check', count: 0, due: null };
+  }
+
   /**
    * @param {Retest[]} retests
    * @param {Attempt} attempt
@@ -1796,6 +1829,7 @@
     normalizeIntervals,
     createRetests,
     applyRetestOutcome,
+    explainUnclosedVerification,
     recomputeRetest,
     deleteAttempt,
     reconcileEditedAttempt,

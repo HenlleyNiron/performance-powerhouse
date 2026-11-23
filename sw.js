@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'powerhouse-';
-const CACHE = `${CACHE_PREFIX}v5.3.1`;
+const CACHE = `${CACHE_PREFIX}v5.4.0`;
 const ASSETS = [
   './',
   './index.html',
@@ -30,7 +30,9 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches
       .open(CACHE)
-      .then(cache => cache.addAll(ASSETS))
+      // `cache: 'reload'` bypasses the browser's HTTP cache, so a new release can never
+      // precache a stale copy of a file the HTTP cache still holds from the last one.
+      .then(cache => cache.addAll(ASSETS.map(asset => new Request(asset, { cache: 'reload' }))))
       .then(() => self.skipWaiting()),
   );
 });

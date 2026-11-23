@@ -2609,6 +2609,7 @@ function submitAttempt(event) {
     return;
   }
   const editingId = $('attempt-form').dataset.editId || '';
+  let unclosedNote = '';
   const existingAttempt = editingId ? state.attempts.find(a => a.id === editingId) : null;
   const attempt = {
     id: editingId || uid(),
@@ -2640,7 +2641,8 @@ function submitAttempt(event) {
     state.attempts[idx] = attempt;
     PowerhouseCore.reconcileEditedAttempt(state, attempt, state.v5Settings?.retestIntervals, uid);
   } else {
-    completeEligibleRetests(attempt);
+    const closedCheck = completeEligibleRetests(attempt);
+    if (!closedCheck) unclosedNote = unclosedVerificationNote(attempt);
     state.attempts.push(attempt);
     if (typeof linkTrackerSessionToAttempt === 'function') linkTrackerSessionToAttempt(attempt);
     scheduleRetests(attempt);
@@ -2653,10 +2655,25 @@ function submitAttempt(event) {
   toast(
     editingId
       ? 'Attempt corrected. Original ID and created-at timestamp preserved.'
-      : earned === total
-        ? 'Full-credit evidence saved.'
-        : 'Evidence saved. Retest policy applied.',
+      : unclosedNote ||
+          (earned === total ? 'Full-credit evidence saved.' : 'Evidence saved. Retest policy applied.'),
   );
+}
+
+/**
+ * A verification attempt that closed no check must say so; otherwise the student
+ * reads "saved" and believes the check is done.
+ */
+function unclosedVerificationNote(attempt) {
+  const { reason, count, due } = PowerhouseCore.explainUnclosedVerification(state.retests, attempt);
+  const kind = attempt.type === 'fresh-transfer' ? 'fresh-transfer' : 'delayed-retest';
+  if (reason === 'too-early')
+    return `Evidence saved, but no check closed: the ${kind} check for this topic is not due until ${due}. Log it again on or after that date.`;
+  if (reason === 'ambiguous')
+    return `Evidence saved, but no check closed: ${count} ${kind} checks match this topic. Open the one you mean from Retests and log it there.`;
+  if (reason === 'no-open-check')
+    return `Evidence saved. There is no open ${kind} check for this topic, so nothing was closed.`;
+  return '';
 }
 
 function deleteAttempt(id) {
@@ -3123,12 +3140,34 @@ function showDemoBanner() {
   document.body.prepend(bar);
 }
 
+/**
+ * Each open tab holds the record in memory and saves the whole of it. Without this,
+ * a save from a tab that had not seen another tab's latest save would silently erase
+ * that work. The browser fires `storage` in every OTHER tab when a key changes, so
+ * those tabs reload the record (through the same validation as a normal start) and
+ * re-render before the student can act on stale data.
+ */
+function watchOtherTabs() {
+  if (DEMO_MODE) return;
+  window.addEventListener('storage', event => {
+    if (event.storageArea !== localStorage) return;
+    if (event.key === APP_KEY && event.newValue) {
+      state = loadState();
+      refreshAll();
+      toast('Updated with changes saved in another tab.');
+    } else if (event.key === STUDY_TRACKER_KEY) {
+      refreshAll();
+    }
+  });
+}
+
 showDemoBanner();
 showUnreadableBanner();
 SUBJECTS.forEach(buildSubjectPanel);
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost'))
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 initEvents();
+watchOtherTabs();
 refreshAll();
 try {
   const hashPanel = location.hash.replace('#', '');

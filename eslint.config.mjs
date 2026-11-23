@@ -28,6 +28,7 @@ const APP_GLOBALS = {
   planProgress: 'readonly',
   priorityTopics: 'readonly',
   navigate: 'readonly',
+  activePanel: 'readonly',
   openAttemptDialog: 'readonly',
   fillTopicSelect: 'readonly',
   recoveryCount: 'readonly',
@@ -72,5 +73,8 @@ export default [
     files: ['**/*.mjs'],
     languageOptions: { ecmaVersion: 2024, sourceType: 'module', globals: { ...globals.node } },
   },
-  { files: ['tests/e2e/**/*.mjs'], languageOptions: { globals: { ...globals.browser, ...globals.node } } },
+  {
+    files: ['tests/e2e/**/*.mjs', 'tests/fuzz/**/*.mjs'],
+    languageOptions: { globals: { ...globals.browser, ...globals.node } },
+  },
 ];

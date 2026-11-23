@@ -3,6 +3,35 @@
 All notable changes to Performance Powerhouse. Versions follow the `package.json` version;
 storage-schema changes are called out explicitly.
 
+## 5.4.0 — 2026-11-23
+
+Storage schema unchanged (12). No storage key renamed or removed. Findings and methods are
+recorded in [`docs/AUDIT-2026-11.md`](docs/AUDIT-2026-11.md).
+
+### Fixed
+- **Two open tabs no longer erase each other's work.** Each tab saved its whole in-memory record,
+  so a save from a tab that had not seen another tab's latest save silently removed those
+  attempts. Tabs now reload the record when another tab saves (through the same validation as a
+  normal start), re-render and say so.
+- **Links to the V5 panels open them.** `/#retests`, `#papers`, `#intelligence`, `#weekly` and
+  `#study-tracker` used to fall back to Command because they were resolved before those panels
+  existed. Hash changes after load now switch panels too.
+- **A retest that closed no check now says why.** A fresh transfer or delayed retest logged before
+  its check was due, or matching two open checks, was reported as "Evidence saved", so students
+  believed the check had closed. The message now gives the due date, the number of matching
+  checks, or says there was no open check (new tested core helper
+  `PowerhouseCore.explainUnclosedVerification`).
+- The service worker precaches each release with `cache: 'reload'`, so it can no longer store a
+  stale file from the browser's HTTP cache next to a new one.
+
+### Added
+- **`npm run fuzz:ui`**: a reproducible UI fuzzer. It generates random student histories, replays
+  them through the core's retest rules, opens every panel in Chromium and fails on any page error
+  or broken text (NaN, `undefined`, `Infinity`, `[object Object]`).
+- **[`docs/METHOD.md`](docs/METHOD.md)**: the repair loop as a method any A/L student can use
+  without the app (steps, clean-pass rule, error families, a paper template and background
+  reading).
+
 ## 5.3.1 — 2026-11-05
 
 Storage schema unchanged (12). No storage key renamed or removed. Bug fixes only.

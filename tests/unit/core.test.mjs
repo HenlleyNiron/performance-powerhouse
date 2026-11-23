@@ -945,3 +945,64 @@ describe('values that cannot be converted to text', () => {
     assert.equal(plan.state.repairEvents[0].rule, '');
   });
 });
+
+describe('explaining a verification attempt that closed no check', () => {
+  const source = {
+    id: 's1',
+    date: '2027-01-01',
+    subject: 'physics',
+    topicKey: 'physics|1|1',
+    type: 'topic-question',
+    earned: 2,
+    total: 5,
+    guesses: 0,
+    trustedEarned: null,
+    error: 'C',
+  };
+  const transfer = extra => ({
+    id: 't1',
+    date: '2027-01-05',
+    subject: 'physics',
+    topicKey: 'physics|1|1',
+    type: 'fresh-transfer',
+    earned: 5,
+    total: 5,
+    guesses: 0,
+    trustedEarned: null,
+    error: '',
+    ...extra,
+  });
+  let n = 0;
+  const schedule = (...attempts) => attempts.flatMap(a => core.createRetests(a, [3, 7], () => `r${n++}`));
+
+  test('ordinary practice attempts need no explanation', () => {
+    assert.equal(core.explainUnclosedVerification(schedule(source), source).reason, null);
+  });
+
+  test('a check logged before its due date is reported as too early, with the date', () => {
+    const result = core.explainUnclosedVerification(schedule(source), transfer({ date: '2027-01-02' }));
+    assert.deepEqual(result, { reason: 'too-early', count: 1, due: '2027-01-04' });
+  });
+
+  test('two matching checks are reported as ambiguous instead of guessed', () => {
+    const retests = schedule(source, { ...source, id: 's2' });
+    const attempt = transfer();
+    assert.equal(core.applyRetestOutcome(retests, attempt), null);
+    assert.deepEqual(core.explainUnclosedVerification(retests, attempt), {
+      reason: 'ambiguous',
+      count: 2,
+      due: null,
+    });
+  });
+
+  test('a transfer on a topic with no open check says so', () => {
+    const result = core.explainUnclosedVerification(schedule(source), transfer({ topicKey: 'physics|2|2' }));
+    assert.deepEqual(result, { reason: 'no-open-check', count: 0, due: null });
+  });
+
+  test('the wrong stage is not mistaken for a match', () => {
+    // A delayed retest on day 5 is too early for the stage-2 check (due day 8).
+    const result = core.explainUnclosedVerification(schedule(source), transfer({ type: 'delayed-retest' }));
+    assert.deepEqual(result, { reason: 'too-early', count: 1, due: '2027-01-08' });
+  });
+});

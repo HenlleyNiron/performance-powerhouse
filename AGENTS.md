@@ -45,6 +45,7 @@ npm run test:coverage  # same, with enforced coverage thresholds for js/core.js
 npm run validate:data  # Physics Intelligence dataset consistency
 npm run test:e2e       # browser, accessibility and offline tests; first run: npx playwright install chromium
 npm run test:snapshots:update  # after an INTENDED change to visible text: review the diff, then update
+npm run fuzz:ui        # random histories through every panel; FUZZ_RUNS / FUZZ_SEED to vary
 npm run check          # lint + format + typecheck + coverage + browser tests
 ```
 
@@ -82,6 +83,9 @@ Run `npm run check` before proposing a change.
    performance test in `tests/e2e/integration.spec.mjs` guards this.
 8. **Accessible by default.** New UI must pass the axe audit in `tests/e2e/a11y.spec.mjs`
    (labelled controls, sufficient contrast, keyboard-reachable scroll regions).
+9. **Every tab sees every save.** Each tab holds the record in memory and saves all of it, so
+   any new code path that replaces `state` must keep the `storage` listener in `app.js`
+   (`watchOtherTabs`) working; `tests/e2e/multi-tab.spec.mjs` guards this.
 
 ## Versioning and releases
 

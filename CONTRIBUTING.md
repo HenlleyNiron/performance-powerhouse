@@ -38,6 +38,10 @@ of every panel with the files in `tests/e2e/__snapshots__/`. If it fails and you
 change what students see, you have found a regression. If the change is intended, run
 `npm run test:snapshots:update`, read the snapshot diff line by line, and commit it with your change.
 
+**UI fuzzing.** `npm run fuzz:ui` loads random student histories into Chromium and opens every
+panel. When it fails it prints the seed and history number; rerun with those values to reproduce,
+then turn the case into a normal regression test before fixing it.
+
 Before opening a pull request:
 
 1. `npm run check` passes.

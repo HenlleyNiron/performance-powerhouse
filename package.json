@@ -1,6 +1,6 @@
 {
   "name": "al-performance-powerhouse",
-  "version": "5.3.1",
+  "version": "5.4.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,6 +15,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc -p tsconfig.json",
+    "fuzz:ui": "node tests/fuzz/ui-fuzz.mjs",
     "test:snapshots:update": "playwright test tests/e2e/snapshots.spec.mjs --update-snapshots"
   },
   "engines": {

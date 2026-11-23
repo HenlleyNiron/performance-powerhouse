@@ -1,0 +1,836 @@
+VALIDATED NAVIGATION LAYER
+Physics Intelligence
+Use historical distribution to navigate the syllabus, then let your own timed-paper evidence decide what to repair. Frequency describes the past; it does not predict the next paper.
+primary units validated
+current families validated
+prediction prohibited
+THE GOVERNING LOOP
+Attempt → mark → diagnose → repair → fresh transfer → delayed retest
+01
+Attempt
+Closed book, official timing.
+02
+Diagnose
+Record wrong, guessed and slow work.
+03
+Repair
+Fix the unit or family, prove fresh transfer, then retest after delay.
+VALIDATED MCQs
+1,410
+exact year-question keys
+EXAMINATION YEARS
+26
+2000–2025 inclusive
+CURRENT-ERA MCQs
+350
+2019–2025
+VALIDATED FAMILIES
+173
+350 unique memberships
+UNIT DISTRIBUTION EXPLORER
+Compare counts without confusing paper formats
+Download filtered CSV
+From year
+2000
+2001
+2002
+2003
+2004
+2005
+2006
+2007
+2008
+2009
+2010
+2011
+2012
+2013
+2014
+2015
+2016
+2017
+2018
+2019
+2020
+2021
+2022
+2023
+2024
+2025
+To year
+2000
+2001
+2002
+2003
+2004
+2005
+2006
+2007
+2008
+2009
+2010
+2011
+2012
+2013
+2014
+2015
+2016
+2017
+2018
+2019
+2020
+2021
+2022
+2023
+2024
+2025
+Curriculum era
+All eras
+2000–2010 · 60 questions
+2011–2018 · 50 questions
+2019–2025 · current era
+Trend unit
+Measurement
+Mechanics
+Oscillations and Waves
+Thermal Physics
+Gravitational Field
+Electrostatic Field
+Magnetic Field
+Current Electricity
+Electronics
+Mechanical Properties of Matter
+Matter and Radiation
+Normalized percentage = unit count ÷ verified questions in that paper. The denominator is 60 through 2010 and 50 from 2011 onward.
+Mechanics trend
+26 papers · mean 15.82%
+0%
+8%
+15%
+22%
+30%
+2000
+2003
+2006
+2009
+2012
+2015
+2018
+2021
+2024
+2025
+Selected-range unit mix
+counts and normalized share
+Oscillations and Waves
+19.0%
+Mechanics
+15.7%
+Thermal Physics
+11.7%
+Current Electricity
+10.9%
+Mechanical Properties of Matter
+10.5%
+Magnetic Field
+7.7%
+Electrostatic Field
+7.7%
+Electronics
+5.4%
+Matter and Radiation
+5.2%
+Measurement
+4.2%
+Gravitational Field
+2.1%
+Year × unit heatmap
+cell values are normalized percentages
+Measurement
+Mechanics
+O&W
+Thermal
+Gravity
+Electrostatic
+Magnetic
+Current
+Electronics
+MPM
+M&R
+2000
+5
+17
+22
+8
+2
+12
+7
+10
+5
+8
+5
+2001
+3
+17
+22
+13
+2
+7
+7
+8
+5
+12
+5
+2002
+2
+8
+22
+20
+2
+7
+7
+13
+3
+10
+7
+2003
+2
+17
+22
+13
+2
+7
+5
+12
+7
+10
+5
+2004
+3
+15
+20
+10
+2
+7
+7
+18
+5
+10
+3
+2005
+3
+13
+17
+15
+0
+8
+7
+15
+7
+12
+3
+2006
+7
+15
+20
+8
+3
+8
+8
+13
+5
+7
+5
+2007
+5
+18
+18
+10
+2
+7
+7
+13
+5
+8
+7
+2008
+2
+18
+20
+12
+2
+7
+7
+13
+5
+10
+5
+2009
+3
+12
+18
+12
+2
+7
+8
+15
+5
+12
+7
+2010
+3
+13
+22
+18
+2
+5
+10
+10
+5
+8
+3
+2011
+8
+14
+24
+10
+2
+6
+8
+10
+6
+8
+4
+2012
+8
+14
+18
+12
+4
+6
+8
+8
+6
+8
+8
+2013
+2
+16
+22
+8
+2
+8
+8
+12
+6
+12
+4
+2014
+6
+16
+18
+10
+2
+6
+10
+8
+6
+12
+6
+2015
+4
+18
+20
+10
+2
+8
+8
+8
+6
+12
+4
+2016
+2
+18
+14
+14
+2
+6
+8
+12
+6
+12
+6
+2017
+6
+14
+18
+12
+0
+8
+10
+10
+6
+12
+4
+2018
+6
+16
+16
+14
+2
+8
+6
+10
+6
+14
+2
+2019
+6
+14
+14
+10
+4
+10
+8
+8
+6
+12
+8
+2020
+4
+16
+18
+12
+4
+12
+8
+8
+4
+10
+4
+2021
+4
+16
+18
+10
+2
+8
+8
+10
+4
+14
+6
+2022
+4
+18
+18
+10
+2
+8
+10
+8
+6
+10
+6
+2023
+4
+18
+18
+8
+4
+8
+8
+10
+6
+10
+6
+2024
+4
+22
+14
+12
+2
+6
+8
+8
+6
+12
+6
+2025
+4
+18
+20
+10
+2
+12
+8
+6
+4
+10
+6
+Unit Count Share Mean per paper Years represented
+Oscillations and Waves 268 19.01% 10.31 26/26
+Mechanics 222 15.74% 8.54 26/26
+Thermal Physics 165 11.70% 6.35 26/26
+Current Electricity 153 10.85% 5.88 26/26
+Mechanical Properties of Matter 148 10.50% 5.69 26/26
+Magnetic Field 109 7.73% 4.19 26/26
+Electrostatic Field 108 7.66% 4.15 26/26
+Electronics 76 5.39% 2.92 26/26
+Matter and Radiation 73 5.18% 2.81 26/26
+Measurement 59 4.18% 2.27 26/26
+Gravitational Field 29 2.06% 1.12 24/26
+CURRENT-ERA FAMILY EXPLORER
+All 173 validated families, 2019–2025 only
+173 families
+Search family or subtopic
+Unit
+All units
+Measurement
+Mechanics
+Oscillations and Waves
+Thermal Physics
+Gravitational Field
+Electrostatic Field
+Magnetic Field
+Current Electricity
+Electronics
+Mechanical Properties of Matter
+Matter and Radiation
+Minimum recurrence
+All families
+2+ questions
+3+ questions
+5+ questions
+Only family labels, syllabus mappings and year-question references are shown. Full question text is not reproduced.
+FAM126 · Resistor-network reduction and node voltages
+11 questions
+Current Electricity · Current, resistance and circuit laws
+Years: 2019, 2020, 2021, 2022, 2023, 2024, 2025
+References: 2019 Q49 · 2020 Q47 · 2021 Q40 · 2022 Q23 · 2022 Q30 · 2022 Q41 · 2023 Q29 · 2023 Q40 · 2024 Q18 · 2025 Q6 · 2025 Q29
+FAM139 · Faraday-Lenz induction in loops and coils
+9 questions
+Magnetic Field · Electromagnetic induction, generators and transformers
+Years: 2019, 2020, 2021, 2022, 2023, 2024, 2025
+References: 2019 Q20 · 2020 Q29 · 2021 Q50 · 2022 Q39 · 2023 Q23 · 2023 Q47 · 2024 Q11 · 2025 Q9 · 2025 Q33
+FAM018 · Bernoulli-continuity pipe and efflux problems
+6 questions
+Mechanical Properties of Matter · Viscosity and fluid flow
+Years: 2019, 2020, 2022, 2023, 2024, 2025
+References: 2019 Q39 · 2020 Q41 · 2022 Q34 · 2023 Q28 · 2024 Q38 · 2025 Q30
+FAM039 · Centre-of-gravity location from geometry
+6 questions
+Mechanics · Moments, centre of gravity and stability
+Years: 2020, 2021, 2022, 2023, 2024, 2025
+References: 2020 Q19 · 2021 Q24 · 2022 Q22 · 2023 Q22 · 2024 Q12 · 2025 Q21
+FAM134 · Charged-particle motion in magnetic fields
+6 questions
+Magnetic Field · Magnetic force and field
+Years: 2020, 2021, 2022, 2024, 2025
+References: 2020 Q37 · 2020 Q44 · 2021 Q34 · 2022 Q45 · 2024 Q39 · 2025 Q18
+FAM076 · Doppler shift from source or observer motion
+6 questions
+Oscillations and Waves · Doppler effect and beats
+Years: 2019, 2021, 2022, 2023, 2024, 2025
+References: 2019 Q41 · 2021 Q39 · 2022 Q12 · 2023 Q24 · 2024 Q10 · 2025 Q49
+FAM034 · Quark composition charge and confinement
+6 questions
+Matter and Radiation · Elementary particles and cosmology
+Years: 2019, 2020, 2021, 2022, 2023, 2025
+References: 2019 Q4 · 2020 Q6 · 2021 Q8 · 2022 Q7 · 2023 Q8 · 2025 Q7
+FAM099 · Steady conduction through rods and networks
+6 questions
+Thermal Physics · Heat transfer
+Years: 2020, 2021, 2022, 2023, 2024, 2025
+References: 2020 Q27 · 2021 Q36 · 2022 Q40 · 2023 Q36 · 2024 Q47 · 2025 Q34
+FAM011 · Axial extension from effective tensile force
+5 questions
+Mechanical Properties of Matter · Elasticity and deformation
+Years: 2020, 2021, 2023, 2024, 2025
+References: 2020 Q39 · 2021 Q7 · 2023 Q37 · 2024 Q20 · 2025 Q11
+FAM148 · Combinational logic evaluation
+5 questions
+Electronics · Digital electronics and logic gates
+Years: 2020, 2021, 2023, 2024, 2025
+References: 2020 Q18 · 2021 Q10 · 2023 Q46 · 2024 Q40 · 2025 Q48
+FAM073 · Decibel intensity conversion
+5 questions
+Oscillations and Waves · Sound and acoustics
+Years: 2020, 2022, 2023, 2024, 2025
+References: 2020 Q3 · 2022 Q26 · 2023 Q13 · 2024 Q13 · 2025 Q22
+FAM102 · Humidity dew point and vapour accounting
+5 questions
+Thermal Physics · Thermal applications
+Years: 2019, 2020, 2022, 2024, 2025
+References: 2019 Q13 · 2020 Q13 · 2022 Q47 · 2024 Q28 · 2025 Q23
+FAM036 · Motion-graph slope and area interpretation
+5 questions
+Mechanics · Linear motion kinematics
+Years: 2019, 2020, 2021, 2022, 2024
+References: 2019 Q40 · 2020 Q4 · 2021 Q12 · 2022 Q19 · 2024 Q7
+FAM123 · Capacitor equivalent networks and plate topology
+4 questions
+Electrostatic Field · Capacitance and capacitors
+Years: 2019, 2020, 2022, 2023
+References: 2019 Q18 · 2020 Q50 · 2022 Q32 · 2023 Q39
+FAM056 · Centripetal-force constraint
+4 questions
+Mechanics · Rotational and circular motion
+Years: 2019, 2022, 2024
+References: 2019 Q50 · 2022 Q25 · 2024 Q15 · 2024 Q41
+FAM129 · Electrical power from voltage current and resistance
+4 questions
+Current Electricity · Electrical energy and power
+Years: 2019, 2021, 2023, 2024
+References: 2019 Q47 · 2021 Q46 · 2023 Q18 · 2024 Q24
+FAM100 · First-law path and cycle accounting
+4 questions
+Thermal Physics · Thermodynamics
+Years: 2019, 2020, 2021, 2025
+References: 2019 Q30 · 2020 Q24 · 2021 Q30 · 2025 Q44
+FAM046 · Friction in coupled-body systems
+4 questions
+Mechanics · Friction
+Years: 2020, 2023, 2024
+References: 2020 Q22 · 2023 Q44 · 2024 Q16 · 2024 Q50
+FAM137 · Magnetic-field superposition from straight currents
+4 questions
+Magnetic Field · Magnetic fields of currents
+Years: 2019, 2020, 2021, 2022
+References: 2019 Q48 · 2020 Q12 · 2021 Q33 · 2022 Q50
+FAM068 · Mechanical-wave propagation across media
+4 questions
+Oscillations and Waves · Wave properties and propagation
+Years: 2019, 2020, 2022, 2025
+References: 2019 Q16 · 2020 Q7 · 2022 Q21 · 2025 Q25
+FAM050 · Perfectly inelastic collision common velocity
+4 questions
+Mechanics · Momentum, impulse and collisions
+Years: 2021, 2023, 2024, 2025
+References: 2021 Q6 · 2023 Q16 · 2024 Q5 · 2025 Q45
+FAM028 · Photoelectric threshold and maximum energy
+4 questions
+Matter and Radiation · Quantum nature of radiation and photoelectric effect
+Years: 2019, 2021, 2023, 2025
+References: 2019 Q32 · 2021 Q29 · 2023 Q14 · 2025 Q47
+FAM108 · Point-charge field superposition and equilibrium
+4 questions
+Electrostatic Field · Electrostatic force and field
+Years: 2019, 2020, 2021, 2022
+References: 2019 Q17 · 2020 Q28 · 2021 Q17 · 2022 Q29
+FAM133 · Potentiometer balance-length method
+4 questions
+Current Electricity · Potentiometer
+Years: 2020, 2021, 2024, 2025
+References: 2020 Q17 · 2021 Q31 · 2024 Q26 · 2025 Q24
+Show more families
+PERSONAL PERFORMANCE OVERLAY
+Let your errors control the next repair
+Stored only in this browser
+Revision Opportunity Score = 30% validated current-era frequency + 30% personal weakness + 15% repeated errors + 15% time loss + 10% confidence mismatch. It is a repair-priority score, never an examination probability.
+Family
+FAM126 · Resistor-network reduction and node voltages
+FAM139 · Faraday-Lenz induction in loops and coils
+FAM018 · Bernoulli-continuity pipe and efflux problems
+FAM039 · Centre-of-gravity location from geometry
+FAM134 · Charged-particle motion in magnetic fields
+FAM076 · Doppler shift from source or observer motion
+FAM034 · Quark composition charge and confinement
+FAM099 · Steady conduction through rods and networks
+FAM011 · Axial extension from effective tensile force
+FAM148 · Combinational logic evaluation
+FAM073 · Decibel intensity conversion
+FAM102 · Humidity dew point and vapour accounting
+FAM036 · Motion-graph slope and area interpretation
+FAM123 · Capacitor equivalent networks and plate topology
+FAM056 · Centripetal-force constraint
+FAM129 · Electrical power from voltage current and resistance
+FAM100 · First-law path and cycle accounting
+FAM046 · Friction in coupled-body systems
+FAM137 · Magnetic-field superposition from straight currents
+FAM068 · Mechanical-wave propagation across media
+FAM050 · Perfectly inelastic collision common velocity
+FAM028 · Photoelectric threshold and maximum energy
+FAM108 · Point-charge field superposition and equilibrium
+FAM133 · Potentiometer balance-length method
+FAM037 · Projectile component and equal-height reasoning
+FAM019 · Stokes terminal-speed scaling
+FAM084 · Thin-lens imaging and magnification
+FAM058 · Torque and angular acceleration
+FAM143 · Transistor switching regions
+FAM071 · Air-column resonance under changed wave speed
+FAM027 · Blackbody Wien-Stefan scaling
+FAM097 · Calorimetry with phase change
+FAM122 · Capacitor charge sharing and energy change
+FAM014 · Capillary-rise geometry and retention
+FAM130 · Cell internal resistance and terminal behavior
+FAM131 · Centre-zero meter in divider and bridge circuits
+FAM081 · Critical-angle and grazing-ray refraction
+FAM045 · Friction coefficient from limiting or stopping condition
+FAM092 · Ideal-gas state relation and graphs
+FAM135 · Magnetic force on current-carrying conductors
+FAM094 · Molecular kinetic energy and absolute temperature
+FAM082 · Principal-ray tracing through thin lenses
+FAM083 · Prism deviation at symmetry or in combinations
+FAM080 · Apparent depth through liquid
+FAM106 · Circular-satellite energy versus radius
+FAM115 · Conducting-sphere potential after charge combination
+FAM125 · Current density and drift speed in varying area
+FAM004 · Dimensions of physical constants
+FAM116 · Electrostatic potential-energy accounting
+FAM001 · Energy-unit recognition
+FAMV3-R01 · Floating composite body submerged fraction
+FAM140 · Ideal-transformer ratios
+FAM049 · Impulse from force-time area
+FAM107 · Inverse-distance gravitational potential and energy
+FAM057 · Moment of inertia and mass distribution
+FAM098 · Newton cooling-rate scaling
+FAM040 · Newton third-law force pairs
+FAM032 · Nuclear mass-and-charge accounting
+FAM146 · Op-amp comparator response
+FAM147 · Op-amp voltage gain
+FAM103 · Opposing Earth-Moon gravitational fields
+FAM051 · Projectile fragmentation momentum
+FAMV3-R02 · Radial electric-field graph for concentric charged conductors
+FAM061 · SHM period and frequency scaling
+FAM062 · SHM phase and extrema relations
+FAM047 · Signs and values of work by forces
+FAM015 · Soap-bubble pressure and energy
+FAM070 · Standing-wave node spacing
+FAM072 · String-pulse wavelength under varying tension or density
+FAM104 · Surface gravity planetary scaling
+FAM064 · Telescope normal-adjustment relations
+FAM089 · Thermal-expansion correction of length standards
+FAM085 · Two-lens effective optical power
+FAM117 · Uniform-field potential gradient
+FAM008 · Vernier least-count relation
+FAM030 · de Broglie wavelength under momentum change
+FAMV3-S03 · Apparent weight through stages of immersion and bottom contact
+FAMV3-S06 · Back emf versus electric-motor speed
+FAMV3-S13 · Buoyant launch height from an underwater release
+FAM096 · Calorimetry energy balance
+FAMV3-S10 · Circular-orbit speed ratio
+FAMV3-S11 · Dimensional exponent in a viscous-flow relation
+FAM096-S1 · Distinct family - Separate batch calorimetry from steady-flow heater power
+FAM081-S1 · Distinct family - distinct parallel-interface refractive-index ordering family
+FAM037-S1 · Distinct family - distinct projectile-energy/statements family
+FAM134-S1 · Distinct family - distinct zero-magnetic-force/parallel-motion family
+FAM072-S1 · Distinct family - string-pulse family
+FAMV3-S01 · Electric field between concentric conducting shells held at fixed potentials
+FAMV3-S16 · Field lines for an off-centre charge in a conductor cavity
+FAMV3-S05 · Force of a steady liquid jet on a wall
+FAMV3-S14 · Magnetic force on a moving induced-current loop beside a straight wire
+FAMV3-S04 · Parachutist velocity-time profile
+FAMV3-S08 · Polarization identifies transverse waves
+FAMV3-S09 · Projectile energy and statement reasoning
+FAMV3-S02 · Repeated rebound with a fixed fractional speed loss
+FAMV3-S07 · Submerged volume from spring-balance tension
+FAMV3-S15 · Support reactions as a person walks on a non-uniform beam
+FAM132 · Unique - Analogue multimeter range and scale reading
+FAM059 · Unique - Angular momentum conservation in cyclone rotation
+FAM078 · Unique - Basic propagation properties of electromagnetic waves
+FAM077 · Unique - Beats between open pipes at different temperatures
+FAM020 · Unique - Bernoulli lift on a roof in wind
+FAM042 · Unique - Buoyancy direction in an accelerating liquid tank
+FAM110 · Unique - Charge sharing by successive contact of conducting spheres
+FAM111 · Unique - Circular motion driven by a line-charge electric field
+FAM079 · Unique - Comparison of ultraviolet and ultrasonic waves
+FAM065 · Unique - Compound microscope magnification
+FAM021 · Unique - Continuity equation for blood flow through capillaries
+FAM067 · Unique - Diffraction of light at an edge
+FAM012 · Unique - Elastic strain energy in a stretched wire
+FAM120 · Unique - Electric potential on the axis of a charged ring
+FAM149 · Unique - Flip-flop as a one-bit memory element
+FAM141 · Unique - Forward resistance of a diode-resistor two-terminal network
+FAM033 · Unique - Half-life independence from sample state
+FAM022 · Unique - Hydrostatic pressure balance in a two-liquid U-tube
+FAM009 · Unique - Identifying a vector-scalar pair
+FAM069 · Unique - Instantaneous particle velocity in a travelling transverse wave
+FAM136 · Unique - Interactions of stationary magnetic fields
+FAM095 · Unique - Kinetic theory relation between pressure density and rms speed
+FAM053 · Unique - Linear momentum conservation in collisions
+FAM013 · Unique - Material dependence of Young modulus
+FAM054 · Unique - Maximum spring energy during an interaction between blocks
+FAM006 · Unique - Micrometer reading with zero correction
+FAM105 · Unique - Mutual gravity providing circular motion of three stars
+FAM005 · Unique - Pairs of quantities with equal dimensions
+FAM023 · Unique - Poiseuille flow through a grease nipple
+FAM038 · Unique - Possible magnitude of the resultant of two forces
+FAM091 · Unique - Real volume expansivity from liquid-column displacement
+FAM086 · Unique - Refraction and deviation through a glass sphere
+FAM087 · Unique - Refraction through adjacent right-angled prisms
+FAM145 · Unique - Relative doping of BJT emitter base and collector
+FAM127 · Unique - Resistance of variable-length arcs of a conducting ring
+FAM063 · Unique - SHM of a vertically displaced floating tube
+FAM003 · Unique - SI base and derived units
+FAM055 · Unique - Series of one-dimensional elastic collisions
+FAM074 · Unique - Sound quality and overtones
+FAM075 · Unique - Speed of sound in the atmosphere
+FAM124 · Unique - Steady capacitor voltage in a multi-source resistor circuit
+FAM017 · Unique - Surface-tension threshold for seepage through a hole
+FAM044 · Unique - Tensions with a massive accelerating pulley
+FAM088 · Unique - Thermometric properties and liquid thermometers
+FAM029 · Unique - Three-level laser energy transitions
+FAM138 · Unique - Torque on current loops of different areas
+FAM024 · Unique - Total hydrostatic force on a flask wall
+FAM093 · Unique - Two trapped gas columns heated to different temperatures
+FAM025 · Unique - Viscous shear between parallel plates
+FAM121 · Unique - Work and potential differences between equipotentials
+FAM031 · Unique - X-ray tube production principles
+FAM109 · Unique - accelerations of charged masses in a uniform electric field
+FAM144 · Unique - active-region transistor bias voltage
+FAM052 · Unique - angular momentum in a collision with a pivoted rod
+FAM041 · Unique - apparent weight in an accelerating elevator
+FAM035 · Unique - classification of the muon as a lepton
+FAM066 · Unique - corrective lens for myopia
+FAM090 · Unique - differential thermal expansion of a ball and circular hole
+FAM002 · Unique - dimensionless physical quantity having a named unit
+FAM118 · Unique - electric field obtained from a potential-distance graph
+FAM112 · Unique - electric field within a dielectric medium
+FAM119 · Unique - electric potential of a charged hollow spherical shell
+FAM048 · Unique - engine power required to climb an incline
+FAM016 · Unique - force required to pull a loop from a liquid surface
+FAM113 · Unique - force torque and stability of an electric dipole
+FAM142 · Unique - full-wave rectifier output including diode forward drop
+FAM101 · Unique - heat and work in an isothermal ideal-gas process
+FAM114 · Unique - interpretation of electric field-line patterns
+FAM007 · Unique - percentage uncertainty in a pendulum period
+FAM010 · Unique - possible magnitude range of a vector resultant
+FAM128 · Unique - series-parallel resistor statements
+FAM043 · Unique - spring force immediately after a support breaks
+FAM060 · Unique - translational and rotational energy of a rolling cylinder
+FAM026 · Unique - water-level changes for floating blocks and disks
+FAMV3-S12 · Velocity-time graph for bounces with fixed kinetic-energy loss
+FAMV3-S17 · Velocity-vector change in uniform circular motion
+Outcome
+Correct
+Wrong
+Guessed
+Correct but slow
+Unattempted
+Time taken (seconds)
+Confidence (1–5)
+Save outcome
+NEXT MOVE
+Log one honest timed Physics MCQ
+A recommendation requires your marked outcome, time and confidence.
+Priority Family Unit Score Your evidence Action
+No private evidence yet. Frequency alone will not be disguised as a personal diagnosis.
+EVIDENCE & METHODOLOGY
+What the data can—and cannot—support
+Validated
+2000-2025 primary-unit distribution
+2019-2025 primary subtopics
+2019-2025 question families
+Provisional
+historical subtopics
+historical question families
+secondary-unit mapping
+difficulty pilot
+answers and explanations
+Unavailable / prohibited
+production difficulty ranking
+exam probability
+guaranteed future weighting
+Historical frequency can reveal what has been examined and how emphasis changed across eras. It cannot guarantee what will appear next. Current-era evidence controls present strategy; low-frequency outcomes still require compulsory syllabus coverage.
+External comparison: Hirun De Silva Physics Dashboard — retained as a separately attributed aggregate benchmark, not merged into the validated question-level dataset.

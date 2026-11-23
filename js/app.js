@@ -851,6 +851,8 @@ const OLDEST_APP_KEY = 'al_performance_command_centre_v4';
 const VERY_OLD_APP_KEY = 'al_performance_command_centre_v3';
 const LEGACY_KEY = 'al_v2_samra';
 const RECOVERY_KEY = 'al_performance_powerhouse_v5_recovery';
+/** Untouched copy of a stored record that could not be read (see preserveUnreadableRecord). */
+const UNREADABLE_KEY = 'al_performance_powerhouse_v5_unreadable';
 const V4_RECOVERY_KEY = 'al_performance_powerhouse_v4_recovery';
 const PREVIOUS_POWERHOUSE_RECOVERY_KEY = 'al_performance_powerhouse_v3_recovery';
 const PREVIOUS_RECOVERY_KEY = 'al_performance_command_centre_v6_recovery';
@@ -1273,8 +1275,46 @@ function loadState() {
     }
     return migrated;
   } catch (_) {
+    preserveUnreadableRecord();
     return defaultState();
   }
+}
+
+let unreadableRecordKept = false;
+
+/**
+ * If the stored record cannot be parsed or validated, the app opens a blank one —
+ * and the next save would overwrite the damaged original for good. Keep an
+ * untouched copy under its own key first, so it can still be recovered by hand.
+ */
+function preserveUnreadableRecord() {
+  try {
+    const raw = localStorage.getItem(APP_KEY);
+    if (!raw) return;
+    let kept = null;
+    try {
+      kept = JSON.parse(localStorage.getItem(UNREADABLE_KEY) || 'null');
+    } catch (_) {}
+    if (!kept || kept.raw !== raw)
+      localStorage.setItem(UNREADABLE_KEY, JSON.stringify({ at: new Date().toISOString(), raw }));
+    unreadableRecordKept = true;
+  } catch (_) {}
+}
+
+function showUnreadableBanner() {
+  if (!unreadableRecordKept) return;
+  const bar = document.createElement('div');
+  bar.className = 'recovery-banner';
+  bar.setAttribute('role', 'alert');
+  const text = document.createElement('span');
+  text.textContent =
+    'Your saved study record could not be read, so a blank record was opened. The original was not deleted: an untouched copy is kept on this device. If you have a backup file, restore it from Backup.';
+  const dismiss = document.createElement('button');
+  dismiss.type = 'button';
+  dismiss.textContent = 'Dismiss';
+  dismiss.addEventListener('click', () => bar.remove());
+  bar.append(text, dismiss);
+  document.body.prepend(bar);
 }
 
 const todayISO = () => PowerhouseCore.zonedToday('Asia/Colombo');
@@ -2569,6 +2609,7 @@ function submitAttempt(event) {
     return;
   }
   const editingId = $('attempt-form').dataset.editId || '';
+  let unclosedNote = '';
   const existingAttempt = editingId ? state.attempts.find(a => a.id === editingId) : null;
   const attempt = {
     id: editingId || uid(),
@@ -2600,7 +2641,8 @@ function submitAttempt(event) {
     state.attempts[idx] = attempt;
     PowerhouseCore.reconcileEditedAttempt(state, attempt, state.v5Settings?.retestIntervals, uid);
   } else {
-    completeEligibleRetests(attempt);
+    const closedCheck = completeEligibleRetests(attempt);
+    if (!closedCheck) unclosedNote = unclosedVerificationNote(attempt);
     state.attempts.push(attempt);
     if (typeof linkTrackerSessionToAttempt === 'function') linkTrackerSessionToAttempt(attempt);
     scheduleRetests(attempt);
@@ -2613,10 +2655,25 @@ function submitAttempt(event) {
   toast(
     editingId
       ? 'Attempt corrected. Original ID and created-at timestamp preserved.'
-      : earned === total
-        ? 'Full-credit evidence saved.'
-        : 'Evidence saved. Retest policy applied.',
+      : unclosedNote ||
+          (earned === total ? 'Full-credit evidence saved.' : 'Evidence saved. Retest policy applied.'),
   );
+}
+
+/**
+ * A verification attempt that closed no check must say so; otherwise the student
+ * reads "saved" and believes the check is done.
+ */
+function unclosedVerificationNote(attempt) {
+  const { reason, count, due } = PowerhouseCore.explainUnclosedVerification(state.retests, attempt);
+  const kind = attempt.type === 'fresh-transfer' ? 'fresh-transfer' : 'delayed-retest';
+  if (reason === 'too-early')
+    return `Evidence saved, but no check closed: the ${kind} check for this topic is not due until ${due}. Log it again on or after that date.`;
+  if (reason === 'ambiguous')
+    return `Evidence saved, but no check closed: ${count} ${kind} checks match this topic. Open the one you mean from Retests and log it there.`;
+  if (reason === 'no-open-check')
+    return `Evidence saved. There is no open ${kind} check for this topic, so nothing was closed.`;
+  return '';
 }
 
 function deleteAttempt(id) {
@@ -2750,6 +2807,31 @@ function exportData() {
 }
 
 const MAX_IMPORT_BYTES = 15 * 1024 * 1024;
+const STUDY_TRACKER_KEY = 'al_performance_powerhouse_study_tracker_v1';
+const PHYSICS_INTELLIGENCE_KEY = 'al_performance_powerhouse_physics_intelligence_v1';
+
+/**
+ * Before a restore replaces a companion module's record, keeps the current one in
+ * that module's recovery list (`<key>_recovery`, newest first, last 10), so a
+ * restore can never silently destroy Study Tracker or Physics Intelligence data.
+ */
+function snapshotCompanion(key, label) {
+  try {
+    const current = localStorage.getItem(key);
+    if (!current) return;
+    let saved;
+    try {
+      saved = JSON.parse(current);
+    } catch (_) {
+      saved = current; // keep unreadable data verbatim rather than lose it
+    }
+    const recoveryKey = `${key}_recovery`;
+    const list = JSON.parse(localStorage.getItem(recoveryKey) || '[]');
+    if (!Array.isArray(list)) return; // never overwrite a recovery key we do not understand
+    list.unshift({ id: uid(), at: new Date().toISOString(), label, state: saved });
+    localStorage.setItem(recoveryKey, JSON.stringify(list.slice(0, 10)));
+  } catch (_) {}
+}
 
 function closeDataDialogs() {
   if ($('data-dialog').open) $('data-dialog').close();
@@ -2776,31 +2858,34 @@ function importData(file) {
       toast('That file is not valid JSON, so nothing was imported.');
       return;
     }
-    const plan = PowerhouseCore.inspectImport(parsed);
     try {
+      const plan = PowerhouseCore.inspectImport(parsed);
       if (plan.kind === 'invalid') {
         toast(plan.message);
         return;
       }
       if (plan.kind === 'backup') {
+        const replaced = [
+          'Your current local record',
+          plan.studyTracker ? 'Study Tracker sessions' : '',
+          plan.physicsIntelligence ? 'Physics Intelligence attempts' : '',
+        ].filter(Boolean);
         const ok = confirm(
-          `Restore this Powerhouse backup?\n\n${plan.summary}.\n\nYour current local record will be replaced. A recovery snapshot of it is kept first.`,
+          `Restore this Powerhouse backup?\n\n${plan.summary}.\n\n${replaced.join(', ').replace(/, ([^,]*)$/, ' and $1')} will be replaced. A recovery snapshot of each is kept first.`,
         );
         if (!ok) {
           toast('Import cancelled. Nothing changed.');
           return;
         }
         snapshotState('pre-import');
-        if (plan.studyTracker && !DEMO_MODE)
-          localStorage.setItem(
-            'al_performance_powerhouse_study_tracker_v1',
-            JSON.stringify(plan.studyTracker),
-          );
-        if (plan.physicsIntelligence && !DEMO_MODE)
-          localStorage.setItem(
-            'al_performance_powerhouse_physics_intelligence_v1',
-            JSON.stringify(plan.physicsIntelligence),
-          );
+        if (plan.studyTracker && !DEMO_MODE) {
+          snapshotCompanion(STUDY_TRACKER_KEY, 'pre-powerhouse-import');
+          localStorage.setItem(STUDY_TRACKER_KEY, JSON.stringify(plan.studyTracker));
+        }
+        if (plan.physicsIntelligence && !DEMO_MODE) {
+          snapshotCompanion(PHYSICS_INTELLIGENCE_KEY, 'pre-powerhouse-import');
+          localStorage.setItem(PHYSICS_INTELLIGENCE_KEY, JSON.stringify(plan.physicsIntelligence));
+        }
         state = plan.state;
         saveState();
         refreshAll();
@@ -3055,11 +3140,34 @@ function showDemoBanner() {
   document.body.prepend(bar);
 }
 
+/**
+ * Each open tab holds the record in memory and saves the whole of it. Without this,
+ * a save from a tab that had not seen another tab's latest save would silently erase
+ * that work. The browser fires `storage` in every OTHER tab when a key changes, so
+ * those tabs reload the record (through the same validation as a normal start) and
+ * re-render before the student can act on stale data.
+ */
+function watchOtherTabs() {
+  if (DEMO_MODE) return;
+  window.addEventListener('storage', event => {
+    if (event.storageArea !== localStorage) return;
+    if (event.key === APP_KEY && event.newValue) {
+      state = loadState();
+      refreshAll();
+      toast('Updated with changes saved in another tab.');
+    } else if (event.key === STUDY_TRACKER_KEY) {
+      refreshAll();
+    }
+  });
+}
+
 showDemoBanner();
+showUnreadableBanner();
 SUBJECTS.forEach(buildSubjectPanel);
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost'))
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 initEvents();
+watchOtherTabs();
 refreshAll();
 try {
   const hashPanel = location.hash.replace('#', '');

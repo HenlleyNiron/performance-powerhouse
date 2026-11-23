@@ -1,0 +1,20 @@
+PAPER ENGINE
+Paper quantity is not paper quality.
+Every paper or section is classified by how far the review-and-verification chain actually progressed.
+Log paper evidence
+FULL PAPERS
+1
+all-time logged full timed papers
+PAPER OUTPUT · 30D
+1
+MCQ/structured/paper/full sections
+BEST RECENT TRUSTED
+70%
+only attempts with trusted-score audit
+UNRESOLVED PAPER DEBT
+1
+paper-exposed errors not yet verified closed
+PAPER QUALITY / CLOSURE
+Attempted → marked → diagnosed → repaired → verified
+DATE SUBJECT SOURCE TYPE RAW / TRUSTED TIME CLOSURE
+2027-02-09 Physics Physics Paper I · timed Full paper 38/50 · 35/50 120m DIAGNOSED

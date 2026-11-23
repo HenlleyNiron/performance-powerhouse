@@ -8,6 +8,8 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
+  // Text snapshots are platform-independent, so one committed copy serves every OS.
+  snapshotPathTemplate: '{testDir}/__snapshots__/{arg}{ext}',
   use: {
     baseURL: `http://localhost:${PORT}`,
     timezoneId: 'Asia/Colombo',

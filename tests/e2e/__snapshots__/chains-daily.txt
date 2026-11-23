@@ -1,0 +1,53 @@
+DAILY EXECUTION LAYER
+Create one measurable output before adding more planning.
+The useful daily-output layer is integrated into Powerhouse V3. Paper/error evidence stays authoritative; this layer tracks daily volume and target consistency. If work is already logged in Evidence, do not manually count it twice.
+TODAY · TARGET SCORE
+Optional
+TODAY · OUTPUTS
+0
+7-DAY ACTIVE DAYS
+3/7
+CURRENT STREAK
+0d
+TODAY'S SCOREBOARD
+Monday 15 Feb
+Manual extras + evidence-derived activity.
+Physics
+No target/output yet
+—
+Chemistry
+No target/output yet
+—
+Biology
+No target/output yet
+—
+LOG EXTRA OUTPUT
+Daily progress entry
+Use this for drills or work you did not already log in the Evidence ledger.
+DATE
+OPTIONAL NOTE
+Physics
+MCQS
+STRUCTURED QS
+ESSAYS
+FULL PAPERS
+RETESTS
+Chemistry
+MCQS
+STRUCTURED QS
+ESSAYS
+FULL PAPERS
+RETESTS
+Biology
+MCQS
+STRUCTURED QS
+ESSAYS
+FULL PAPERS
+RETESTS
+Save daily output
+Daily targets · editable, local-only
+EXECUTION HISTORY
+Daily output ledger
+Manual entries remain editable by deletion/re-entry; the underlying JSON backup preserves the full record.
+DATE PHYSICS CHEMISTRY BIOLOGY NOTE
+2027-02-14 MCQs: 20 · Structured Qs: 1 Retests: 1 MCQs: 10 · Essays: 1 Fixture block Delete

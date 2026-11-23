@@ -3,6 +3,87 @@
 All notable changes to Performance Powerhouse. Versions follow the `package.json` version;
 storage-schema changes are called out explicitly.
 
+## 5.4.0 — 2026-11-23
+
+Storage schema unchanged (12). No storage key renamed or removed. Findings and methods are
+recorded in [`docs/AUDIT-2026-11.md`](docs/AUDIT-2026-11.md).
+
+### Fixed
+- **Two open tabs no longer erase each other's work.** Each tab saved its whole in-memory record,
+  so a save from a tab that had not seen another tab's latest save silently removed those
+  attempts. Tabs now reload the record when another tab saves (through the same validation as a
+  normal start), re-render and say so.
+- **Links to the V5 panels open them.** `/#retests`, `#papers`, `#intelligence`, `#weekly` and
+  `#study-tracker` used to fall back to Command because they were resolved before those panels
+  existed. Hash changes after load now switch panels too.
+- **A retest that closed no check now says why.** A fresh transfer or delayed retest logged before
+  its check was due, or matching two open checks, was reported as "Evidence saved", so students
+  believed the check had closed. The message now gives the due date, the number of matching
+  checks, or says there was no open check (new tested core helper
+  `PowerhouseCore.explainUnclosedVerification`).
+- The service worker precaches each release with `cache: 'reload'`, so it can no longer store a
+  stale file from the browser's HTTP cache next to a new one.
+
+### Added
+- **`npm run fuzz:ui`**: a reproducible UI fuzzer. It generates random student histories, replays
+  them through the core's retest rules, opens every panel in Chromium and fails on any page error
+  or broken text (NaN, `undefined`, `Infinity`, `[object Object]`).
+- **[`docs/METHOD.md`](docs/METHOD.md)**: the repair loop as a method any A/L student can use
+  without the app (steps, clean-pass rule, error families, a paper template and background
+  reading).
+
+## 5.3.1 — 2026-11-05
+
+Storage schema unchanged (12). No storage key renamed or removed. Bug fixes only.
+
+### Fixed — evidence integrity
+- **Correcting a verification attempt now re-derives its scheduled check properly.** Changing a
+  fresh transfer or delayed retest's topic, type or date used to leave the check it had closed
+  still closed — even by an attempt dated before the check was due, or now on another topic. The
+  attempt is now unlinked from any check it no longer qualifies for (that check reopens) and, like a
+  newly logged attempt, applied to the one check it now does qualify for. A launch link to a check
+  the corrected attempt can no longer verify falls back to the unambiguous match.
+
+### Fixed — data safety
+- **Restoring a full backup no longer silently replaces Study Tracker and Physics Intelligence
+  data.** Their current records are kept in each module's recovery list
+  (`…_study_tracker_v1_recovery`, new `…_physics_intelligence_v1_recovery`) before the restore,
+  and the confirmation now says those records will be replaced and how many each backup holds.
+- Physics Intelligence's own import now asks for confirmation, keeps a recovery copy first, and
+  reports an unreadable or wrong file instead of failing silently.
+
+### Security and robustness
+- **Study Tracker and Physics Intelligence now validate stored and imported records** through new
+  tested core helpers (`PowerhouseCore.sanitizeTrackerState`, `sanitizePhysicsAttempts`), as the
+  main app already did. Previously a crafted backup could inject markup into the tracker's history
+  table (script execution was already blocked by the CSP), one malformed session crashed the whole
+  tracker page, and an unknown Physics outcome produced `NaN` scores. The full-backup import
+  validates these blocks before writing them. If validation must skip records, the original stored
+  record is kept in the module's recovery list first, once.
+- Both companion pages now load `js/core.js` (already in the offline cache).
+
+- **An unreadable stored record is no longer silently overwritten.** If the saved record could not
+  be parsed or validated (for example, cut off mid-write), the app opened a blank record and the
+  next save destroyed the damaged original. An untouched copy is now kept under
+  `al_performance_powerhouse_v5_unreadable` first, and a message that stays on screen says so.
+- **Backups containing values that cannot be converted to text or numbers now import.** A JSON
+  value such as `"note": {"toString": null}` crashed validation, so the import did nothing and
+  showed no message. Validation now converts only real strings and numbers (`toText`, `asNumber`,
+  `isKeyOf`), and any unexpected import failure is reported. Found by property-based testing.
+
+### Tests
+- **Property-based tests** (fast-check, 500 random cases each, fixed seed): validation never throws
+  on any input and is idempotent; every surviving record is well-formed with no hostile ids or
+  enums; one attempt closes at most one check; closed checks always have clean, on-time evidence;
+  deleting or correcting any attempt never leaves a check closed without evidence.
+- **Panel text snapshots**: the visible text of every panel, with the clock frozen, for the demo
+  record and for a fixture containing every evidence-chain state, plus the companion pages. A
+  refactor that changes any wording or number fails until the change is reviewed
+  (`npm run test:snapshots:update`).
+- 15 new unit tests (edit re-derivation, companion sanitisers, import summary) and 3 browser
+  regression tests (tracker injection and recovery, companion snapshot on restore, Physics
+  validation and import feedback). Each new test fails on 5.3.0.
+
 ## 5.3.0 — 2026-10-31
 
 Storage schema unchanged (12). No user-visible behaviour change.

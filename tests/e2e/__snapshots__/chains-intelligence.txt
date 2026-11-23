@@ -1,0 +1,351 @@
+PERFORMANCE ANALYTICS 2.0
+Marks, calibration and evidence-backed coverage.
+Transparent descriptive analytics only. No predicted grades, ranks, exam probabilities or opaque mastery scores.
+MARKS INITIALLY LOST
+44
+across traceable source errors
+MARKS TARGETED
+28
+lost marks with a completed repair
+OBSERVED IMPROVEMENT
+22
+same-mark-scale improvement after repair; not causal attribution
+DELAYED SURVIVAL
+100%
+clean delayed passes / delayed attempts
+CONFIDENCE CALIBRATION
+Where certainty is misleading
+2
+Dangerous blind spots
+high confidence + wrong
+0
+Fragile successes
+low confidence + clean correct
+0
+Secure mastery signals
+high confidence + clean correct
+2
+Unsupported / guessed items logged
+Raw accuracy 76% · Trusted accuracy 20% · Raw/trusted gap 56 pp.
+THREE-SUBJECT BALANCE
+Evidence balance, not equal hours
+Physics
+60%
+Evidence days · 14d
+3
+Marked attempts
+3
+Repair debt
+3
+Retest debt
+4
+Full papers · 14d
+0
+Days since evidence
+5
+Chemistry
+70%
+Evidence days · 14d
+2
+Marked attempts
+2
+Repair debt
+3
+Retest debt
+0
+Full papers · 14d
+0
+Days since evidence
+10
+Biology
+60%
+Evidence days · 14d
+1
+Marked attempts
+1
+Repair debt
+2
+Retest debt
+0
+Full papers · 14d
+1
+Days since evidence
+3
+EVIDENCE-BACKED SYLLABUS MAP
+Coverage ≠ mastery
+Each row separates manual coverage context from closed-book testing, current performance, mark loss, closure debt and recency.
+Measurements
+Physics · Grade 12
+Coverage 0%
+Tests 1
+Recent 60%
+Lost 4
+Debt 3 · 5d
+Mechanics
+Physics · Grade 12
+Coverage 0%
+Tests 1
+Recent 70%
+Lost 3
+Debt 3 · 6d
+Waves & Oscillations
+Physics · Grade 12
+Coverage 0%
+Tests 1
+Recent 50%
+Lost 5
+Debt 1 · 7d
+Thermal Physics
+Physics · Grade 12
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+Gravitational Field
+Physics · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+Electrostatic Field
+Physics · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+Magnetic Field
+Physics · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+Current Electricity
+Physics · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+Electronics
+Physics · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+Properties of Matter
+Physics · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+Matter & Radiation
+Physics · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+01 · Atomic Structure
+Chemistry · Grade 12
+Coverage 0%
+Tests 1
+Recent 40%
+Lost 6
+Debt 1 · 10d
+02 · Structure & Bonding
+Chemistry · Grade 12
+Coverage 0%
+Tests 2
+Recent 80%
+Lost 4
+Debt 1 · 12d
+03 · Chemical Calculations
+Chemistry · Grade 12
+Coverage 0%
+Tests 3
+Recent 83%
+Lost 5
+Debt 1 · 21d
+04 · Gaseous State of Matter
+Chemistry · Grade 12
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+05 · Energetics
+Chemistry · Grade 12
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+06 · Chemistry of s, p and d Block Elements
+Chemistry · Grade 12
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+07 · Basic Concepts of Organic Chemistry
+Chemistry · Grade 12
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+08 · Hydrocarbons & Halo-hydrocarbons
+Chemistry · Grade 12
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+09 · Oxygen-containing Organic Compounds
+Chemistry · Grade 12
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+10 · Nitrogen-containing Organic Compounds
+Chemistry · Grade 12
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+11 · Chemical Kinetics
+Chemistry · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+12 · Equilibrium
+Chemistry · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+13 · Electrochemistry
+Chemistry · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+14 · Industrial Chemistry & Environmental Pollution
+Chemistry · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+01 · Introduction to Biology
+Biology · Grade 12
+Coverage 0%
+Tests 4
+Recent 80%
+Lost 7
+Debt 0 · 30d
+02 · Chemical & Cellular Basis of Life
+Biology · Grade 12
+Coverage 0%
+Tests 5
+Recent 80%
+Lost 10
+Debt 2 · 3d
+03 · Evolution & Diversity of Organisms
+Biology · Grade 12
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+04 · Plant Form & Function
+Biology · Grade 12
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+05 · Animal Form & Function
+Biology · Grade 12–13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+06 · Genetics
+Biology · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+07 · Molecular Biology & Recombinant DNA Technology
+Biology · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+08 · Environmental Biology
+Biology · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+09 · Microbiology
+Biology · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+10 · Applied Biology
+Biology · Grade 13
+Coverage 0%
+Tests 0
+Recent —
+Lost 0
+Debt 0 · never
+UNIVERSAL SEARCH
+Find attempts, repairs and syllabus evidence
+All subjects
+Physics
+Chemistry
+Biology
+Attempt · Fixture open-src
+2027-02-10 · Topic question · 6/10 · 01 · Measurements ·
+Attempt · Fixture diag-src
+2027-02-09 · MCQ set · 7/10 · 02 · Mechanics · Conceptual model
+Attempt · Fixture plan-src
+2027-02-08 · Structured essay · 5/10 · 03 · Waves & Oscillations · Method / calculation
+Attempt · Fixture redo-src
+2027-02-05 · Topic question · 4/10 · 01 · Atomic Structure & Periodic Table · Knowledge gap
+Attempt · Fixture xfer-src
+2027-02-01 · Topic question · 6/10 · 02 · Structure & Bonding · Retrieval failure
+Attempt · Fixture xfer-re
+2027-02-03 · Closed-book reattempt · 10/10 · 02 · Structure & Bonding ·
+Attempt · Fixture late-src
+2027-01-20 · MCQ set · 5/10 · 03 · Chemical Calculations · Attention / misreading
+Attempt · Fixture late-re
+2027-01-22 · Closed-book reattempt · 10/10 · 03 · Chemical Calculations ·
+Attempt · Fixture late-xf
+2027-01-25 · Fresh transfer · 10/10 · 03 · Chemical Calculations ·
+Attempt · Fixture done-src
+2027-01-05 · Topic question · 3/10 · 01 · Introduction to Biology · Presentation
+Attempt · Fixture done-re
+2027-01-07 · Closed-book reattempt · 10/10 · 01 · Introduction to Biology ·
+Attempt · Fixture done-xf
+2027-01-10 · Fresh transfer · 10/10 · 01 · Introduction to Biology ·

@@ -1,0 +1,37 @@
+RETEST ENGINE 2.0
+Retrieval debt must become visible.
+Intervals are configurable. Failed checks stay open; a check closes only when the logged retest is a clean independent pass.
+Export important retests .ics
+OVERDUE
+2
+highest priority retrieval debt
+DUE TODAY
+0
+fresh independent checks
+FAILED / REOPENED
+0
+checks attempted but not cleanly passed
+RETEST SURVIVAL
+100%
+passed among retests with recorded V5 attempts
+Fresh-transfer interval (days)
+Delayed-retest interval (days)
+Save retest policy
+Existing due dates stay unchanged; new error chains use the updated policy.
+OVERDUE · 2
+Physical quantities & SI units
+Physics · Fresh transfer · 2027-02-13 Attempt
+Equations of motion (SUVAT)
+Physics · Fresh transfer · 2027-02-12 Attempt
+DUE TODAY · 0
+None.
+UPCOMING · 2
+Equations of motion (SUVAT)
+Physics · Delayed stability · 2027-02-16 Attempt
+Physical quantities & SI units
+Physics · Delayed stability · 2027-02-17 Attempt
+COMPLETED · 2
+Characteristics of living organisms
+Biology · Delayed stability · 2027-01-12
+Characteristics of living organisms
+Biology · Fresh transfer · 2027-01-08

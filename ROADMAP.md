@@ -16,6 +16,20 @@ becoming another high-maintenance productivity system.
 - Validation script for the Physics Intelligence dataset
 - Offline and Study Tracker hand-off browser tests; automatic releases
 
+## Done in 5.4.0
+
+- Reliability audit with a reproducible UI fuzzer ([`docs/AUDIT-2026-11.md`](docs/AUDIT-2026-11.md)):
+  multi-tab data loss, V5 deep links and silent retest non-closure fixed
+- [`docs/METHOD.md`](docs/METHOD.md): the repair loop as a method usable without the app
+
+## Open decision
+
+- **Retest stage order.** Today a clean delayed retest can close the 7-day check even if the
+  3-day fresh-transfer check is still open (pinned by a unit test, so it is deliberate current
+  behaviour). The alternative is to require stage 1 before stage 2. This changes what
+  "closed" means for existing records, so it needs the maintainer's decision before any code
+  change.
+
 ## Next
 
 - Manual screen-reader pass (NVDA, TalkBack) — automated checks cannot cover everything

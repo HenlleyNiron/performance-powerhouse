@@ -76,7 +76,7 @@
    * @property {Record<string, number>} dropped  Invalid records skipped, by collection.
    */
 
-  const BUILD = '5.3.0';
+  const BUILD = '5.4.0';
   const SCHEMA_VERSION = 12;
   const DEFAULT_TIMEZONE = 'Asia/Colombo';
 
@@ -147,17 +147,43 @@
     );
   }
 
+  /**
+   * Whether `value` is a string naming one of `map`'s own keys. Non-strings are
+   * rejected without being converted (conversion throws on some JSON objects).
+   * @param {object} map
+   * @param {unknown} value
+   */
+  const isKeyOf = (map, value) =>
+    typeof value === 'string' && Object.prototype.hasOwnProperty.call(map, value);
+
+  /**
+   * Number from untrusted input: numbers and numeric strings only. Objects and
+   * arrays give NaN rather than being coerced (Number() throws on some JSON
+   * objects, e.g. {"valueOf": 1}, and turns [5] into 5).
+   * @param {unknown} value
+   */
+  function asNumber(value) {
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string' && value.trim() !== '') return Number(value);
+    return NaN;
+  }
+
   function toNumber(value, { min = -Infinity, max = Infinity, fallback = 0, integer = false } = {}) {
-    if (value === null || value === '' || typeof value === 'boolean') return fallback;
-    let n = Number(value);
+    let n = asNumber(value);
     if (!Number.isFinite(n)) return fallback;
     if (integer) n = Math.round(n);
     return Math.min(max, Math.max(min, n));
   }
 
+  /**
+   * Text for display or storage. Only primitives become text: objects and arrays
+   * give '' (some JSON objects make String() throw, e.g. {"toString": null}).
+   */
   function toText(value, max = 500) {
-    if (value === null || value === undefined) return '';
-    return String(value).slice(0, max);
+    if (typeof value === 'string') return value.slice(0, max);
+    if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint')
+      return String(value).slice(0, max);
+    return '';
   }
 
   function escapeHTML(value = '') {
@@ -259,7 +285,7 @@
 
   function normalizeIntervals(value) {
     if (!Array.isArray(value) || value.length < 2) return [...DEFAULT_RETEST_INTERVALS];
-    const nums = value.slice(0, 2).map(n => Number(n));
+    const nums = value.slice(0, 2).map(asNumber);
     return nums.every(n => Number.isFinite(n) && n >= 0 && n <= 365) ? nums : [...DEFAULT_RETEST_INTERVALS];
   }
 
@@ -298,11 +324,61 @@
   }
 
   /**
+   * Whether an attempt can count as evidence for a scheduled check: the matching
+   * verification type for the stage, the same topic, on or after the due date, and
+   * not the source attempt itself.
+   * @param {Retest} retest
+   * @param {Partial<Attempt>} attempt
+   */
+  function canVerify(retest, attempt) {
+    return (
+      attempt.type === (retest.stage === 1 ? 'fresh-transfer' : 'delayed-retest') &&
+      attempt.topicKey === retest.topicKey &&
+      typeof attempt.date === 'string' &&
+      attempt.date >= retest.due &&
+      retest.sourceAttemptId !== attempt.id
+    );
+  }
+
+  /**
    * Records a verification attempt against at most ONE eligible scheduled check.
    * When the student launched the attempt from a specific retest (`attempt.retestId`)
    * only that check is touched; otherwise a check is linked only if it is unambiguous.
    * Returns the updated retest, or null when nothing was eligible.
    */
+  /**
+   * Why a fresh transfer or delayed retest closed (or failed) no scheduled check, so the
+   * student is never told "saved" while believing a check closed. Call it when
+   * `applyRetestOutcome` returned null; it does not modify anything.
+   *  - `too-early`: a matching check exists but is not due yet (`due` = earliest due date)
+   *  - `ambiguous`: several checks match and none was chosen (`count` of them)
+   *  - `no-open-check`: nothing open for this topic and stage
+   *  - `null`: the attempt is not a verification attempt
+   * @param {Retest[]} retests
+   * @param {Partial<Attempt>} attempt
+   * @returns {{ reason: 'too-early' | 'ambiguous' | 'no-open-check' | null, count: number, due: string | null }}
+   */
+  function explainUnclosedVerification(retests, attempt) {
+    if (!attempt || !['fresh-transfer', 'delayed-retest'].includes(String(attempt.type)))
+      return { reason: null, count: 0, due: null };
+    const stage = attempt.type === 'fresh-transfer' ? 1 : 2;
+    const open = (Array.isArray(retests) ? retests : []).filter(
+      r =>
+        r &&
+        !r.completedAt &&
+        r.stage === stage &&
+        r.topicKey === attempt.topicKey &&
+        r.sourceAttemptId !== attempt.id,
+    );
+    const eligible = open.filter(r => canVerify(r, attempt));
+    if (eligible.length) return { reason: 'ambiguous', count: eligible.length, due: null };
+    const early = open
+      .filter(r => typeof attempt.date === 'string' && attempt.date < r.due)
+      .sort((a, b) => a.due.localeCompare(b.due));
+    if (early.length) return { reason: 'too-early', count: early.length, due: early[0].due };
+    return { reason: 'no-open-check', count: 0, due: null };
+  }
+
   /**
    * @param {Retest[]} retests
    * @param {Attempt} attempt
@@ -310,16 +386,8 @@
    */
   function applyRetestOutcome(retests, attempt) {
     if (!attempt || !['fresh-transfer', 'delayed-retest'].includes(attempt.type)) return null;
-    const stage = attempt.type === 'fresh-transfer' ? 1 : 2;
     const eligible = retests
-      .filter(
-        r =>
-          !r.completedAt &&
-          r.topicKey === attempt.topicKey &&
-          r.stage === stage &&
-          r.due <= attempt.date &&
-          r.sourceAttemptId !== attempt.id,
-      )
+      .filter(r => !r.completedAt && canVerify(r, attempt))
       .sort((a, b) => a.due.localeCompare(b.due));
     /** @type {Retest | null} */
     let retest = null;
@@ -402,7 +470,11 @@
 
   /**
    * Keeps the retest schedule consistent after an attempt is corrected:
-   *  - checks this attempt verified are re-evaluated against the corrected marks;
+   *  - checks this attempt verified are re-evaluated against the corrected marks,
+   *    and the attempt is unlinked from any check it no longer qualifies for
+   *    (corrected type, topic, or a date before the check was due);
+   *  - a corrected verification attempt that is no longer linked to any check is
+   *    applied to the one it now qualifies for, exactly as a new attempt would be;
    *  - a source attempt that now shows lost marks gets its checks scheduled;
    *  - untouched checks follow a corrected date/topic, or disappear if the
    *    correction shows full credit.
@@ -415,13 +487,23 @@
    */
   function reconcileEditedAttempt(state, attempt, intervals = DEFAULT_RETEST_INTERVALS, idFn = makeId) {
     const byId = new Map(state.attempts.map(a => [a.id, a]));
+    const linksTo = r => (r.attempts || []).some(e => e && e.attemptId === attempt.id);
     state.retests.forEach(r => {
-      if ((r.attempts || []).some(e => e && e.attemptId === attempt.id)) recomputeRetest(r, byId);
+      if (!linksTo(r)) return;
+      if (!canVerify(r, attempt)) r.attempts = r.attempts.filter(e => !e || e.attemptId !== attempt.id);
+      recomputeRetest(r, byId);
     });
     if (VERIFICATION_TYPES.includes(attempt.type)) {
       state.retests = state.retests.filter(
         r => r.sourceAttemptId !== attempt.id || (r.attempts || []).length || r.completedAt,
       );
+      if (!state.retests.some(linksTo)) {
+        // A launch link to a check the corrected attempt cannot verify is stale;
+        // fall back to the unambiguous match a new attempt would get.
+        const target = attempt.retestId && state.retests.find(r => r.id === attempt.retestId);
+        const stale = Boolean(attempt.retestId) && !(target && canVerify(target, attempt));
+        applyRetestOutcome(state.retests, stale ? { ...attempt, retestId: null } : attempt);
+      }
       return;
     }
     const own = state.retests.filter(r => r.sourceAttemptId === attempt.id);
@@ -506,7 +588,7 @@
       date,
       subject,
       topicKey,
-      type: Object.prototype.hasOwnProperty.call(ATTEMPT_TYPE_NAMES, raw.type) ? raw.type : 'topic-question',
+      type: isKeyOf(ATTEMPT_TYPE_NAMES, raw.type) ? raw.type : 'topic-question',
       question: toText(raw.question, 200),
       earned,
       trustedEarned,
@@ -515,7 +597,7 @@
       items: toNumber(raw.items, { min: 1, max: 1000, fallback: 1, integer: true }),
       guesses: toNumber(raw.guesses, { min: 0, max: 1000, fallback: 0, integer: true }),
       confidence: CONFIDENCE_LEVELS.includes(raw.confidence) ? raw.confidence : 'medium',
-      error: Object.prototype.hasOwnProperty.call(ERROR_NAMES, raw.error) ? raw.error : '',
+      error: isKeyOf(ERROR_NAMES, raw.error) ? raw.error : '',
       note: toText(raw.note, 500),
       createdAt: isTimestamp(raw.createdAt) ? raw.createdAt : `${date}T00:00:00.000Z`,
       updatedAt: isTimestamp(raw.updatedAt) ? raw.updatedAt : null,
@@ -532,7 +614,7 @@
   function sanitizeRetest(raw, idFn = makeId) {
     if (!isPlainObject(raw)) return null;
     if (typeof raw.topicKey !== 'string' || !TOPIC_KEY.test(raw.topicKey) || !isISODate(raw.due)) return null;
-    const stage = Number(raw.stage) === 2 ? 2 : Number(raw.stage) === 1 ? 1 : null;
+    const stage = asNumber(raw.stage) === 2 ? 2 : asNumber(raw.stage) === 1 ? 1 : null;
     if (!stage) return null;
     const attempts = Array.isArray(raw.attempts)
       ? raw.attempts
@@ -592,7 +674,7 @@
     const out = {};
     if (!isPlainObject(raw)) return out;
     Object.keys(raw).forEach(key => {
-      const v = Number(raw[key]);
+      const v = asNumber(raw[key]);
       if (TOPIC_KEY.test(key) && [1, 2, 3].includes(v)) out[key] = v;
     });
     return out;
@@ -602,7 +684,7 @@
     const out = {};
     if (!isPlainObject(raw)) return out;
     Object.keys(raw).forEach(key => {
-      const v = Number(raw[key]);
+      const v = asNumber(raw[key]);
       if (/^[a-z0-9-]{1,60}$/.test(key) && PROGRESS_STEPS.includes(v)) out[key] = v;
     });
     return out;
@@ -643,7 +725,7 @@
     if (JSON.stringify(value) === JSON.stringify(OLD_V6_DAILY_TARGETS)) return out;
     SUBJECTS.forEach(subject =>
       DAILY_FIELDS.forEach(field => {
-        const n = Number(value[subject] && value[subject][field.id]);
+        const n = asNumber(value[subject] && value[subject][field.id]);
         if (Number.isFinite(n) && n >= 0) out[subject][field.id] = Math.min(n, 9999);
       }),
     );
@@ -816,12 +898,21 @@
     let physicsIntelligence = null;
     /** @type {Record<string, any>} */
     const doc = isPlainObject(parsed) ? parsed : {};
+    let companionDropped = 0;
     if (doc.product === 'A/L Performance Powerhouse') {
       if (!isPlainObject(doc.core))
         return { kind: 'invalid', message: 'This backup is missing its core study record.' };
       core = doc.core;
-      if (isPlainObject(doc.study_tracker)) studyTracker = doc.study_tracker;
-      if (isPlainObject(doc.physics_intelligence)) physicsIntelligence = doc.physics_intelligence;
+      if (isPlainObject(doc.study_tracker)) {
+        const tracker = sanitizeTrackerState(doc.study_tracker);
+        studyTracker = tracker.state;
+        companionDropped += tracker.report.dropped;
+      }
+      if (isPlainObject(doc.physics_intelligence)) {
+        const physics = sanitizePhysicsAttempts(doc.physics_intelligence.attempts);
+        physicsIntelligence = { version: 1, attempts: physics.attempts };
+        companionDropped += physics.dropped;
+      }
     }
     if (
       isPlainObject(core) &&
@@ -829,7 +920,11 @@
       (isPlainObject(core.ratings) || core.ratings === undefined)
     ) {
       const { state, report } = normalizeState(core, { profileSetupComplete: true });
-      const dropped = Object.values(report.dropped).reduce((n, v) => n + v, 0);
+      const dropped = Object.values(report.dropped).reduce((n, v) => n + v, 0) + companionDropped;
+      const companions = [
+        studyTracker ? `${studyTracker.sessions.length} Study Tracker session(s)` : '',
+        physicsIntelligence ? `${physicsIntelligence.attempts.length} Physics Intelligence attempt(s)` : '',
+      ].filter(Boolean);
       return {
         kind: 'backup',
         state,
@@ -839,6 +934,7 @@
         dropped,
         summary:
           `${state.attempts.length} attempt(s), ${state.retests.length} scheduled check(s), ${state.dailyEntries.length} daily-output entr${state.dailyEntries.length === 1 ? 'y' : 'ies'}` +
+          (companions.length ? `, ${companions.join(', ')}` : '') +
           (dropped ? ` · ${dropped} invalid record(s) will be skipped` : ''),
       };
     }
@@ -846,12 +942,155 @@
       const entries = Object.entries(core);
       if (
         entries.length &&
-        entries.every(([key, value]) => TOPIC_KEY.test(key) && [1, 2, 3].includes(Number(value)))
+        entries.every(([key, value]) => TOPIC_KEY.test(key) && [1, 2, 3].includes(asNumber(value)))
       ) {
         return { kind: 'legacy-ratings', ratings: sanitizeRatings(core), count: entries.length };
       }
     }
     return { kind: 'other' };
+  }
+
+  // ------------------------------------------------- companion-module records
+
+  const TRACKER_EVIDENCE_CLASSES = Object.freeze(['evidence', 'supporting', 'passive', 'uncertain']);
+  const TRACKER_SESSION_FIELDS = new Set([
+    'id',
+    'date',
+    'subject',
+    'type',
+    'task',
+    'topicKey',
+    'plannedMinutes',
+    'status',
+    'startedAt',
+    'accumulatedMs',
+    'durationMs',
+    'output',
+    'note',
+    'evidenceClass',
+    'createdAt',
+    'updatedAt',
+    'endedAt',
+    'ownerTab',
+    'linkedAttemptId',
+    'linkedEvidenceAt',
+  ]);
+
+  /**
+   * One Study Tracker session (completed or active). Returns null only when the
+   * record cannot be placed at all (no subject, or no usable date). Every string
+   * the tracker renders is bounded here; it is still escaped at render time.
+   * @param {unknown} raw
+   * @param {() => string} [idFn]
+   */
+  function sanitizeTrackerSession(raw, idFn = makeId) {
+    if (!isPlainObject(raw) || !SUBJECTS.includes(raw.subject)) return null;
+    const date = isISODate(raw.date)
+      ? raw.date
+      : isTimestamp(raw.createdAt) && isISODate(raw.createdAt.slice(0, 10))
+        ? raw.createdAt.slice(0, 10)
+        : null;
+    if (!date) return null;
+    const stamp = v => (isTimestamp(v) ? v : null);
+    const ms = v => toNumber(v, { min: 0, max: Number.MAX_SAFE_INTEGER, fallback: 0 });
+    /** @type {Record<string, any>} */
+    const out = {
+      ...passthrough(raw, TRACKER_SESSION_FIELDS),
+      id: safeId(raw.id, idFn),
+      date,
+      subject: raw.subject,
+      type: toText(raw.type, 60),
+      task: toText(raw.task, 500),
+      topicKey: typeof raw.topicKey === 'string' && TOPIC_KEY.test(raw.topicKey) ? raw.topicKey : '',
+      plannedMinutes: toNumber(raw.plannedMinutes, { min: 0, max: Number.MAX_SAFE_INTEGER, fallback: 0 }),
+      status: toText(raw.status, 20),
+      startedAt:
+        typeof raw.startedAt === 'number' && Number.isFinite(raw.startedAt)
+          ? raw.startedAt
+          : stamp(raw.startedAt),
+      accumulatedMs: ms(raw.accumulatedMs),
+      durationMs: ms(raw.durationMs),
+      output: toText(raw.output, 60),
+      note: toText(raw.note, 1000),
+      createdAt: stamp(raw.createdAt),
+      updatedAt: stamp(raw.updatedAt),
+      endedAt: stamp(raw.endedAt),
+      ownerTab: typeof raw.ownerTab === 'string' ? raw.ownerTab.slice(0, 100) : null,
+      linkedAttemptId: optionalId(raw.linkedAttemptId),
+      linkedEvidenceAt: stamp(raw.linkedEvidenceAt),
+    };
+    if (TRACKER_EVIDENCE_CLASSES.includes(raw.evidenceClass)) out.evidenceClass = raw.evidenceClass;
+    return out;
+  }
+
+  /**
+   * Validates a stored or imported Study Tracker record. Unknown top-level
+   * primitives are kept (newer builds); sessions that cannot be placed are
+   * dropped and counted so the caller can snapshot the original first.
+   * @param {unknown} raw
+   * @param {() => string} [idFn]
+   */
+  function sanitizeTrackerState(raw, idFn = makeId) {
+    const report = { dropped: 0 };
+    const src = isPlainObject(raw) ? raw : {};
+    const sessions = sanitizeList(src.sessions, sanitizeTrackerSession, idFn, { dropped: {} }, 'sessions');
+    report.dropped += (Array.isArray(src.sessions) ? src.sessions.length : 0) - sessions.length;
+    /** @type {Record<string, any> | null} */
+    let activeSession = null;
+    if (src.activeSession !== null && src.activeSession !== undefined) {
+      activeSession = sanitizeTrackerSession(src.activeSession, idFn);
+      if (!activeSession) report.dropped += 1;
+    }
+    const settings = isPlainObject(src.settings) ? src.settings : {};
+    return {
+      state: {
+        ...passthrough(src, new Set(['sessions', 'activeSession', 'settings', 'updatedAt'])),
+        version: 1,
+        schemaVersion: 1,
+        product: 'Performance Powerhouse Study Tracker',
+        timezone: DEFAULT_TIMEZONE,
+        sessions,
+        activeSession,
+        settings: {
+          ...passthrough(settings, new Set(['shareSafe'])),
+          shareSafe: settings.shareSafe === true,
+        },
+        updatedAt: isTimestamp(src.updatedAt) ? src.updatedAt : null,
+      },
+      report,
+    };
+  }
+
+  const PHYSICS_OUTCOMES = Object.freeze(['correct', 'wrong', 'guessed', 'slow', 'unattempted']);
+
+  /**
+   * Physics Intelligence private attempts: a known question family id, a known
+   * outcome, and bounded time and confidence. Anything else is dropped.
+   * @param {unknown} list
+   */
+  function sanitizePhysicsAttempts(list) {
+    const attempts = [];
+    let dropped = 0;
+    (Array.isArray(list) ? list : []).forEach(raw => {
+      const time = isPlainObject(raw) ? toNumber(raw.timeSeconds, { min: 0, max: 1200, fallback: NaN }) : NaN;
+      if (
+        !isPlainObject(raw) ||
+        !optionalId(raw.familyId) ||
+        !PHYSICS_OUTCOMES.includes(raw.outcome) ||
+        !Number.isFinite(time)
+      ) {
+        dropped += 1;
+        return;
+      }
+      attempts.push({
+        familyId: raw.familyId,
+        outcome: raw.outcome,
+        timeSeconds: time,
+        confidence: toNumber(raw.confidence, { min: 1, max: 5, fallback: 3, integer: true }),
+        recordedAt: isTimestamp(raw.recordedAt) ? raw.recordedAt : null,
+      });
+    });
+    return { attempts, dropped };
   }
 
   // ------------------------------------------------------------------- analysis
@@ -1081,7 +1320,7 @@
     /** @type {Map<string, Attempt[]>} */
     const byTopic = new Map();
     attempts.forEach(a => {
-      if (!Object.prototype.hasOwnProperty.call(ATTEMPT_TYPE_NAMES, a.type)) return;
+      if (!isKeyOf(ATTEMPT_TYPE_NAMES, a.type)) return;
       const list = byTopic.get(a.topicKey);
       if (list) list.push(a);
       else byTopic.set(a.topicKey, [a]);
@@ -1590,6 +1829,7 @@
     normalizeIntervals,
     createRetests,
     applyRetestOutcome,
+    explainUnclosedVerification,
     recomputeRetest,
     deleteAttempt,
     reconcileEditedAttempt,
@@ -1604,6 +1844,9 @@
     defaultState,
     normalizeState,
     inspectImport,
+    sanitizeTrackerSession,
+    sanitizeTrackerState,
+    sanitizePhysicsAttempts,
     lostMarksByError,
     repairPriorityScore,
     repairIntelligence,

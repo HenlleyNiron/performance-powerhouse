@@ -28,6 +28,7 @@ const APP_GLOBALS = {
   planProgress: 'readonly',
   priorityTopics: 'readonly',
   navigate: 'readonly',
+  activePanel: 'readonly',
   openAttemptDialog: 'readonly',
   fillTopicSelect: 'readonly',
   recoveryCount: 'readonly',
@@ -60,11 +61,20 @@ export default [
     },
   },
   { files: ['js/v5-additions.js'], languageOptions: { globals: APP_GLOBALS } },
+  // Companion pages load ../js/core.js first so stored and imported records are
+  // validated by the same tested code as the main app.
+  {
+    files: ['physics-intelligence/**/*.js', 'study-tracker/**/*.js'],
+    languageOptions: { globals: { PowerhouseCore: 'readonly' } },
+  },
   { files: ['js/core.js'], languageOptions: { globals: { globalThis: 'readonly' } } },
   { files: ['sw.js'], languageOptions: { sourceType: 'script', globals: { ...globals.serviceworker } } },
   {
     files: ['**/*.mjs'],
     languageOptions: { ecmaVersion: 2024, sourceType: 'module', globals: { ...globals.node } },
   },
-  { files: ['tests/e2e/**/*.mjs'], languageOptions: { globals: { ...globals.browser, ...globals.node } } },
+  {
+    files: ['tests/e2e/**/*.mjs', 'tests/fuzz/**/*.mjs'],
+    languageOptions: { globals: { ...globals.browser, ...globals.node } },
+  },
 ];

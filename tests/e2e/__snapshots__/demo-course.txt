@@ -1,0 +1,110 @@
+COURSE CORRECTION · BROTHER MODE
+Close 8 overdue retests before expanding the backlog.
+An old correction that has never survived delayed retrieval is still open. Closure outranks collecting another resource or starting another chapter.
+✓ marked output today
+8 overdue retests
+T top error · 1×/7d
+backup good
+EXECUTION GATE
+Protect output from the system itself
+Planning is useful only after it serves a marked attempt.
+Execution Lock
+Before the first marked attempt of the day, Syllabus Map asks for an explicit override.
+MARKED OUTPUT TODAY
+Yes
+RETESTS OVERDUE
+8
+PLANNING OVERRIDES · 7D
+0
+BACKUP HEALTH
+Good
+RABBIT-HOLE INTERCEPTOR
+Catch the urge before it steals the block
+Tap what you are about to do. V3 gives the replacement action.
+I want a better resource
+Resource accumulation / teacher hopping
+I want to redesign the tracker
+System-building instead of output
+I need to clear the backlog
+Lecture / recording binge
+I need a whole new plan
+Fresh-start loop after a bad day
+Ask AI to optimize everything
+Optimization before evidence
+I should organize files first
+Control-seeking administration
+Check what others are doing
+Social comparison / reassurance
+I should help/message someone now
+Other people before your own block
+I should stay up and catch up
+Sleep traded for guilt relief
+I should rewrite clean notes
+Passive work disguised as study
+I need huge paper volume today
+Unrealistic paper-count target
+Default replacement
+Open the current paper. Do one measurable question set. Mark it. Then decide what you actually need.
+BAD-DAY RECOVERY
+Minimum viable day · 60 minutes
+No fresh-start ceremony. Resume with the smallest complete evidence loop.
+30 min · attempt
+Closed-book questions from the current weakest/most due area.
+15 min · mark
+Official scheme. Count guesses, skipped items and exact lost points.
+10 min · repair
+Fix only the top one or two causes. No full lecture.
+5 min · reattempt
+Close sources and prove the repair immediately. Delayed retest remains scheduled.
+Start 30-min rescue attempt
+Log completed evidence
+DAILY DISCIPLINE AUDIT
+Five checks—not another journal
+Tick once at the end of the day. This is about protecting execution.
+Sleep protected
+No late-night punishment session to compensate for lost time.
+Planning/admin capped
+No prolonged timetable, tracker, file or dashboard redesign.
+AI stayed out of TEST
+AI may diagnose/repair after the closed-book attempt—not during it.
+No untriggered resource hunt
+New material opened only because an identified error required it.
+Own output came first
+Helping others, long messages and side projects waited until the minimum academic output was done.
+Save today’s audit
+7-DAY EVIDENCE REVIEW
+Change strategy only when the data earns it
+One bad paper is not a new life plan. Three repeated data points can justify a targeted change.
+MARKED ATTEMPTS
+5 attempts across 5/7 evidence days.
+RETESTS CLOSED
+2 delayed retrieval checks completed.
+TOP ERROR FAMILIES
+T Timing / selection ×1 · C Conceptual model ×1
+WEAKEST VERIFIED SUBJECT
+Physics · 80% over 2 attempts
+TOP RABBIT HOLE
+No interceptor events logged in the last 7 days.
+TODAY’S DISCIPLINE
+4/5 checks protected
+COURSE CORRECTION
+No redesign. Gather more evidence and keep closing current loops.
+2027 PLANNING ANCHOR
+Target date without fake certainty
+Leave blank until a useful/official date exists. This is a planning anchor, not a prediction.
+PLANNING TARGET DATE
+Save target
+Course-change rule
+No single error mechanism has repeated 3 times in the last 7 days. Do not redesign the strategy yet.
+V3 DOCTRINE
+What this site is allowed to do
+TEST
+Closed-book, timed, AI-free. The site measures; it does not rescue you mid-question.
+DIAGNOSE
+Score + confidence + guesses + one primary error cause. Do not write essays about every mistake.
+REPAIR
+Smallest intervention that fixes the cause. No chapter rewatch for one failed point.
+RETEST
+Fresh, delayed retrieval decides whether the repair survived.
+SYSTEM
+If Powerhouse starts consuming more time than it saves, Powerhouse itself is the problem.

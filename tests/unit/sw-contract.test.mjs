@@ -42,3 +42,7 @@ test('ignores non-GET and cross-origin traffic', () => {
   assert.match(source, /request\.method !== 'GET'/);
   assert.match(source, /url\.origin !== self\.location\.origin/);
 });
+
+test('precaches each release from the network, not the HTTP cache', () => {
+  assert.match(source, /new Request\(asset, \{ cache: 'reload' \}\)/);
+});

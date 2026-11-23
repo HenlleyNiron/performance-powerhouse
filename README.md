@@ -34,6 +34,9 @@ question **after a delay** before calling it fixed.
 Attempt → Mark → Diagnose → Repair → Closed-book reattempt → Fresh transfer → Delayed retest
 ```
 
+**No app needed to use the method.** [`docs/METHOD.md`](docs/METHOD.md) explains the loop, the
+eight error families, what counts as a clean pass and how to run it in a notebook.
+
 ## What it does
 
 | | |
@@ -121,6 +124,9 @@ Every push and pull request runs:
 | **Type checking** | The evidence core is checked by TypeScript in strict mode through JSDoc types — still plain JavaScript, no build step |
 | **Performance** | A browser test fails if a dashboard refresh with 3,000 logged attempts takes longer than 1.5 s (it takes ≈0.2 s) |
 | **Style** | ESLint and Prettier on every file |
+| **Property-based tests** | fast-check throws thousands of random and hostile records at the core: validation never crashes, and no sequence of logging, editing or deleting can leave a check closed without clean evidence |
+| **Text snapshots** | The visible text of every panel is frozen, so a refactor cannot silently change what students see |
+| **UI fuzzing** | Random student histories are replayed through the real retest rules and opened in every panel of a real browser; any crash or broken text (NaN, `undefined`) fails the build. Latest audit: [`docs/AUDIT-2026-11.md`](docs/AUDIT-2026-11.md) |
 | **Integrity tests** | No duplicate ids or missing elements, links resolve, CSP on every page, offline assets exist, versions agree |
 | **Dataset validation** | Every Physics Intelligence total is reproducible from its per-year rows, no question sits in two families, and no question or answer text is published |
 | **Browser tests** (Chromium, desktop + Pixel 7) | Onboarding, attempt → retest flow, V4 migration, backup round-trip, hostile-backup import, demo mode, Study Tracker hand-off, full offline use, mobile layout |
